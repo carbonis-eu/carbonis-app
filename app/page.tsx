@@ -2,6 +2,7 @@ export const instant = false
 
 import Link from 'next/link'
 import InlineCbamCalc from './components/InlineCbamCalc'
+import CarbonisLogo, { CarbonisIcon } from './components/CarbonisLogo'
 
 async function getEtsPrice(): Promise<number> {
   try {
@@ -76,16 +77,6 @@ const icons = {
   ),
 }
 
-// Carbonis hexagon logo SVG
-function Logo() {
-  return (
-    <svg width="32" height="36" viewBox="0 0 32 36" fill="none">
-      <path d="M16 1L30 9.5V26.5L16 35L2 26.5V9.5L16 1Z" fill="#265CFF"/>
-      <path d="M16 6L26.39 11.5V22.5L16 28L5.61 22.5V11.5L16 6Z" fill="#0B2471"/>
-      <text x="16" y="21" textAnchor="middle" fill="white" fontFamily="system-ui,sans-serif" fontWeight="700" fontSize="11">C</text>
-    </svg>
-  )
-}
 
 export default async function HomePage() {
   const etsPrice = await getEtsPrice()
@@ -125,10 +116,7 @@ export default async function HomePage() {
       {/* NAV */}
       <nav style={{ background: 'rgba(255,251,243,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, zIndex: 50 }}>
         <div className="max-w-6xl mx-auto px-6" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Logo />
-            <span style={{ fontSize: '18px', fontWeight: 700, color: '#0B2471', letterSpacing: '-0.02em' }}>Carbonis</span>
-          </div>
+          <CarbonisLogo size="md" variant="light" />
           <div className="hidden md:flex" style={{ gap: '28px', fontSize: '14px', color: '#4b5563' }}>
             <a href="#features" style={{ color: 'inherit', textDecoration: 'none' }} className="hover:text-gray-900">Features</a>
             <a href="#pricing" style={{ color: 'inherit', textDecoration: 'none' }} className="hover:text-gray-900">Pricing</a>
@@ -513,9 +501,8 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto px-6">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '48px', marginBottom: '40px' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                <Logo />
-                <span style={{ color: 'white', fontWeight: 800, fontSize: '18px' }}>Carbonis</span>
+              <div style={{ marginBottom: '10px' }}>
+                <CarbonisLogo size="md" variant="dark" />
               </div>
               <p style={{ fontSize: '14px', lineHeight: 1.6, maxWidth: '260px', margin: 0 }}>
                 EU Environmental Compliance Marketplace — CBAM declarations, certificate trading, regulatory monitoring.
