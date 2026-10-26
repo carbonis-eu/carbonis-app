@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import CarbonisLogo from '@/app/components/CarbonisLogo'
 
 function generateCaptcha() {
   const a = Math.floor(Math.random() * 9) + 1
@@ -68,7 +67,7 @@ export default function LoginPage() {
       {/* Minimal nav */}
       <nav style={{ background: 'rgba(255,251,243,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e5e7eb', padding: '0 24px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <CarbonisLogo size="sm" variant="light" />
+          <img src="/carbonis-logo-light.png" alt="Carbonis" style={{ height: '28px', width: 'auto' }}/>
         </Link>
         <Link href="/" style={{ fontSize: '13px', color: '#64748b', textDecoration: 'none' }}>← Back to home</Link>
       </nav>

@@ -2,7 +2,6 @@ export const instant = false
 
 import Link from 'next/link'
 import InlineCbamCalc from './components/InlineCbamCalc'
-import CarbonisLogo, { CarbonisIcon } from './components/CarbonisLogo'
 
 async function getEtsPrice(): Promise<number> {
   try {
@@ -127,7 +126,7 @@ function DashboardMockup() {
       {/* Sidebar */}
       <div style={{ width: '160px', background: '#0a1220', borderRight: '1px solid rgba(255,255,255,0.06)', padding: '16px 0', flexShrink: 0 }}>
         <div style={{ padding: '0 14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <CarbonisIcon size={24} variant="dark"/>
+          <img src="/carbonis-icon.png" alt="Carbonis" style={{ height: '24px', width: 'auto' }}/>
         </div>
         {[
           { icon: '▦', label: 'Dashboard', active: true },
@@ -231,7 +230,7 @@ export default async function HomePage() {
         borderBottom: '1px solid #e2e8f0',
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <CarbonisLogo size="md" variant="light"/>
+          <img src="/carbonis-logo-light.png" alt="Carbonis" style={{ height: '36px', width: 'auto' }}/>
           <div style={{ display: 'flex', gap: '32px' }}>
             <a href="#why" className="nav-link" style={{ color: '#0f172a', borderBottom: '2px solid #265CFF', paddingBottom: '2px', fontSize: '14px' }}>Home</a>
             <a href="#platform" className="nav-link">Platform</a>
@@ -693,7 +692,7 @@ export default async function HomePage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '40px', marginBottom: '48px' }}>
             <div>
-              <div style={{ marginBottom: '16px' }}><CarbonisLogo size="md" variant="dark" showTagline/></div>
+              <div style={{ marginBottom: '16px' }}><img src="/carbonis-logo-dark.png" alt="Carbonis" style={{ height: '44px', width: 'auto' }}/></div>
               <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.7, maxWidth: '280px', margin: 0 }}>
                 EU Environmental Compliance Marketplace — CBAM declarations, certificate trading, regulatory monitoring.
               </p>
