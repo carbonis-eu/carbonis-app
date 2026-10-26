@@ -39,7 +39,7 @@ export default async function HomePage() {
       {/* ── NAV ── */}
       <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(255,255,255,0.97)',backdropFilter:'blur(16px)',borderBottom:'1px solid #e2e8f0'}}>
         <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px',height:'64px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-          <Link href="/"><img src="/carbonis-logo-light.png" alt="Carbonis" style={{height:'32px',width:'auto'}}/></Link>
+          <Link href="/"><img src="/carbonis-logo-light.png" alt="Carbonis" style={{height:'40px',width:'auto'}}/></Link>
           <div style={{display:'flex',gap:'28px',alignItems:'center'}}>
             <a href="#" style={{color:'#265CFF',fontSize:'14px',borderBottom:'2px solid #265CFF',paddingBottom:'2px'}}>Home</a>
             <a href="#platform" className="nl">Product</a>
@@ -83,23 +83,27 @@ export default async function HomePage() {
           </div>
 
           {/* Right — Earth globe */}
-          <div style={{flex:1,display:'flex',justifyContent:'flex-end'}}>
-            <div style={{position:'relative',width:'580px',height:'500px'}}>
-              <img src="/earth-hero.png" alt="Earth from space" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'16px',opacity:0.95}}/>
-              <div style={{position:'absolute',top:0,left:0,bottom:0,width:'120px',background:'linear-gradient(to right,#081424,transparent)'}}/>
-              {/* Card 1 */}
-              <div className="f1" style={{position:'absolute',right:'20px',top:'90px',background:'rgba(6,12,28,0.88)',backdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'14px 18px',minWidth:'190px'}}>
-                <p style={{color:'#94a3b8',fontSize:'11px',marginBottom:'8px'}}>Carbon emissions</p>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                  <span style={{color:'white',fontSize:'13px',fontWeight:700}}>under control</span>
-                  <svg viewBox="0 0 60 22" width="56" height="22"><path d="M0 18 Q15 14 30 9 Q45 5 60 2" stroke="#4ade80" strokeWidth="1.8" fill="none"/></svg>
-                </div>
+          <div style={{flex:1,position:'relative',minHeight:'520px'}}>
+            {/* Atmospheric glow ring */}
+            <div style={{position:'absolute',right:'-30px',top:'50%',transform:'translateY(-50%)',width:'590px',height:'590px',borderRadius:'50%',background:'radial-gradient(circle,transparent 43%,rgba(38,92,255,0.18) 54%,rgba(96,165,250,0.08) 70%,transparent 86%)',pointerEvents:'none',zIndex:1}}/>
+            {/* Earth circle */}
+            <div style={{position:'absolute',right:'-30px',top:'50%',transform:'translateY(-50%)',width:'530px',height:'530px',borderRadius:'50%',overflow:'hidden',boxShadow:'0 0 0 1.5px rgba(38,92,255,0.3),0 0 50px rgba(38,92,255,0.28),0 0 110px rgba(11,36,113,0.22)',zIndex:2}}>
+              <img src="/earth-globe.jpg" alt="Earth from space" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center center'}}/>
+            </div>
+            {/* Left fade into hero bg */}
+            <div style={{position:'absolute',top:0,left:0,bottom:0,width:'160px',background:'linear-gradient(to right,#06101e,transparent)',zIndex:3,pointerEvents:'none'}}/>
+            {/* Card 1 */}
+            <div className="f1" style={{position:'absolute',right:'30px',top:'calc(50% - 110px)',background:'rgba(6,12,28,0.88)',backdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'14px 18px',minWidth:'190px',zIndex:4}}>
+              <p style={{color:'#94a3b8',fontSize:'11px',marginBottom:'8px'}}>Carbon emissions</p>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                <span style={{color:'white',fontSize:'13px',fontWeight:700}}>under control</span>
+                <svg viewBox="0 0 60 22" width="56" height="22"><path d="M0 18 Q15 14 30 9 Q45 5 60 2" stroke="#4ade80" strokeWidth="1.8" fill="none"/></svg>
               </div>
-              {/* Card 2 */}
-              <div className="f2" style={{position:'absolute',right:'20px',bottom:'110px',background:'rgba(6,12,28,0.88)',backdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'14px 18px',minWidth:'190px'}}>
-                <p style={{color:'#94a3b8',fontSize:'11px',marginBottom:'5px'}}>Full compliance</p>
-                <p style={{color:'white',fontSize:'13px',fontWeight:700}}>with EU regulations</p>
-              </div>
+            </div>
+            {/* Card 2 */}
+            <div className="f2" style={{position:'absolute',right:'30px',top:'calc(50% + 30px)',background:'rgba(6,12,28,0.88)',backdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'14px 18px',minWidth:'190px',zIndex:4}}>
+              <p style={{color:'#94a3b8',fontSize:'11px',marginBottom:'5px'}}>Full compliance</p>
+              <p style={{color:'white',fontSize:'13px',fontWeight:700}}>with EU regulations</p>
             </div>
           </div>
         </div>
@@ -327,7 +331,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer id="about" style={{background:'#060d1f',padding:'52px 0 26px',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+      <footer id="about" style={{background:'#0d1a2e',padding:'52px 0 26px',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
         <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px'}}>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'40px',flexWrap:'wrap',gap:'20px'}}>
             <Link href="/"><img src="/carbonis-logo-dark.png" alt="Carbonis" style={{height:'32px',width:'auto'}}/></Link>
@@ -340,7 +344,7 @@ export default async function HomePage() {
               {[
                 {d:<><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" fill="#64748b"/><circle cx="4" cy="4" r="2" fill="#64748b"/></>},
                 {d:<><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25z" fill="#64748b"/></>},
-                {d:<><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42C1 8.13 1 12 1 12s0 3.87.46 5.58a2.78 2.78 0 001.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 001.95-1.95C23 15.87 23 12 23 12s0-3.87-.46-5.58z" fill="#64748b"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#060d1f"/></>},
+                {d:<><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42C1 8.13 1 12 1 12s0 3.87.46 5.58a2.78 2.78 0 001.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 001.95-1.95C23 15.87 23 12 23 12s0-3.87-.46-5.58z" fill="#64748b"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#0d1a2e"/></>},
               ].map(({d},i) => (
                 <a key={i} href="#" style={{width:'30px',height:'30px',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'6px',display:'flex',alignItems:'center',justifyContent:'center'}}>
                   <svg width="14" height="14" viewBox="0 0 24 24">{d}</svg>
