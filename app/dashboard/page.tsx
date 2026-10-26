@@ -87,7 +87,6 @@ export default async function DashboardPage() {
             title="CBAM Calculator"
             description="Calculate your CBAM liability for imported goods"
             href="/cbam"
-            badge="Coming soon"
             icon="🧮"
           />
           <DashboardCard
