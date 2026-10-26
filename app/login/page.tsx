@@ -63,10 +63,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFBF3] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#FFFBF3]">
+      {/* Minimal nav */}
+      <nav style={{ background: 'rgba(255,251,243,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e5e7eb', padding: '0 24px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+          <svg width="26" height="30" viewBox="0 0 32 36" fill="none">
+            <path d="M16 1L30 9.5V26.5L16 35L2 26.5V9.5L16 1Z" fill="#265CFF"/>
+            <path d="M16 6L26.39 11.5V22.5L16 28L5.61 22.5V11.5L16 6Z" fill="#0B2471"/>
+            <text x="16" y="21" textAnchor="middle" fill="white" fontFamily="system-ui,sans-serif" fontWeight="700" fontSize="11">C</text>
+          </svg>
+          <span style={{ fontSize: '17px', fontWeight: 700, color: '#0B2471' }}>Carbonis</span>
+        </Link>
+        <Link href="/" style={{ fontSize: '13px', color: '#64748b', textDecoration: 'none' }}>← Back to home</Link>
+      </nav>
+
+      <div className="flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-[#0B2471]">Carbonis</h1>
           <p className="text-gray-500 mt-1 text-sm">EU Environmental Compliance</p>
         </div>
 
@@ -142,6 +155,7 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
+      </div>
       </div>
     </div>
   )

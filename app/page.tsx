@@ -1,6 +1,7 @@
 export const instant = false
 
 import Link from 'next/link'
+import InlineCbamCalc from './components/InlineCbamCalc'
 
 async function getEtsPrice(): Promise<number> {
   try {
@@ -15,45 +16,129 @@ async function getEtsPrice(): Promise<number> {
   return 65.40
 }
 
+// SVG icons — inline, no external deps
+const icons = {
+  calculator: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="2"/>
+      <line x1="8" y1="8" x2="16" y2="8"/>
+      <line x1="8" y1="12" x2="10" y2="12"/>
+      <line x1="14" y1="12" x2="16" y2="12"/>
+      <line x1="8" y1="16" x2="10" y2="16"/>
+      <line x1="14" y1="16" x2="16" y2="16"/>
+    </svg>
+  ),
+  marketplace: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3h2l.4 2M7 13h10l4-8H5.4"/>
+      <circle cx="9" cy="21" r="1"/>
+      <circle cx="20" cy="21" r="1"/>
+    </svg>
+  ),
+  document: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="16" y1="13" x2="8" y2="13"/>
+      <line x1="16" y1="17" x2="8" y2="17"/>
+      <polyline points="10 9 9 9 8 9"/>
+    </svg>
+  ),
+  shield: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+  ),
+  check: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  ),
+  alert: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+      <line x1="12" y1="9" x2="12" y2="13"/>
+      <line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+  ),
+  building: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <path d="M3 9h18M9 21V9"/>
+    </svg>
+  ),
+  globe: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+  ),
+}
+
+// Carbonis hexagon logo SVG
+function Logo() {
+  return (
+    <svg width="32" height="36" viewBox="0 0 32 36" fill="none">
+      <path d="M16 1L30 9.5V26.5L16 35L2 26.5V9.5L16 1Z" fill="#265CFF"/>
+      <path d="M16 6L26.39 11.5V22.5L16 28L5.61 22.5V11.5L16 6Z" fill="#0B2471"/>
+      <text x="16" y="21" textAnchor="middle" fill="white" fontFamily="system-ui,sans-serif" fontWeight="700" fontSize="11">C</text>
+    </svg>
+  )
+}
+
 export default async function HomePage() {
   const etsPrice = await getEtsPrice()
 
+  // Mockup card: 500t BOF steel from China — real math
+  const mockQty = 500
+  const mockFactor = 1.89  // BOF steel tCO₂/t
+  const mockEmissions = mockQty * mockFactor  // 945 tCO₂
+  const mockGross = mockEmissions * etsPrice
+  const mockDeduction = mockEmissions * 7  // China €7/tCO₂
+  const mockNet = Math.round(mockGross - mockDeduction)
+
+  function fmt(n: number) {
+    return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
+  }
+
   return (
-    <div className="min-h-screen bg-[#FFFBF3]">
+    <div className="min-h-screen" style={{ background: '#FFFBF3' }}>
       <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        .float { animation: float 5s ease-in-out infinite; }
+        .card-3d { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .card-3d:hover {
+          transform: perspective(900px) rotateX(-3deg) rotateY(5deg) scale(1.015);
+          box-shadow: 0 24px 48px rgba(11,36,113,0.14);
         }
-        .float { animation: float 4s ease-in-out infinite; }
-        .card-tilt { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .card-tilt:hover {
-          transform: perspective(800px) rotateX(-3deg) rotateY(4deg) scale(1.02);
-          box-shadow: 0 20px 50px rgba(11,36,113,0.12);
+        @keyframes in { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+        .in1 { animation: in 0.55s ease-out both; }
+        .in2 { animation: in 0.55s 0.12s ease-out both; }
+        .in3 { animation: in 0.55s 0.24s ease-out both; }
+        .dot-grid {
+          background-image: radial-gradient(circle, #0B247120 1px, transparent 1px);
+          background-size: 28px 28px;
         }
-        @keyframes slide-up {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .slide-up { animation: slide-up 0.6s ease-out both; }
-        .slide-up-2 { animation: slide-up 0.6s 0.15s ease-out both; }
-        .slide-up-3 { animation: slide-up 0.6s 0.3s ease-out both; }
       `}</style>
 
       {/* NAV */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-xl font-bold text-[#0B2471]">Carbonis</span>
-          <div className="hidden md:flex items-center gap-6 text-sm text-gray-600">
-            <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
-            <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
-            <a href="#how" className="hover:text-gray-900 transition-colors">How it works</a>
+      <nav style={{ background: 'rgba(255,251,243,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e5e7eb', position: 'sticky', top: 0, zIndex: 50 }}>
+        <div className="max-w-6xl mx-auto px-6" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Logo />
+            <span style={{ fontSize: '18px', fontWeight: 700, color: '#0B2471', letterSpacing: '-0.02em' }}>Carbonis</span>
           </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">Sign in</Link>
+          <div className="hidden md:flex" style={{ gap: '28px', fontSize: '14px', color: '#4b5563' }}>
+            <a href="#features" style={{ color: 'inherit', textDecoration: 'none' }} className="hover:text-gray-900">Features</a>
+            <a href="#pricing" style={{ color: 'inherit', textDecoration: 'none' }} className="hover:text-gray-900">Pricing</a>
+            <a href="#how" style={{ color: 'inherit', textDecoration: 'none' }} className="hover:text-gray-900">How it works</a>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Link href="/login" style={{ fontSize: '14px', color: '#374151', textDecoration: 'none' }}>Sign in</Link>
             <Link
               href="/register"
-              className="bg-[#0B2471] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#0a1f63] transition-colors"
+              style={{ background: '#0B2471', color: 'white', fontSize: '14px', fontWeight: 600, padding: '8px 18px', borderRadius: '10px', textDecoration: 'none' }}
             >
               Start free trial
             </Link>
@@ -61,145 +146,228 @@ export default async function HomePage() {
         </div>
       </nav>
 
-      {/* HERO */}
-      <section className="max-w-6xl mx-auto px-6 pt-20 pb-24 text-center">
-        <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium px-3 py-1.5 rounded-full mb-8 slide-up">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
-          CBAM in force since Jan 2026 — 2026 annual declaration due May 2027
-        </div>
+      {/* HERO — 2 column */}
+      <section className="dot-grid" style={{ paddingTop: '72px', paddingBottom: '80px' }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 480px', gap: '64px', alignItems: 'center' }}>
 
-        <h1 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-tight mb-6 slide-up-2">
-          Stop guessing your<br />
-          <span className="text-[#265CFF]">CBAM liability</span>
-        </h1>
-
-        <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-10 slide-up-3">
-          Calculate your carbon border adjustment costs, source smarter across 20+ countries,
-          and generate audit-ready CBAM declarations — all in one platform.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12 slide-up-3">
-          <Link
-            href="/register"
-            className="bg-[#0B2471] text-white px-8 py-3.5 rounded-xl text-sm font-semibold hover:bg-[#0a1f63] transition-colors shadow-lg shadow-blue-900/20"
-          >
-            Start free 30-day trial
-          </Link>
-          <Link
-            href="/cbam"
-            className="border border-gray-300 text-gray-700 px-8 py-3.5 rounded-xl text-sm font-semibold hover:border-gray-400 hover:bg-white transition-colors"
-          >
-            Try CBAM calculator — free →
-          </Link>
-        </div>
-
-        {/* ETS live price badge */}
-        <div className="inline-flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-5 py-3 shadow-sm text-sm">
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-gray-500">EU ETS today</span>
-          <span className="font-bold text-[#0B2471] text-lg">€{etsPrice.toFixed(2)}</span>
-          <span className="text-gray-400">/ tCO₂</span>
-        </div>
-
-        {/* Mockup card — 3D float */}
-        <div className="mt-16 float">
-          <div className="bg-gradient-to-br from-[#0B2471] to-[#265CFF] rounded-2xl p-6 max-w-sm mx-auto text-white text-left shadow-2xl shadow-blue-900/30"
-            style={{ transform: 'perspective(1000px) rotateX(5deg) rotateY(-5deg)' }}>
-            <p className="text-blue-200 text-xs uppercase tracking-wider mb-1">CBAM Liability Estimate</p>
-            <p className="text-3xl font-bold mb-3">€ 47,580</p>
-            <div className="space-y-1 text-sm text-blue-100">
-              <div className="flex justify-between">
-                <span>500 t crude steel (BOF)</span>
-                <span>China</span>
+            {/* Left column */}
+            <div>
+              <div className="in1" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#fef3c7', border: '1px solid #fcd34d', color: '#92400e', fontSize: '12px', fontWeight: 500, padding: '6px 14px', borderRadius: '999px', marginBottom: '28px' }}>
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#f59e0b', display: 'inline-block' }} />
+                CBAM in force — 2026 annual declaration due May 2027
               </div>
-              <div className="flex justify-between">
-                <span>945 tCO₂ × €{etsPrice.toFixed(0)}/tCO₂</span>
-                <span className="text-green-300">−€4,725 credit</span>
+
+              <h1 className="in2" style={{ fontSize: '52px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.03em', marginBottom: '20px' }}>
+                Know your CBAM<br />
+                <span style={{ color: '#265CFF' }}>liability instantly.</span>
+              </h1>
+
+              <p className="in3" style={{ fontSize: '18px', color: '#475569', lineHeight: 1.65, marginBottom: '36px', maxWidth: '480px' }}>
+                Calculate carbon border adjustment costs for EU imports,
+                compare sourcing alternatives, and generate audit-ready
+                declarations — in one platform built for compliance teams.
+              </p>
+
+              <div className="in3" style={{ display: 'flex', gap: '12px', marginBottom: '40px', flexWrap: 'wrap' }}>
+                <Link
+                  href="/register"
+                  style={{ background: '#0B2471', color: 'white', fontWeight: 700, fontSize: '15px', padding: '14px 28px', borderRadius: '12px', textDecoration: 'none', boxShadow: '0 8px 24px rgba(11,36,113,0.22)' }}
+                >
+                  Start free 30-day trial
+                </Link>
+                <Link
+                  href="/cbam"
+                  style={{ background: 'white', color: '#0B2471', fontWeight: 600, fontSize: '15px', padding: '14px 28px', borderRadius: '12px', textDecoration: 'none', border: '1.5px solid #e2e8f0' }}
+                >
+                  Open full calculator
+                </Link>
+              </div>
+
+              {/* ETS live */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '10px 18px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', animation: 'pulse 2s ease-in-out infinite' }} />
+                <span style={{ fontSize: '13px', color: '#64748b' }}>EU ETS spot</span>
+                <span style={{ fontSize: '20px', fontWeight: 800, color: '#0B2471' }}>€{etsPrice.toFixed(2)}</span>
+                <span style={{ fontSize: '13px', color: '#94a3b8' }}>/ tCO₂</span>
               </div>
             </div>
-            <div className="mt-3 pt-3 border-t border-blue-400/40 flex justify-between items-center">
-              <span className="text-blue-200 text-xs">Net liability</span>
-              <span className="font-bold">€ 47,580</span>
+
+            {/* Right column — inline calculator */}
+            <div className="in3">
+              <InlineCbamCalc etsPrice={etsPrice} />
             </div>
           </div>
         </div>
       </section>
 
-      {/* PAIN POINT BANNER */}
-      <section className="bg-[#0B2471] py-10">
-        <div className="max-w-4xl mx-auto px-6 text-center text-white">
-          <p className="text-lg font-medium mb-2">
-            Non-compliance with CBAM carries fines of <span className="text-yellow-300 font-bold">€50–€150 per tCO₂</span> of unreported emissions
+      {/* FINE ALERT BANNER */}
+      <section style={{ background: '#0B2471', padding: '28px 0' }}>
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span style={{ color: '#fbbf24' }}>{icons.alert}</span>
+            <p style={{ color: 'white', fontSize: '16px', fontWeight: 600, margin: 0 }}>
+              Non-compliance fines: <span style={{ color: '#fde047' }}>€50–€150 per unreported tCO₂</span>
+            </p>
+          </div>
+          <p style={{ color: '#93c5fd', fontSize: '13px', margin: 0 }}>
+            EU Regulation 2023/956 — covers cement, steel, aluminium, fertilisers, hydrogen &amp; electricity
           </p>
-          <p className="text-blue-300 text-sm">
-            Regulation (EU) 2023/956 — in force for cement, steel, aluminium, fertilisers, hydrogen & electricity
-          </p>
+        </div>
+      </section>
+
+      {/* HERO MOCKUP CARD (floating, correct math) */}
+      <section style={{ background: '#f8fafc', padding: '80px 0' }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'center' }}>
+
+            {/* Floating card */}
+            <div className="float" style={{ display: 'flex', justifyContent: 'center' }}>
+              <div style={{
+                background: 'linear-gradient(145deg, #0B2471, #1a3a8f)',
+                borderRadius: '20px',
+                padding: '28px',
+                width: '340px',
+                color: 'white',
+                boxShadow: '0 32px 64px rgba(11,36,113,0.30)',
+                transform: 'perspective(1000px) rotateX(4deg) rotateY(-6deg)',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                  <p style={{ color: '#93c5fd', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>CBAM Liability Estimate</p>
+                  <span style={{ background: '#265CFF', fontSize: '10px', padding: '2px 8px', borderRadius: '999px', color: 'white' }}>LIVE</span>
+                </div>
+                <p style={{ fontSize: '36px', fontWeight: 800, margin: '8px 0 16px', letterSpacing: '-0.03em' }}>{fmt(mockNet)}</p>
+
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '14px', fontSize: '13px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#bfdbfe', marginBottom: '8px' }}>
+                    <span>500 t crude steel (BOF) · China</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#bfdbfe', marginBottom: '6px' }}>
+                    <span>{mockEmissions.toFixed(0)} tCO₂ × €{etsPrice.toFixed(0)}</span>
+                    <span>{fmt(mockGross)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#86efac', marginBottom: '6px' }}>
+                    <span>− China carbon credit (€7/tCO₂)</span>
+                    <span>− {fmt(mockDeduction)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px' }}>
+                    <span style={{ color: '#e2e8f0' }}>Net CBAM liability</span>
+                    <span>{fmt(mockNet)}</span>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: '16px', background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '10px 14px', fontSize: '12px', color: '#93c5fd' }}>
+                  Procurement tip: Sourcing from Turkey (€15/tCO₂) saves {fmt((7 - 15 < 0 ? 0 : (7 - 15)) * mockEmissions)} vs. China
+                </div>
+              </div>
+            </div>
+
+            {/* Text */}
+            <div>
+              <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#0f172a', lineHeight: 1.15, letterSpacing: '-0.025em', marginBottom: '20px' }}>
+                From import data to<br />declaration-ready report
+              </h2>
+              <p style={{ color: '#64748b', fontSize: '16px', lineHeight: 1.7, marginBottom: '28px' }}>
+                Carbonis calculates your exact CBAM liability using live EU ETS prices,
+                country-specific carbon credits, and official emission factors from
+                EU Regulation 2023/956 annexes.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {[
+                  'Live EU ETS price updated hourly',
+                  'Country carbon credit deductions (20+ countries)',
+                  'Procurement optimisation — find lowest CBAM cost supplier',
+                  'XML export for EU CBAM Registry',
+                ].map(item => (
+                  <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ color: '#22c55e', flexShrink: 0 }}>{icons.check}</span>
+                    <span style={{ fontSize: '14px', color: '#374151' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* FEATURES */}
-      <section id="features" className="max-w-6xl mx-auto px-6 py-24">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">Everything you need for CBAM compliance</h2>
-          <p className="text-gray-500">Built for EU importers, traders, and compliance managers</p>
-        </div>
+      <section id="features" style={{ padding: '80px 0', background: '#FFFBF3' }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+            <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em', marginBottom: '12px' }}>
+              Full-stack CBAM compliance
+            </h2>
+            <p style={{ color: '#64748b', fontSize: '16px' }}>Calculator, marketplace, declarations — one platform</p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              icon: '🧮',
-              title: 'CBAM Calculator',
-              desc: 'Free, no registration. Instant liability estimates for 20+ products across 6 CBAM sectors. Live EU ETS price, country-specific emission factors, procurement comparison.',
-              badge: 'Free',
-              href: '/cbam',
-            },
-            {
-              icon: '📋',
-              title: 'Certificate Marketplace',
-              desc: 'OTC bulletin board for CBAM and GO certificates. Sellers list for free. Buyers get matched automatically. EFET contract generated on match.',
-              badge: 'Coming Q1 2027',
-              href: '/register',
-            },
-            {
-              icon: '📊',
-              title: 'Compliance Reports',
-              desc: 'Generate CBAM XML declarations ready for the EU CBAM Registry. ARSO and DEHSt formats. Audit trail and submission history included.',
-              badge: 'PRO Compliance',
-              href: '/register',
-            },
-          ].map(f => (
-            <Link key={f.title} href={f.href} className="card-tilt bg-white rounded-2xl border border-gray-200 p-6 block">
-              <div className="text-3xl mb-4">{f.icon}</div>
-              <div className="flex items-center gap-2 mb-2">
-                <h3 className="font-semibold text-gray-900">{f.title}</h3>
-                <span className="text-xs bg-blue-50 text-[#265CFF] px-2 py-0.5 rounded-full">{f.badge}</span>
-              </div>
-              <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
-            </Link>
-          ))}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+            {[
+              {
+                icon: icons.calculator,
+                title: 'CBAM Calculator',
+                badge: 'Free',
+                badgeColor: '#22c55e',
+                desc: 'Instant liability estimates for 6 sectors, 20+ products, 20+ origin countries. Live EU ETS price. Country carbon credit deductions. Procurement comparison.',
+                href: '/cbam',
+              },
+              {
+                icon: icons.marketplace,
+                title: 'Certificate Marketplace',
+                badge: 'Beta Q4 2026',
+                badgeColor: '#265CFF',
+                desc: 'OTC bulletin board for CBAM and GO certificates. Sellers list free, buyers matched automatically. EFET contract template on every match.',
+                href: '/register',
+              },
+              {
+                icon: icons.document,
+                title: 'Compliance Reports',
+                badge: 'PRO',
+                badgeColor: '#f59e0b',
+                desc: 'CBAM XML declarations for the EU Registry. ARSO and DEHSt formats. Audit trail, submission history. Supplier data request templates.',
+                href: '/register',
+              },
+            ].map(f => (
+              <Link key={f.title} href={f.href}
+                className="card-3d"
+                style={{ background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '28px', textDecoration: 'none', display: 'block' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                  <div style={{ width: '48px', height: '48px', background: '#eff6ff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#265CFF' }}>
+                    {f.icon}
+                  </div>
+                  <span style={{ fontSize: '11px', fontWeight: 600, background: `${f.badgeColor}18`, color: f.badgeColor, padding: '3px 10px', borderRadius: '999px' }}>
+                    {f.badge}
+                  </span>
+                </div>
+                <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#0f172a', marginBottom: '10px' }}>{f.title}</h3>
+                <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* HOW IT WORKS */}
-      <section id="how" className="bg-white py-24">
+      <section id="how" style={{ background: 'white', padding: '80px 0' }}>
         <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Up and running in minutes</h2>
-            <p className="text-gray-500">No consultants. No spreadsheets. No guessing.</p>
+          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+            <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em', marginBottom: '12px' }}>
+              Up and running in minutes
+            </h2>
+            <p style={{ color: '#64748b', fontSize: '16px' }}>No consultants. No spreadsheets. No guessing.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
             {[
-              { n: '01', title: 'Register your company', desc: 'Sign up with your EU VAT number. 30-day free trial, no credit card.' },
-              { n: '02', title: 'Enter your imports', desc: 'Select CN code, country of origin, quantity. We handle the emission factors.' },
-              { n: '03', title: 'Get your declaration', desc: 'Download audit-ready CBAM XML report or export to your compliance workflow.' },
+              { n: '01', title: 'Register your company', desc: 'Sign up with your EU VAT number. We verify it instantly via the EU VIES registry. 30-day free trial, no credit card.' },
+              { n: '02', title: 'Enter your imports', desc: 'Select CN code, country of origin, quantity. We apply official emission factors and live ETS price automatically.' },
+              { n: '03', title: 'Generate your declaration', desc: 'Download CBAM XML for the EU Registry or export PDF for auditors. Submission history saved automatically.' },
             ].map(s => (
-              <div key={s.n} className="text-center">
-                <div className="w-12 h-12 rounded-full bg-[#0B2471] text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">
+              <div key={s.n} style={{ textAlign: 'center' }}>
+                <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: '#0B2471', color: 'white', fontWeight: 800, fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
                   {s.n}
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{s.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{s.desc}</p>
+                <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>{s.title}</h3>
+                <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.65, margin: 0 }}>{s.desc}</p>
               </div>
             ))}
           </div>
@@ -207,109 +375,133 @@ export default async function HomePage() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="max-w-6xl mx-auto px-6 py-24">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">Simple, transparent pricing</h2>
-          <p className="text-gray-500">Seller tier is free forever. Compliance and trading plans include a 30-day free trial.</p>
-        </div>
+      <section id="pricing" style={{ background: '#f8fafc', padding: '80px 0' }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+            <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em', marginBottom: '12px' }}>
+              Transparent pricing
+            </h2>
+            <p style={{ color: '#64748b', fontSize: '16px' }}>Sellers list for free, forever. Compliance and trading plans include a 30-day trial.</p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              name: 'Seller',
-              price: '€0',
-              period: 'forever',
-              features: [
-                'Post CBAM & GO certificate listings',
-                'VAT/VIES verified profile',
-                'View counter on your listings',
-                'EFET contract generated on match',
-                'No commission — ever',
-              ],
-              cta: 'Register as seller',
-              href: '/register',
-              highlight: false,
-            },
-            {
-              name: 'PRO Compliance',
-              price: '€79',
-              period: '/month',
-              features: [
-                'Unlimited CBAM calculations',
-                'Compliance dashboard',
-                'XML/PDF export (ARSO, DEHSt)',
-                'AI cost forecast',
-                'Supplier data request link',
-                '30-day free trial',
-              ],
-              cta: 'Start free trial',
-              href: '/register',
-              highlight: true,
-            },
-            {
-              name: 'PRO Trading',
-              price: '€249',
-              period: '/month',
-              features: [
-                'Everything in PRO Compliance',
-                'OTC bulletin board (CBAM + GO)',
-                'Automated match alerts',
-                'MSR / EUA price alerts',
-                'EU Sanctions screening',
-                '30-day free trial',
-              ],
-              cta: 'Start free trial',
-              href: '/register',
-              highlight: false,
-            },
-          ].map(p => (
-            <div
-              key={p.name}
-              className={`rounded-2xl border p-6 flex flex-col ${p.highlight ? 'bg-[#0B2471] border-[#0B2471] text-white' : 'bg-white border-gray-200 text-gray-900'}`}
-            >
-              <div className="mb-6">
-                <p className={`text-sm font-medium mb-1 ${p.highlight ? 'text-blue-300' : 'text-gray-500'}`}>{p.name}</p>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold">{p.price}</span>
-                  <span className={`text-sm ${p.highlight ? 'text-blue-300' : 'text-gray-400'}`}>{p.period}</span>
-                </div>
-              </div>
-              <ul className="space-y-2 mb-8 flex-1">
-                {p.features.map(f => (
-                  <li key={f} className={`flex items-center gap-2 text-sm ${p.highlight ? 'text-blue-100' : 'text-gray-600'}`}>
-                    <span className={`text-xs ${p.highlight ? 'text-green-400' : 'text-green-500'}`}>✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href={p.href}
-                className={`text-center py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                  p.highlight
-                    ? 'bg-white text-[#0B2471] hover:bg-blue-50'
-                    : 'bg-[#0B2471] text-white hover:bg-[#0a1f63]'
-                }`}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', alignItems: 'stretch' }}>
+            {[
+              {
+                name: 'Seller',
+                price: '€0',
+                period: 'forever',
+                features: [
+                  'Post CBAM & GO certificate listings',
+                  'EU VAT / VIES verified profile',
+                  'View & inquiry counter',
+                  'EFET contract on match',
+                  'No commission — ever',
+                ],
+                cta: 'Register as seller',
+                href: '/register',
+                highlight: false,
+              },
+              {
+                name: 'PRO Compliance',
+                price: '€79',
+                period: '/month',
+                features: [
+                  'Unlimited CBAM calculations',
+                  'Compliance dashboard',
+                  'XML/PDF export (ARSO, DEHSt)',
+                  'AI cost forecast',
+                  'Supplier data request templates',
+                  '30-day free trial',
+                ],
+                cta: 'Start free trial',
+                href: '/register',
+                highlight: true,
+              },
+              {
+                name: 'PRO Trading',
+                price: '€249',
+                period: '/month',
+                features: [
+                  'Everything in PRO Compliance',
+                  'OTC bulletin board (CBAM + GO)',
+                  'Automated match notifications',
+                  'EUA price alerts',
+                  'EU Sanctions screening',
+                  '30-day free trial',
+                ],
+                cta: 'Start free trial',
+                href: '/register',
+                highlight: false,
+              },
+            ].map(p => (
+              <div
+                key={p.name}
+                style={{
+                  borderRadius: '18px',
+                  border: p.highlight ? '2px solid #265CFF' : '1px solid #e2e8f0',
+                  padding: '28px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  background: p.highlight ? '#0B2471' : 'white',
+                  position: 'relative',
+                }}
               >
-                {p.cta}
-              </Link>
-            </div>
-          ))}
+                {p.highlight && (
+                  <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: '#265CFF', color: 'white', fontSize: '11px', fontWeight: 700, padding: '4px 14px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+                    MOST POPULAR
+                  </div>
+                )}
+                <div style={{ marginBottom: '24px' }}>
+                  <p style={{ fontSize: '13px', fontWeight: 600, color: p.highlight ? '#93c5fd' : '#64748b', marginBottom: '4px' }}>{p.name}</p>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                    <span style={{ fontSize: '36px', fontWeight: 800, color: p.highlight ? 'white' : '#0f172a' }}>{p.price}</span>
+                    <span style={{ fontSize: '14px', color: p.highlight ? '#93c5fd' : '#94a3b8' }}>{p.period}</span>
+                  </div>
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+                  {p.features.map(f => (
+                    <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', color: p.highlight ? '#bfdbfe' : '#475569' }}>
+                      <span style={{ color: '#22c55e', flexShrink: 0, marginTop: '2px' }}>{icons.check}</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href={p.href}
+                  style={{
+                    display: 'block',
+                    textAlign: 'center',
+                    padding: '12px',
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    background: p.highlight ? 'white' : '#0B2471',
+                    color: p.highlight ? '#0B2471' : 'white',
+                  }}
+                >
+                  {p.cta}
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* TRUST */}
-      <section className="border-t border-gray-200 py-12">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      {/* TRUST BAR */}
+      <section style={{ borderTop: '1px solid #e2e8f0', background: 'white', padding: '40px 0' }}>
+        <div className="max-w-5xl mx-auto px-6">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', textAlign: 'center' }}>
             {[
-              { label: 'Regulation', value: 'EU 2023/956' },
-              { label: 'Data hosting', value: 'EU (Supabase)' },
-              { label: 'CBAM sectors', value: '6 covered' },
-              { label: 'Countries', value: '20+ supported' },
+              { icon: icons.shield, label: 'Regulation', value: 'EU 2023/956' },
+              { icon: icons.building, label: 'Data hosting', value: 'EU data centres' },
+              { icon: icons.globe, label: 'CBAM sectors', value: '6 covered' },
+              { icon: icons.globe, label: 'Origin countries', value: '20+ supported' },
             ].map(t => (
-              <div key={t.label}>
-                <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">{t.label}</p>
-                <p className="font-semibold text-gray-800">{t.value}</p>
+              <div key={t.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <span style={{ color: '#265CFF' }}>{t.icon}</span>
+                <p style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>{t.label}</p>
+                <p style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>{t.value}</p>
               </div>
             ))}
           </div>
@@ -317,34 +509,38 @@ export default async function HomePage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#0B2471] text-blue-200 py-12">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between gap-6 text-sm">
-          <div>
-            <p className="text-white font-bold text-lg mb-1">Carbonis</p>
-            <p>EU Environmental Compliance Marketplace</p>
-            <p className="mt-1">carbonis.eu</p>
-          </div>
-          <div className="flex gap-8">
+      <footer style={{ background: '#0B2471', color: '#93c5fd', padding: '56px 0 32px' }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '48px', marginBottom: '40px' }}>
             <div>
-              <p className="text-white font-medium mb-2">Platform</p>
-              <div className="space-y-1">
-                <Link href="/cbam" className="block hover:text-white transition-colors">CBAM Calculator</Link>
-                <Link href="/register" className="block hover:text-white transition-colors">Register</Link>
-                <Link href="/login" className="block hover:text-white transition-colors">Sign in</Link>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                <Logo />
+                <span style={{ color: 'white', fontWeight: 800, fontSize: '18px' }}>Carbonis</span>
+              </div>
+              <p style={{ fontSize: '14px', lineHeight: 1.6, maxWidth: '260px', margin: 0 }}>
+                EU Environmental Compliance Marketplace — CBAM declarations, certificate trading, regulatory monitoring.
+              </p>
+            </div>
+            <div>
+              <p style={{ color: 'white', fontWeight: 600, fontSize: '13px', marginBottom: '12px' }}>Platform</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
+                <Link href="/cbam" style={{ color: '#93c5fd', textDecoration: 'none' }}>CBAM Calculator</Link>
+                <Link href="/register" style={{ color: '#93c5fd', textDecoration: 'none' }}>Register</Link>
+                <Link href="/login" style={{ color: '#93c5fd', textDecoration: 'none' }}>Sign in</Link>
               </div>
             </div>
             <div>
-              <p className="text-white font-medium mb-2">Legal</p>
-              <div className="space-y-1">
-                <span className="block">Privacy Policy</span>
-                <span className="block">Terms of Service</span>
-                <span className="block">GDPR</span>
+              <p style={{ color: 'white', fontWeight: 600, fontSize: '13px', marginBottom: '12px' }}>Legal</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
+                <span>Privacy Policy</span>
+                <span>Terms of Service</span>
+                <span>GDPR</span>
               </div>
             </div>
           </div>
-        </div>
-        <div className="max-w-6xl mx-auto px-6 mt-8 pt-6 border-t border-blue-800 text-xs text-blue-400">
-          © 2026 Carbonis. Not legal or tax advice. EU Regulation 2023/956 compliance is the responsibility of the declarant.
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px', fontSize: '12px', color: '#60a5fa' }}>
+            © 2026 Carbonis. Not legal or tax advice. CBAM compliance is the declarant&apos;s responsibility under EU Regulation 2023/956.
+          </div>
         </div>
       </footer>
     </div>
