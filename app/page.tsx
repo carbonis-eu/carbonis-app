@@ -1,3 +1,5 @@
+export const instant = false
+
 import Link from 'next/link'
 
 async function getEtsPrice(): Promise<number> {
