@@ -63,10 +63,9 @@ export default async function HomePage() {
 
       {/* HERO */}
       <section className="max-w-6xl mx-auto px-6 pt-20 pb-24 text-center">
-        {/* Regulatory badge */}
         <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium px-3 py-1.5 rounded-full mb-8 slide-up">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
-          EU CBAM mandatory reporting starts January 2026 — are you ready?
+          CBAM in force since Jan 2026 — 2026 annual declaration due May 2027
         </div>
 
         <h1 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-tight mb-6 slide-up-2">
@@ -90,7 +89,7 @@ export default async function HomePage() {
             href="/cbam"
             className="border border-gray-300 text-gray-700 px-8 py-3.5 rounded-xl text-sm font-semibold hover:border-gray-400 hover:bg-white transition-colors"
           >
-            Try CBAM calculator →
+            Try CBAM calculator — free →
           </Link>
         </div>
 
@@ -150,22 +149,22 @@ export default async function HomePage() {
             {
               icon: '🧮',
               title: 'CBAM Calculator',
-              desc: 'Instant liability estimates for 20+ products across 6 CBAM sectors. Uses live EU ETS price and country-specific emission factors.',
-              badge: 'Live now',
+              desc: 'Free, no registration. Instant liability estimates for 20+ products across 6 CBAM sectors. Live EU ETS price, country-specific emission factors, procurement comparison.',
+              badge: 'Free',
               href: '/cbam',
             },
             {
               icon: '📋',
               title: 'Certificate Marketplace',
-              desc: 'OTC bulletin board for EUA, GO and CBAM certificates. List surplus, find buyers, close deals — all within the platform.',
+              desc: 'OTC bulletin board for CBAM and GO certificates. Sellers list for free. Buyers get matched automatically. EFET contract generated on match.',
               badge: 'Coming Q1 2027',
               href: '/register',
             },
             {
               icon: '📊',
               title: 'Compliance Reports',
-              desc: 'Generate CBAM XML declarations ready for submission to the EU CBAM Registry. Automated gap analysis and audit trail.',
-              badge: 'Pro plan',
+              desc: 'Generate CBAM XML declarations ready for the EU CBAM Registry. ARSO and DEHSt formats. Audit trail and submission history included.',
+              badge: 'PRO Compliance',
               href: '/register',
             },
           ].map(f => (
@@ -211,35 +210,55 @@ export default async function HomePage() {
       <section id="pricing" className="max-w-6xl mx-auto px-6 py-24">
         <div className="text-center mb-14">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">Simple, transparent pricing</h2>
-          <p className="text-gray-500">Start free. Upgrade when you need reports or trading.</p>
+          <p className="text-gray-500">Seller tier is free forever. Compliance and trading plans include a 30-day free trial.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
-              name: 'Free Trial',
+              name: 'Seller',
               price: '€0',
-              period: '30 days',
-              features: ['CBAM Calculator', '5 calculations/day', 'Live ETS price', 'Country comparison'],
-              cta: 'Start free trial',
+              period: 'forever',
+              features: [
+                'Post CBAM & GO certificate listings',
+                'VAT/VIES verified profile',
+                'View counter on your listings',
+                'EFET contract generated on match',
+                'No commission — ever',
+              ],
+              cta: 'Register as seller',
               href: '/register',
               highlight: false,
             },
             {
-              name: 'Pro Compliance',
-              price: '€149',
+              name: 'PRO Compliance',
+              price: '€79',
               period: '/month',
-              features: ['Unlimited calculations', 'CBAM XML declarations', 'Compliance alerts', 'Audit export', 'Priority support'],
-              cta: 'Get Pro Compliance',
+              features: [
+                'Unlimited CBAM calculations',
+                'Compliance dashboard',
+                'XML/PDF export (ARSO, DEHSt)',
+                'AI cost forecast',
+                'Supplier data request link',
+                '30-day free trial',
+              ],
+              cta: 'Start free trial',
               href: '/register',
               highlight: true,
             },
             {
-              name: 'Pro Trading',
+              name: 'PRO Trading',
               price: '€249',
               period: '/month',
-              features: ['Everything in Compliance', 'Marketplace access', 'Certificate listings', 'OTC matching', 'API access'],
-              cta: 'Get Pro Trading',
+              features: [
+                'Everything in PRO Compliance',
+                'OTC bulletin board (CBAM + GO)',
+                'Automated match alerts',
+                'MSR / EUA price alerts',
+                'EU Sanctions screening',
+                '30-day free trial',
+              ],
+              cta: 'Start free trial',
               href: '/register',
               highlight: false,
             },
