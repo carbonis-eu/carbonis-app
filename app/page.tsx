@@ -530,7 +530,7 @@ export default async function HomePage() {
               <p style={{ color: '#64748b', fontSize: '15px', lineHeight: 1.7, marginBottom: '28px' }}>
                 Calculate your exact CBAM carbon border adjustment costs using live EU ETS prices, country-specific carbon credits, and official emission factors from EU Regulation 2023/956.
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px 18px', display: 'inline-flex' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px 18px' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', animation: 'pulse 2s ease-in-out infinite' }}/>
                 <span style={{ color: '#64748b', fontSize: '13px' }}>EU ETS live</span>
                 <span style={{ fontSize: '22px', fontWeight: 800, color: '#0B2471' }}>€{etsPrice.toFixed(2)}</span>
