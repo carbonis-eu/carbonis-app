@@ -25,8 +25,8 @@ export default async function HomePage() {
         *{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none}
         button{cursor:pointer;border:none;background:none}
-        .nl{color:#64748b;font-size:14px;transition:color .15s}
-        .nl:hover{color:#0f172a}
+        .nl{color:rgba(255,255,255,0.72);font-size:14px;transition:color .15s}
+        .nl:hover{color:white}
         .fc{transition:background .2s}
         .fc:hover{background:#f8faff!important}
         .it{transition:all .2s;cursor:pointer}
@@ -37,11 +37,11 @@ export default async function HomePage() {
       `}</style>
 
       {/* ── NAV ── */}
-      <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(255,255,255,0.97)',backdropFilter:'blur(16px)',borderBottom:'1px solid #e2e8f0'}}>
-        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px',height:'64px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-          <Link href="/"><img src="/carbonis-logo-light.png" alt="Carbonis" style={{height:'40px',width:'auto'}}/></Link>
+      <nav style={{position:'sticky',top:0,zIndex:100,background:'#0B2471',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px',height:'68px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <Link href="/"><img src="/carbonis-logo-dark.png" alt="Carbonis" style={{height:'52px',width:'auto'}}/></Link>
           <div style={{display:'flex',gap:'28px',alignItems:'center'}}>
-            <a href="#" style={{color:'#265CFF',fontSize:'14px',borderBottom:'2px solid #265CFF',paddingBottom:'2px'}}>Home</a>
+            <a href="#" style={{color:'white',fontSize:'14px',fontWeight:600,borderBottom:'2px solid rgba(255,255,255,0.5)',paddingBottom:'2px'}}>Home</a>
             <a href="#platform" className="nl">Product</a>
             <a href="#industries" className="nl">Solutions</a>
             <a href="#calculator" className="nl">Pricing</a>
@@ -49,14 +49,14 @@ export default async function HomePage() {
             <a href="#about" className="nl">About</a>
           </div>
           <div style={{display:'flex',gap:'16px',alignItems:'center'}}>
-            <Link href="/login" style={{color:'#0f172a',fontSize:'14px',fontWeight:500}}>Login</Link>
+            <Link href="/login" style={{color:'rgba(255,255,255,0.85)',fontSize:'14px',fontWeight:500}}>Login</Link>
             <Link href="/register" style={{background:'#265CFF',color:'white',fontSize:'14px',fontWeight:600,padding:'9px 20px',borderRadius:'8px',display:'inline-flex',alignItems:'center',gap:'5px'}}>Get started →</Link>
           </div>
         </div>
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{background:'linear-gradient(160deg,#06101e 0%,#0b1d38 50%,#081424 100%)',minHeight:'580px',position:'relative',overflow:'hidden',display:'flex',alignItems:'center'}}>
+      <section style={{background:'linear-gradient(160deg,#06101e 0%,#0b1d38 50%,#081424 100%)',minHeight:'680px',position:'relative',overflow:'hidden',display:'flex',alignItems:'center'}}>
         <div style={{maxWidth:'1200px',margin:'0 auto',padding:'80px 32px',display:'flex',alignItems:'center',gap:'40px',width:'100%',position:'relative',zIndex:2}}>
           {/* Left */}
           <div style={{flex:'0 0 480px',maxWidth:'480px'}}>
@@ -83,27 +83,29 @@ export default async function HomePage() {
           </div>
 
           {/* Right — Earth globe */}
-          <div style={{flex:1,position:'relative',minHeight:'520px'}}>
-            {/* Atmospheric glow ring */}
-            <div style={{position:'absolute',right:'-30px',top:'50%',transform:'translateY(-50%)',width:'590px',height:'590px',borderRadius:'50%',background:'radial-gradient(circle,transparent 43%,rgba(38,92,255,0.18) 54%,rgba(96,165,250,0.08) 70%,transparent 86%)',pointerEvents:'none',zIndex:1}}/>
+          <div style={{flex:1,position:'relative',minHeight:'600px'}}>
+            {/* Dark orbital background ring */}
+            <div style={{position:'absolute',right:'-60px',top:'50%',transform:'translateY(-50%)',width:'680px',height:'680px',borderRadius:'50%',background:'radial-gradient(circle at center, #0a1628 0%, #060f1e 55%, transparent 72%)',pointerEvents:'none',zIndex:1}}/>
+            {/* Outer atmospheric glow */}
+            <div style={{position:'absolute',right:'-60px',top:'50%',transform:'translateY(-50%)',width:'680px',height:'680px',borderRadius:'50%',background:'radial-gradient(circle at center,transparent 44%,rgba(38,92,255,0.25) 55%,rgba(96,165,250,0.1) 68%,transparent 80%)',pointerEvents:'none',zIndex:2}}/>
             {/* Earth circle */}
-            <div style={{position:'absolute',right:'-30px',top:'50%',transform:'translateY(-50%)',width:'530px',height:'530px',borderRadius:'50%',overflow:'hidden',boxShadow:'0 0 0 1.5px rgba(38,92,255,0.3),0 0 50px rgba(38,92,255,0.28),0 0 110px rgba(11,36,113,0.22)',zIndex:2}}>
+            <div style={{position:'absolute',right:'-20px',top:'50%',transform:'translateY(-50%)',width:'580px',height:'580px',borderRadius:'50%',overflow:'hidden',boxShadow:'0 0 0 2px rgba(38,92,255,0.35),0 0 60px rgba(38,92,255,0.35),0 0 140px rgba(11,36,113,0.3)',zIndex:3}}>
               <img src="/earth-globe.jpg" alt="Earth from space" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center center'}}/>
             </div>
             {/* Left fade into hero bg */}
-            <div style={{position:'absolute',top:0,left:0,bottom:0,width:'160px',background:'linear-gradient(to right,#06101e,transparent)',zIndex:3,pointerEvents:'none'}}/>
+            <div style={{position:'absolute',top:0,left:0,bottom:0,width:'200px',background:'linear-gradient(to right,#06101e 30%,transparent)',zIndex:4,pointerEvents:'none'}}/>
             {/* Card 1 */}
-            <div className="f1" style={{position:'absolute',right:'30px',top:'calc(50% - 110px)',background:'rgba(6,12,28,0.88)',backdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'14px 18px',minWidth:'190px',zIndex:4}}>
+            <div className="f1" style={{position:'absolute',right:'60px',top:'calc(50% - 130px)',background:'rgba(6,12,28,0.9)',backdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'14px',padding:'16px 20px',minWidth:'200px',zIndex:5}}>
               <p style={{color:'#94a3b8',fontSize:'11px',marginBottom:'8px'}}>Carbon emissions</p>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                <span style={{color:'white',fontSize:'13px',fontWeight:700}}>under control</span>
+                <span style={{color:'white',fontSize:'14px',fontWeight:700}}>under control</span>
                 <svg viewBox="0 0 60 22" width="56" height="22"><path d="M0 18 Q15 14 30 9 Q45 5 60 2" stroke="#4ade80" strokeWidth="1.8" fill="none"/></svg>
               </div>
             </div>
             {/* Card 2 */}
-            <div className="f2" style={{position:'absolute',right:'30px',top:'calc(50% + 30px)',background:'rgba(6,12,28,0.88)',backdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'14px 18px',minWidth:'190px',zIndex:4}}>
-              <p style={{color:'#94a3b8',fontSize:'11px',marginBottom:'5px'}}>Full compliance</p>
-              <p style={{color:'white',fontSize:'13px',fontWeight:700}}>with EU regulations</p>
+            <div className="f2" style={{position:'absolute',right:'60px',top:'calc(50% + 40px)',background:'rgba(6,12,28,0.9)',backdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'14px',padding:'16px 20px',minWidth:'200px',zIndex:5}}>
+              <p style={{color:'#94a3b8',fontSize:'11px',marginBottom:'6px'}}>Full compliance</p>
+              <p style={{color:'white',fontSize:'14px',fontWeight:700}}>with EU regulations</p>
             </div>
           </div>
         </div>
@@ -260,44 +262,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── TRUST ── */}
-      <section style={{background:'white',padding:'88px 0',borderTop:'1px solid #f1f5f9'}}>
-        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px',display:'flex',gap:'64px'}}>
-          <div style={{flex:'0 0 360px'}}>
-            <h2 style={{fontSize:'26px',fontWeight:800,color:'#0f172a',lineHeight:1.3,letterSpacing:'-0.02em',marginBottom:'12px'}}>Trusted by forward-thinking businesses across Europe</h2>
-            <p style={{color:'#64748b',fontSize:'14px',lineHeight:1.7,marginBottom:'36px'}}>Join companies that are already turning compliance into a competitive advantage.</p>
-            <div style={{display:'flex',gap:'24px',alignItems:'center',flexWrap:'wrap'}}>
-              {[
-                {n:'BOSCH',s:{fontWeight:900,fontSize:'14px',letterSpacing:'0.04em',color:'#475569'}},
-                {n:'SIEMENS',s:{fontWeight:700,fontSize:'12px',letterSpacing:'0.06em',color:'#475569'}},
-                {n:'Schneider Electric',s:{fontWeight:700,fontSize:'11px',color:'#475569'}},
-                {n:"L'ORÉAL",s:{fontWeight:900,fontSize:'11px',letterSpacing:'0.08em',color:'#475569'}},
-              ].map(c => <span key={c.n} style={{...c.s,opacity:0.65}}>{c.n}</span>)}
-            </div>
-          </div>
-          <div style={{flex:1,background:'#f8fafc',borderRadius:'16px',padding:'36px',border:'1px solid #e2e8f0',position:'relative'}}>
-            <div style={{position:'absolute',top:'28px',right:'32px',display:'flex',gap:'8px'}}>
-              {['‹','›'].map(a => (
-                <button key={a} style={{width:'28px',height:'28px',borderRadius:'50%',border:'1.5px solid #e2e8f0',background:'white',color:'#64748b',fontSize:'16px',display:'flex',alignItems:'center',justifyContent:'center'}}>{a}</button>
-              ))}
-            </div>
-            <div style={{fontSize:'42px',color:'#265CFF',lineHeight:0.9,marginBottom:'18px',fontFamily:'Georgia,serif'}}>&ldquo;</div>
-            <p style={{color:'#1e293b',fontSize:'16px',lineHeight:1.75,marginBottom:'24px'}}>&ldquo;Carbonis has completely simplified our CBAM reporting process. What used to take weeks now takes hours. The platform is intuitive, reliable and the support team is outstanding.&rdquo;</p>
-            <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-              <div style={{width:'40px',height:'40px',borderRadius:'50%',background:'linear-gradient(135deg,#0B2471,#265CFF)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:'13px',fontWeight:700}}>JW</div>
-              <div>
-                <p style={{fontWeight:600,color:'#0f172a',fontSize:'14px'}}>Julia Weber</p>
-                <p style={{color:'#64748b',fontSize:'12px'}}>Head of Sustainability, European Imports</p>
-              </div>
-            </div>
-            <div style={{display:'flex',gap:'6px',marginTop:'20px'}}>
-              <div style={{width:'20px',height:'4px',borderRadius:'2px',background:'#265CFF'}}/>
-              <div style={{width:'8px',height:'4px',borderRadius:'2px',background:'#e2e8f0'}}/>
-              <div style={{width:'8px',height:'4px',borderRadius:'2px',background:'#e2e8f0'}}/>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ── CBAM CALCULATOR ── */}
       <section id="calculator" style={{background:'#f5f7fa',padding:'88px 0'}}>
@@ -334,7 +298,7 @@ export default async function HomePage() {
       <footer id="about" style={{background:'#0d1a2e',padding:'52px 0 26px',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
         <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px'}}>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'40px',flexWrap:'wrap',gap:'20px'}}>
-            <Link href="/"><img src="/carbonis-logo-dark.png" alt="Carbonis" style={{height:'32px',width:'auto'}}/></Link>
+            <Link href="/"><img src="/carbonis-logo-dark.png" alt="Carbonis" style={{height:'52px',width:'auto'}}/></Link>
             <nav style={{display:'flex',gap:'24px'}}>
               {['Product','Solutions','Pricing','Resources','About'].map(l => (
                 <a key={l} href="#" style={{color:'#64748b',fontSize:'13px'}}>{l}</a>
