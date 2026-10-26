@@ -16,711 +16,342 @@ async function getEtsPrice(): Promise<number> {
   return 65.40
 }
 
-const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <circle cx="8" cy="8" r="8" fill="#265CFF" fillOpacity="0.12"/>
-    <path d="M5 8l2 2 4-4" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-)
-
-// CSS globe — radial gradient sphere with Europe/Africa outline
-function GlobeVisual() {
-  return (
-    <div style={{ position: 'relative', width: '520px', height: '520px', flexShrink: 0 }}>
-      {/* Globe glow */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        borderRadius: '50%',
-        background: 'radial-gradient(circle at 35% 38%, #1e40af 0%, #1d4ed8 20%, #1e3a8a 40%, #0f172a 70%, transparent 100%)',
-        boxShadow: '0 0 120px 40px rgba(37,92,255,0.18)',
-      }}/>
-      {/* Atmosphere ring */}
-      <div style={{
-        position: 'absolute', inset: '-8px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle at 35% 38%, transparent 46%, rgba(37,92,255,0.08) 50%, rgba(37,92,255,0.04) 56%, transparent 60%)',
-      }}/>
-      {/* SVG continent outlines */}
-      <svg viewBox="0 0 520 520" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
-        {/* Europe */}
-        <path d="M235 145 L248 138 L265 142 L278 148 L285 158 L280 168 L270 172 L258 170 L245 175 L238 165 L232 155Z"
-          fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.5"/>
-        {/* Scandinavia */}
-        <path d="M242 118 L250 108 L260 112 L268 120 L263 130 L255 132 L246 128Z"
-          fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5"/>
-        {/* Africa */}
-        <path d="M238 195 L252 188 L270 192 L282 210 L285 238 L278 262 L265 272 L250 265 L238 248 L232 225 L234 208Z"
-          fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5"/>
-        {/* Connection dots — EU cities */}
-        {[
-          [252, 155], [260, 148], [245, 162], [270, 160], [258, 140],
-        ].map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r="2" fill="#60a5fa" opacity="0.7"/>
-        ))}
-        {/* Connection lines */}
-        <line x1="252" y1="155" x2="260" y2="148" stroke="#60a5fa" strokeWidth="0.5" opacity="0.4"/>
-        <line x1="260" y1="148" x2="270" y2="160" stroke="#60a5fa" strokeWidth="0.5" opacity="0.4"/>
-        <line x1="252" y1="155" x2="245" y2="162" stroke="#60a5fa" strokeWidth="0.5" opacity="0.4"/>
-        {/* Latitude lines */}
-        <ellipse cx="260" cy="260" rx="200" ry="30" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.8"/>
-        <ellipse cx="260" cy="210" rx="160" ry="20" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.8"/>
-        <ellipse cx="260" cy="310" rx="185" ry="25" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.8"/>
-      </svg>
-
-      {/* Floating stat cards */}
-      <div style={{
-        position: 'absolute', right: '-40px', top: '140px',
-        background: 'rgba(15,23,42,0.85)', backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px',
-        padding: '14px 18px', width: '200px',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e' }}/>
-          <span style={{ color: '#94a3b8', fontSize: '11px' }}>Carbon emissions</span>
-        </div>
-        <div style={{ color: 'white', fontSize: '13px', fontWeight: 600 }}>Under control</div>
-        <svg viewBox="0 0 120 30" style={{ width: '100%', marginTop: '8px' }}>
-          <path d="M0 22 Q20 20 40 18 Q60 16 80 10 Q100 6 120 4" fill="none" stroke="#265CFF" strokeWidth="1.5"/>
-          <path d="M0 22 Q20 20 40 18 Q60 16 80 10 Q100 6 120 4 L120 30 L0 30Z" fill="url(#g1)"/>
-          <defs>
-            <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#265CFF" stopOpacity="0.3"/>
-              <stop offset="100%" stopColor="#265CFF" stopOpacity="0"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      <div style={{
-        position: 'absolute', right: '-40px', top: '300px',
-        background: 'rgba(15,23,42,0.85)', backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px',
-        padding: '14px 18px', width: '200px',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M7 1L12.2 4V10L7 13L1.8 10V4L7 1Z" stroke="#265CFF" strokeWidth="1.2"/>
-            <path d="M5 7l1.5 1.5L9.5 5" stroke="#265CFF" strokeWidth="1.2" strokeLinecap="round"/>
-          </svg>
-          <span style={{ color: '#94a3b8', fontSize: '11px' }}>Compliance status</span>
-        </div>
-        <div style={{ color: '#4ade80', fontSize: '14px', fontWeight: 700 }}>Full compliance</div>
-        <div style={{ color: '#64748b', fontSize: '11px', marginTop: '2px' }}>EU Regulation 2023/956</div>
-      </div>
-    </div>
-  )
-}
-
-// Dashboard mockup
-function DashboardMockup() {
-  return (
-    <div style={{
-      background: '#0f172a',
-      borderRadius: '16px',
-      overflow: 'hidden',
-      border: '1px solid rgba(255,255,255,0.08)',
-      boxShadow: '0 40px 80px rgba(0,0,0,0.3)',
-      display: 'flex',
-      height: '420px',
-    }}>
-      {/* Sidebar */}
-      <div style={{ width: '160px', background: '#0a1220', borderRight: '1px solid rgba(255,255,255,0.06)', padding: '16px 0', flexShrink: 0 }}>
-        <div style={{ padding: '0 14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <img src="/carbonis-icon.png" alt="Carbonis" style={{ height: '24px', width: 'auto' }}/>
-        </div>
-        {[
-          { icon: '▦', label: 'Dashboard', active: true },
-          { icon: '◎', label: 'Emissions', active: false },
-          { icon: '⊞', label: 'CBAM', active: false },
-          { icon: '⤴', label: 'EU ETS', active: false },
-          { icon: '▤', label: 'Reports', active: false },
-          { icon: '⊟', label: 'Suppliers', active: false },
-        ].map(item => (
-          <div key={item.label} style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            padding: '8px 14px', cursor: 'default',
-            background: item.active ? 'rgba(37,92,255,0.12)' : 'transparent',
-            borderLeft: item.active ? '2px solid #265CFF' : '2px solid transparent',
-          }}>
-            <span style={{ fontSize: '12px', color: item.active ? '#60a5fa' : '#475569' }}>{item.icon}</span>
-            <span style={{ fontSize: '12px', color: item.active ? '#e2e8f0' : '#475569', fontWeight: item.active ? 600 : 400 }}>{item.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Content */}
-      <div style={{ flex: 1, padding: '20px', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <span style={{ color: 'white', fontSize: '16px', fontWeight: 700 }}>Dashboard</span>
-          <span style={{ color: '#475569', fontSize: '11px', background: 'rgba(255,255,255,0.05)', padding: '4px 10px', borderRadius: '6px' }}>Acme Europe Ltd. ▾</span>
-        </div>
-
-        {/* KPI cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '16px' }}>
-          {[
-            { label: 'Total emissions', value: '12,480 t', unit: 'CO₂e', delta: '↑ 12% vs. last quarter', deltaColor: '#f87171' },
-            { label: 'CBAM declarations', value: '8', unit: '', delta: '↑ 2 pending', deltaColor: '#fbbf24' },
-            { label: 'Compliance status', value: 'On track', unit: '', delta: 'All requirements met', deltaColor: '#4ade80' },
-          ].map(k => (
-            <div key={k.label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ color: '#64748b', fontSize: '10px', marginBottom: '6px' }}>{k.label}</div>
-              <div style={{ color: 'white', fontSize: '18px', fontWeight: 800 }}>{k.value} <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b' }}>{k.unit}</span></div>
-              <div style={{ color: k.deltaColor, fontSize: '10px', marginTop: '4px' }}>{k.delta}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Chart */}
-        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '12px', border: '1px solid rgba(255,255,255,0.06)', marginBottom: '10px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-            <span style={{ color: '#e2e8f0', fontSize: '12px', fontWeight: 600 }}>Emissions trend</span>
-            <span style={{ color: '#475569', fontSize: '10px' }}>2025 ▾</span>
-          </div>
-          <svg viewBox="0 0 360 70" style={{ width: '100%' }}>
-            {[0, 20, 40, 60].map(y => (
-              <line key={y} x1="0" y1={y} x2="360" y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="0.5"/>
-            ))}
-            <path d="M0 55 Q30 52 60 48 Q90 44 120 40 Q150 36 180 30 Q210 26 240 20 Q270 15 300 12 Q330 10 360 8"
-              fill="none" stroke="#265CFF" strokeWidth="2"/>
-            <path d="M0 55 Q30 52 60 48 Q90 44 120 40 Q150 36 180 30 Q210 26 240 20 Q270 15 300 12 Q330 10 360 8 L360 70 L0 70Z"
-              fill="url(#chartGrad)"/>
-            <defs>
-              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#265CFF" stopOpacity="0.25"/>
-                <stop offset="100%" stopColor="#265CFF" stopOpacity="0"/>
-              </linearGradient>
-            </defs>
-            {['Jan','Mar','May','Jul','Sep','Nov'].map((m, i) => (
-              <text key={m} x={i * 72} y="68" fill="#475569" fontSize="9" textAnchor="middle">{m}</text>
-            ))}
-          </svg>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default async function HomePage() {
   const etsPrice = await getEtsPrice()
 
-  const mockEmissions = 500 * 1.89
-  const mockNet = Math.round(mockEmissions * etsPrice - mockEmissions * 7)
-
-  function fmt(n: number) {
-    return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
-  }
-
   return (
-    <div style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}>
+    <div style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif', color: '#0f172a' }}>
       <style>{`
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-        .float { animation: float 6s ease-in-out infinite; }
-        @keyframes in { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-        .in1{animation:in .6s ease-out both} .in2{animation:in .6s .13s ease-out both} .in3{animation:in .6s .25s ease-out both}
+        *{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none}
-        .nav-link{color:#94a3b8;font-size:14px;transition:color .15s} .nav-link:hover{color:#fff}
-        .industry-card:hover{background:rgba(37,92,255,0.07)!important;border-color:rgba(37,92,255,0.3)!important}
-        .feature-card:hover{box-shadow:0 8px 32px rgba(11,36,113,0.1)!important;transform:translateY(-2px)}
+        button{cursor:pointer;border:none;background:none}
+        .nl{color:#64748b;font-size:14px;transition:color .15s}
+        .nl:hover{color:#0f172a}
+        .fc{transition:background .2s}
+        .fc:hover{background:#f8faff!important}
+        .it{transition:all .2s;cursor:pointer}
+        .it:hover{border-color:#265CFF!important;background:#f0f5ff!important}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        .f1{animation:float 5s ease-in-out infinite}
+        .f2{animation:float 5s 1.5s ease-in-out infinite}
       `}</style>
 
-      {/* ─── NAV ─── */}
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid #e2e8f0',
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <img src="/carbonis-logo-light.png" alt="Carbonis" style={{ height: '36px', width: 'auto' }}/>
-          <div style={{ display: 'flex', gap: '32px' }}>
-            <a href="#why" className="nav-link" style={{ color: '#0f172a', borderBottom: '2px solid #265CFF', paddingBottom: '2px', fontSize: '14px' }}>Home</a>
-            <a href="#platform" className="nav-link">Platform</a>
-            <a href="#industries" className="nav-link">Solutions</a>
-            <a href="#pricing" className="nav-link">Pricing</a>
-            <a href="#calculator" className="nav-link">Calculator</a>
+      {/* ── NAV ── */}
+      <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(255,255,255,0.97)',backdropFilter:'blur(16px)',borderBottom:'1px solid #e2e8f0'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px',height:'64px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <Link href="/"><img src="/carbonis-logo-light.png" alt="Carbonis" style={{height:'32px',width:'auto'}}/></Link>
+          <div style={{display:'flex',gap:'28px',alignItems:'center'}}>
+            <a href="#" style={{color:'#265CFF',fontSize:'14px',borderBottom:'2px solid #265CFF',paddingBottom:'2px'}}>Home</a>
+            <a href="#platform" className="nl">Product</a>
+            <a href="#industries" className="nl">Solutions</a>
+            <a href="#calculator" className="nl">Pricing</a>
+            <a href="#calculator" className="nl">Resources</a>
+            <a href="#about" className="nl">About</a>
           </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Link href="/login" style={{ color: '#475569', fontSize: '14px', fontWeight: 500 }}>Login</Link>
-            <Link href="/register" style={{
-              background: '#265CFF', color: 'white', fontSize: '14px', fontWeight: 600,
-              padding: '8px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px'
-            }}>
-              Get started →
-            </Link>
+          <div style={{display:'flex',gap:'16px',alignItems:'center'}}>
+            <Link href="/login" style={{color:'#0f172a',fontSize:'14px',fontWeight:500}}>Login</Link>
+            <Link href="/register" style={{background:'#265CFF',color:'white',fontSize:'14px',fontWeight:600,padding:'9px 20px',borderRadius:'8px',display:'inline-flex',alignItems:'center',gap:'5px'}}>Get started →</Link>
           </div>
         </div>
       </nav>
 
-      {/* ─── HERO — dark ─── */}
-      <section style={{
-        background: 'linear-gradient(145deg, #0a1628 0%, #0d1f3c 50%, #091325 100%)',
-        minHeight: '620px', overflow: 'hidden', position: 'relative',
-        display: 'flex', alignItems: 'center',
-      }}>
-        {/* Background grid */}
-        <div style={{
-          position: 'absolute', inset: 0, opacity: 0.03,
-          backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
-        }}/>
-
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 32px', display: 'flex', alignItems: 'center', gap: '48px', position: 'relative', zIndex: 1 }}>
+      {/* ── HERO ── */}
+      <section style={{background:'linear-gradient(160deg,#06101e 0%,#0b1d38 50%,#081424 100%)',minHeight:'580px',position:'relative',overflow:'hidden',display:'flex',alignItems:'center'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'80px 32px',display:'flex',alignItems:'center',gap:'40px',width:'100%',position:'relative',zIndex:2}}>
           {/* Left */}
-          <div style={{ flex: 1, maxWidth: '580px' }}>
-            <div className="in1" style={{
-              display: 'inline-flex', alignItems: 'center', gap: '8px',
-              background: 'rgba(37,92,255,0.12)', border: '1px solid rgba(37,92,255,0.25)',
-              color: '#93c5fd', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
-              padding: '6px 14px', borderRadius: '999px', marginBottom: '28px',
-            }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#60a5fa', display: 'inline-block' }}/>
-              EU Carbon Compliance Platform
-            </div>
-
-            <h1 className="in2" style={{
-              fontSize: '58px', fontWeight: 800, lineHeight: 1.05,
-              letterSpacing: '-0.035em', marginBottom: '20px',
-            }}>
-              <span style={{ color: 'white' }}>Stay compliant.<br/></span>
-              <span style={{ color: '#60a5fa' }}>Reduce your footprint.</span>
+          <div style={{flex:'0 0 480px',maxWidth:'480px'}}>
+            <p style={{color:'#93c5fd',fontSize:'11px',fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:'22px'}}>EU Carbon Compliance Platform</p>
+            <h1 style={{fontSize:'52px',fontWeight:800,lineHeight:1.1,letterSpacing:'-0.03em',marginBottom:'24px'}}>
+              <span style={{color:'white',display:'block'}}>Stay compliant.</span>
+              <span style={{color:'#265CFF',display:'block'}}>Reduce your footprint.</span>
             </h1>
-
-            <p className="in3" style={{ color: '#94a3b8', fontSize: '17px', lineHeight: 1.7, marginBottom: '36px', maxWidth: '480px' }}>
-              Carbonis helps EU importers and businesses navigate{' '}
-              <strong style={{ color: '#cbd5e1', fontWeight: 600 }}>carbon regulations</strong> with confidence.
-              Track, calculate, report — all in one platform.
+            <p style={{color:'#94a3b8',fontSize:'16px',lineHeight:1.7,marginBottom:'32px',maxWidth:'400px'}}>
+              Carbonis helps EU importers and businesses navigate <strong style={{color:'#cbd5e1'}}>carbon regulations</strong> with confidence. Track, calculate, report — all in one platform.
             </p>
-
-            <div className="in3" style={{ display: 'flex', gap: '14px', marginBottom: '36px', flexWrap: 'wrap' }}>
-              <Link href="/register" style={{
-                background: '#265CFF', color: 'white', fontWeight: 700, fontSize: '15px',
-                padding: '13px 28px', borderRadius: '10px',
-                boxShadow: '0 0 40px rgba(37,92,255,0.4)',
-                display: 'flex', alignItems: 'center', gap: '8px',
-              }}>
-                Get started →
-              </Link>
-              <a href="#calculator" style={{
-                color: 'white', fontWeight: 600, fontSize: '15px',
-                padding: '13px 28px', borderRadius: '10px',
-                border: '1.5px solid rgba(255,255,255,0.2)',
-                background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(8px)',
-              }}>
-                Try free calculator
-              </a>
+            <div style={{display:'flex',gap:'12px',marginBottom:'32px',flexWrap:'wrap'}}>
+              <Link href="/register" style={{background:'#265CFF',color:'white',fontSize:'14px',fontWeight:600,padding:'11px 24px',borderRadius:'8px',display:'inline-flex',alignItems:'center',gap:'6px'}}>Get started →</Link>
+              <a href="#demo" style={{color:'white',fontSize:'14px',fontWeight:500,padding:'11px 24px',borderRadius:'8px',border:'1.5px solid rgba(255,255,255,0.25)',display:'inline-flex',alignItems:'center'}}>Book a demo</a>
             </div>
-
-            {/* Compliance badges */}
-            <div className="in3" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-              {['EU ETS', 'CBAM', 'ESRS', 'CSRD'].map(b => (
-                <div key={b} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                    <path d="M2 6.5l3 3 6-6" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span style={{ color: '#64748b', fontSize: '13px', fontWeight: 500 }}>{b}</span>
+            <div style={{display:'flex',gap:'20px',flexWrap:'wrap'}}>
+              {['EU ETS','CBAM','ESRS','CSRD'].map(tag => (
+                <div key={tag} style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5L5 9 10.5 4" stroke="#4ade80" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                  <span style={{color:'#94a3b8',fontSize:'13px'}}>{tag}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right — globe */}
-          <div className="float in3" style={{ flexShrink: 0 }}>
-            <GlobeVisual/>
+          {/* Right — Earth globe */}
+          <div style={{flex:1,display:'flex',justifyContent:'flex-end'}}>
+            <div style={{position:'relative',width:'580px',height:'500px'}}>
+              <img src="/earth-hero.png" alt="Earth from space" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'16px',opacity:0.95}}/>
+              <div style={{position:'absolute',top:0,left:0,bottom:0,width:'120px',background:'linear-gradient(to right,#081424,transparent)'}}/>
+              {/* Card 1 */}
+              <div className="f1" style={{position:'absolute',right:'20px',top:'90px',background:'rgba(6,12,28,0.88)',backdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'14px 18px',minWidth:'190px'}}>
+                <p style={{color:'#94a3b8',fontSize:'11px',marginBottom:'8px'}}>Carbon emissions</p>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                  <span style={{color:'white',fontSize:'13px',fontWeight:700}}>under control</span>
+                  <svg viewBox="0 0 60 22" width="56" height="22"><path d="M0 18 Q15 14 30 9 Q45 5 60 2" stroke="#4ade80" strokeWidth="1.8" fill="none"/></svg>
+                </div>
+              </div>
+              {/* Card 2 */}
+              <div className="f2" style={{position:'absolute',right:'20px',bottom:'110px',background:'rgba(6,12,28,0.88)',backdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'14px 18px',minWidth:'190px'}}>
+                <p style={{color:'#94a3b8',fontSize:'11px',marginBottom:'5px'}}>Full compliance</p>
+                <p style={{color:'white',fontSize:'13px',fontWeight:700}}>with EU regulations</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ─── WHY CARBONIS ─── */}
-      <section id="why" style={{ background: 'white', padding: '88px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start', marginBottom: '64px' }}>
+      {/* ── WHY CARBONIS ── */}
+      <section id="why" style={{background:'white',padding:'88px 0'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px'}}>
+          <div style={{display:'flex',gap:'80px',marginBottom:'64px',alignItems:'flex-start'}}>
             <div>
-              <p style={{ color: '#265CFF', fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '16px' }}>WHY CARBONIS</p>
-              <h2 style={{ fontSize: '42px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.03em', margin: 0 }}>
-                Complex regulations.<br/>
-                <span style={{ color: '#265CFF' }}>Made simple.</span>
+              <p style={{color:'#265CFF',fontSize:'11px',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:'14px'}}>Why Carbonis</p>
+              <h2 style={{fontSize:'44px',fontWeight:800,lineHeight:1.12,letterSpacing:'-0.03em'}}>
+                <span style={{color:'#0f172a',display:'block'}}>Complex regulations.</span>
+                <span style={{color:'#265CFF',display:'block'}}>Made simple.</span>
               </h2>
             </div>
-            <div style={{ paddingTop: '8px' }}>
-              <p style={{ color: '#64748b', fontSize: '16px', lineHeight: 1.75, margin: 0 }}>
-                We turn complex EU carbon regulations into a simple, clear and automated process — so you can focus on your business, not paperwork. Live EU ETS prices, official emission factors, audit-ready exports.
-              </p>
+            <div style={{flex:1,paddingTop:'52px',maxWidth:'480px'}}>
+              <p style={{color:'#64748b',fontSize:'16px',lineHeight:1.75}}>We turn complex EU carbon regulations into a simple, clear and automated process — so you can focus on your business, not paperwork.</p>
             </div>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'20px'}}>
             {[
-              {
-                icon: (
-                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round">
-                    <path d="M11 2L19.5 7V15L11 20L2.5 15V7L11 2Z"/>
-                    <path d="M8 11l2 2 4-4"/>
-                  </svg>
-                ),
-                title: 'Regulatory expertise',
-                desc: 'Always up to date with the latest EU regulations and CBAM reporting requirements.',
-              },
-              {
-                icon: (
-                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round">
-                    <circle cx="11" cy="11" r="9"/>
-                    <path d="M11 6v5l3 3"/>
-                  </svg>
-                ),
-                title: 'Automated processes',
-                desc: 'Save time with smart workflows, calculations and ready-to-use reports in minutes.',
-              },
-              {
-                icon: (
-                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round">
-                    <rect x="2" y="12" width="4" height="8" rx="1"/>
-                    <rect x="9" y="7" width="4" height="13" rx="1"/>
-                    <rect x="16" y="2" width="4" height="18" rx="1"/>
-                  </svg>
-                ),
-                title: 'Full transparency',
-                desc: 'Track emissions, data and compliance status in real time with live EU ETS pricing.',
-              },
-              {
-                icon: (
-                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round">
-                    <path d="M11 2C6 2 2 6 2 11s4 9 9 9 9-4 9-9"/>
-                    <path d="M15 2c1.5 2 2.5 4 2.5 7"/>
-                    <path d="M11 7c0 3-2 5-4 6"/>
-                  </svg>
-                ),
-                title: 'Real impact',
-                desc: 'Lower your carbon footprint and build a more sustainable supply chain across borders.',
-              },
+              {title:'Regulatory expertise',body:'Always up to date with the latest EU regulations and reporting requirements.',icon:<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 1L2 5v6c0 5 3.2 9.7 9 11 5.8-1.3 9-6 9-11V5L11 1z" stroke="#265CFF" strokeWidth="1.5"/></svg>},
+              {title:'Automated processes',body:'Save time with smart workflows, calculations and ready-to-use reports.',icon:<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="#265CFF" strokeWidth="1.5"/><path d="M11 5.5v5.5l3.5 2" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round"/></svg>},
+              {title:'Full transparency',body:'Track your emissions, data and compliance status in real time.',icon:<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="11" width="4" height="9" rx="1" stroke="#265CFF" strokeWidth="1.5"/><rect x="9" y="6" width="4" height="14" rx="1" stroke="#265CFF" strokeWidth="1.5"/><rect x="16" y="2" width="4" height="18" rx="1" stroke="#265CFF" strokeWidth="1.5"/></svg>},
+              {title:'Real impact',body:'Lower your carbon footprint and build a more sustainable supply chain.',icon:<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2C5.5 2 1 6.5 1 12s4.5 10 10 10" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round"/><path d="M16 5c-2.5 1.5-3.5 4.5-2.5 7" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round"/><circle cx="16" cy="5" r="1.5" fill="#265CFF"/></svg>},
             ].map(f => (
-              <div key={f.title}
-                className="feature-card"
-                style={{ transition: 'all .2s', borderRadius: '14px', padding: '24px' }}>
-                <div style={{
-                  width: '48px', height: '48px', borderRadius: '12px',
-                  border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: '18px', background: '#f8fafc',
-                }}>
-                  {f.icon}
-                </div>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>{f.title}</h3>
-                <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
+              <div key={f.title} className="fc" style={{padding:'28px 22px',borderRadius:'12px',border:'1px solid #f1f5f9'}}>
+                <div style={{width:'48px',height:'48px',background:'#EEF2FF',borderRadius:'12px',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'20px'}}>{f.icon}</div>
+                <h3 style={{fontSize:'15px',fontWeight:700,color:'#0f172a',marginBottom:'10px'}}>{f.title}</h3>
+                <p style={{color:'#64748b',fontSize:'13.5px',lineHeight:1.65}}>{f.body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── PLATFORM ─── */}
-      <section id="platform" style={{ background: '#f1f5f9', padding: '88px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '420px 1fr', gap: '64px', alignItems: 'center' }}>
-            <div>
-              <p style={{ color: '#265CFF', fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '16px' }}>THE PLATFORM</p>
-              <h2 style={{ fontSize: '38px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.03em', marginBottom: '20px' }}>
-                Everything you need<br/>
-                for <span style={{ color: '#265CFF' }}>carbon compliance.</span>
-              </h2>
-              <p style={{ color: '#64748b', fontSize: '15px', lineHeight: 1.7, marginBottom: '28px' }}>
-                From CBAM liability calculations to EU ETS monitoring — Carbonis brings all your compliance needs into one intuitive platform.
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-                {[
-                  'CBAM reporting & data management',
-                  'EU ETS emissions tracking',
-                  'Live EUA price alerts',
-                  'ESRS & CSRD reporting',
-                  'Certificate marketplace (CBAM + GO)',
-                ].map(item => (
-                  <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <CheckIcon/>
-                    <span style={{ fontSize: '14px', color: '#374151' }}>{item}</span>
-                  </div>
-                ))}
-              </div>
-              <Link href="/register" style={{
-                display: 'inline-flex', alignItems: 'center', gap: '8px',
-                background: '#265CFF', color: 'white', fontWeight: 700, fontSize: '14px',
-                padding: '11px 24px', borderRadius: '9px',
-              }}>
-                Explore all features →
-              </Link>
-            </div>
-            <DashboardMockup/>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── INDUSTRIES ─── */}
-      <section id="industries" style={{ background: 'white', padding: '88px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '48px' }}>
-            <div>
-              <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em', marginBottom: '10px' }}>Built for your industry</h2>
-              <p style={{ color: '#64748b', fontSize: '15px', margin: 0 }}>Whether you&apos;re an importer, manufacturer or distributor, Carbonis adapts to your business.</p>
-            </div>
-            <Link href="/register" style={{ color: '#265CFF', fontWeight: 600, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
-              See all solutions →
-            </Link>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
-            {[
-              {
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round">
-                    <path d="M4 20L4 8L14 2L24 8V20L14 26L4 20Z"/>
-                    <path d="M14 12v6M11 15h6"/>
-                  </svg>
-                ),
-                label: 'Importers\n& Distributors',
-              },
-              {
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round">
-                    <rect x="3" y="10" width="22" height="15" rx="2"/>
-                    <path d="M9 10V7a5 5 0 0110 0v3"/>
-                    <circle cx="14" cy="17" r="2"/>
-                  </svg>
-                ),
-                label: 'Manufacturers',
-              },
-              {
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round">
-                    <circle cx="10" cy="22" r="2"/><circle cx="20" cy="22" r="2"/>
-                    <path d="M3 4h3l3 10h11l3-7H8"/>
-                  </svg>
-                ),
-                label: 'Retail &\nE-commerce',
-              },
-              {
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round">
-                    <rect x="3" y="3" width="22" height="22" rx="2"/>
-                    <path d="M3 10h22M10 3v22"/>
-                  </svg>
-                ),
-                label: 'Large\nEnterprises',
-              },
-            ].map(ind => (
-              <div key={ind.label}
-                className="industry-card"
-                style={{
-                  border: '1px solid #e2e8f0', borderRadius: '16px', padding: '28px 20px',
-                  textAlign: 'center', cursor: 'default', transition: 'all .2s',
-                }}>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '14px' }}>{ind.icon}</div>
-                <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', lineHeight: 1.4, margin: 0, whiteSpace: 'pre-line' }}>{ind.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── CBAM CALCULATOR ─── */}
-      <section id="calculator" style={{ background: '#f1f5f9', padding: '88px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 480px', gap: '64px', alignItems: 'center' }}>
-            <div>
-              <p style={{ color: '#265CFF', fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '16px' }}>FREE CBAM CALCULATOR</p>
-              <h2 style={{ fontSize: '38px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.03em', marginBottom: '20px' }}>
-                Know your liability<br/>
-                <span style={{ color: '#265CFF' }}>before the deadline.</span>
-              </h2>
-              <p style={{ color: '#64748b', fontSize: '15px', lineHeight: 1.7, marginBottom: '28px' }}>
-                Calculate your exact CBAM carbon border adjustment costs using live EU ETS prices, country-specific carbon credits, and official emission factors from EU Regulation 2023/956.
-              </p>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px 18px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', animation: 'pulse 2s ease-in-out infinite' }}/>
-                <span style={{ color: '#64748b', fontSize: '13px' }}>EU ETS live</span>
-                <span style={{ fontSize: '22px', fontWeight: 800, color: '#0B2471' }}>€{etsPrice.toFixed(2)}</span>
-                <span style={{ color: '#94a3b8', fontSize: '13px' }}>/ tCO₂</span>
-              </div>
-            </div>
-            <InlineCbamCalc etsPrice={etsPrice}/>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── TRUST + TESTIMONIAL ─── */}
-      <section style={{ background: 'white', padding: '80px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'center' }}>
-            <div>
-              <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.025em', marginBottom: '12px' }}>
-                Trusted by forward-thinking businesses across Europe
-              </h2>
-              <p style={{ color: '#64748b', fontSize: '15px', lineHeight: 1.7, marginBottom: '36px' }}>
-                Join companies that are already turning compliance into a competitive advantage.
-              </p>
-              {/* Company name logos (text-based, not actual brand marks) */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                {['SIJ Group', 'Salonit Anhovo', 'Energie AG', 'Talum d.d.'].map(name => (
-                  <div key={name} style={{
-                    border: '1px solid #e2e8f0', borderRadius: '10px', padding: '16px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{ color: '#94a3b8', fontSize: '13px', fontWeight: 700, letterSpacing: '0.02em' }}>{name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Testimonial */}
-            <div style={{ background: '#f8fafc', borderRadius: '20px', padding: '36px', border: '1px solid #e2e8f0' }}>
-              <svg width="28" height="20" viewBox="0 0 28 20" fill="#265CFF" opacity="0.4" style={{ marginBottom: '20px' }}>
-                <path d="M0 20V12C0 5.4 4 1.6 12 0v4C8.4 5.2 6.4 7.6 6 11h6v9H0zm16 0V12C16 5.4 20 1.6 28 0v4c-3.6 1.2-5.6 3.6-6 7h6v9H16z"/>
-              </svg>
-              <p style={{ color: '#1e293b', fontSize: '16px', lineHeight: 1.75, marginBottom: '24px', fontStyle: 'italic' }}>
-                &ldquo;Carbonis has completely simplified our CBAM reporting process. What used to take weeks now takes hours. The platform is intuitive, reliable and the support team is outstanding.&rdquo;
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{
-                  width: '44px', height: '44px', borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #265CFF, #0B2471)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'white', fontWeight: 700, fontSize: '16px',
-                }}>
-                  JW
-                </div>
-                <div>
-                  <p style={{ color: '#0f172a', fontSize: '14px', fontWeight: 700, margin: 0 }}>Julia Weber</p>
-                  <p style={{ color: '#64748b', fontSize: '13px', margin: '2px 0 0' }}>Head of Sustainability, European Imports</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── PRICING ─── */}
-      <section id="pricing" style={{ background: '#f8fafc', padding: '88px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-            <p style={{ color: '#265CFF', fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>PRICING</p>
-            <h2 style={{ fontSize: '38px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.03em', marginBottom: '12px' }}>
-              Transparent pricing
+      {/* ── THE PLATFORM ── */}
+      <section id="platform" style={{background:'#f5f7fa',padding:'88px 0'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px',display:'flex',gap:'56px',alignItems:'center'}}>
+          <div style={{flex:'0 0 400px'}}>
+            <p style={{color:'#265CFF',fontSize:'11px',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:'14px'}}>The Platform</p>
+            <h2 style={{fontSize:'38px',fontWeight:800,lineHeight:1.15,letterSpacing:'-0.03em',marginBottom:'20px'}}>
+              Everything you need<br/>for <span style={{color:'#265CFF'}}>carbon compliance.</span>
             </h2>
-            <p style={{ color: '#64748b', fontSize: '16px' }}>Sellers list for free, forever. Compliance and trading plans include a 30-day trial.</p>
+            <p style={{color:'#64748b',fontSize:'15px',lineHeight:1.75,marginBottom:'28px'}}>From product carbon footprint calculations to CBAM reporting and EU ETS monitoring — Carbonis brings all your compliance needs into one intuitive platform.</p>
+            <div style={{display:'flex',flexDirection:'column',gap:'11px',marginBottom:'32px'}}>
+              {['CBAM reporting & data management','EU ETS emissions tracking','Product carbon footprint (PCF)','ESRS & CSRD reporting','Supply chain data management'].map(item => (
+                <div key={item} style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#EEF2FF"/><path d="M5 8l2 2 4-4" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  <span style={{color:'#334155',fontSize:'14px'}}>{item}</span>
+                </div>
+              ))}
+            </div>
+            <Link href="/register" style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'#265CFF',color:'white',fontSize:'14px',fontWeight:600,padding:'10px 22px',borderRadius:'8px'}}>Explore all features →</Link>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
-            {[
-              {
-                name: 'Seller', price: '€0', period: 'forever',
-                features: ['Post CBAM & GO listings', 'EU VAT / VIES verified profile', 'View & inquiry counter', 'EFET contract on match', 'No commission — ever'],
-                cta: 'Register as seller', highlight: false,
-              },
-              {
-                name: 'PRO Compliance', price: '€79', period: '/month',
-                features: ['Unlimited CBAM calculations', 'Compliance dashboard', 'XML/PDF export (ARSO, DEHSt)', 'AI cost forecast', 'Supplier data request', '30-day free trial'],
-                cta: 'Start free trial', highlight: true,
-              },
-              {
-                name: 'PRO Trading', price: '€249', period: '/month',
-                features: ['All PRO Compliance features', 'OTC certificate marketplace', 'Automated match alerts', 'EUA price alerts', 'EU Sanctions screening', '30-day free trial'],
-                cta: 'Start free trial', highlight: false,
-              },
-            ].map(p => (
-              <div key={p.name} style={{
-                borderRadius: '18px', padding: '32px',
-                border: p.highlight ? '2px solid #265CFF' : '1px solid #e2e8f0',
-                background: p.highlight ? '#0B2471' : 'white',
-                display: 'flex', flexDirection: 'column', position: 'relative',
-              }}>
-                {p.highlight && (
-                  <div style={{
-                    position: 'absolute', top: '-13px', left: '50%', transform: 'translateX(-50%)',
-                    background: '#265CFF', color: 'white', fontSize: '11px', fontWeight: 700,
-                    padding: '4px 16px', borderRadius: '999px',
-                  }}>MOST POPULAR</div>
-                )}
-                <p style={{ fontSize: '13px', color: p.highlight ? '#93c5fd' : '#64748b', fontWeight: 600, marginBottom: '6px' }}>{p.name}</p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '24px' }}>
-                  <span style={{ fontSize: '40px', fontWeight: 900, color: p.highlight ? 'white' : '#0f172a' }}>{p.price}</span>
-                  <span style={{ fontSize: '14px', color: p.highlight ? '#93c5fd' : '#94a3b8' }}>{p.period}</span>
+          {/* Dashboard mockup */}
+          <div style={{flex:1}}>
+            <div style={{background:'white',borderRadius:'14px',boxShadow:'0 4px 6px -1px rgba(0,0,0,0.07),0 24px 60px -10px rgba(11,36,113,0.12)',overflow:'hidden',display:'flex',height:'410px',border:'1px solid #e2e8f0'}}>
+              {/* Sidebar */}
+              <div style={{width:'148px',background:'#0B2471',padding:'0',flexShrink:0}}>
+                <div style={{padding:'16px 14px',borderBottom:'1px solid rgba(255,255,255,0.08)',display:'flex',alignItems:'center',gap:'6px'}}>
+                  <img src="/carbonis-icon.png" alt="" style={{height:'20px',width:'auto'}}/>
+                  <span style={{color:'white',fontSize:'11px',fontWeight:700}}>Carbonis</span>
                 </div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: '11px', flex: 1 }}>
-                  {p.features.map(f => (
-                    <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', color: p.highlight ? '#bfdbfe' : '#475569' }}>
-                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0, marginTop: '1px' }}>
-                        <path d="M3 7.5l3 3 6-6" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                {([['Dashboard',true],['Emissions',false],['CBAM',false],['EU ETS',false],['Reports',false],['Suppliers',false],['Settings',false]] as [string,boolean][]).map(([label,active]) => (
+                  <div key={label} style={{padding:'8px 14px',fontSize:'12px',color:active?'white':'rgba(255,255,255,0.42)',background:active?'rgba(255,255,255,0.12)':'transparent',fontWeight:active?600:400,borderLeft:active?'2px solid #60a5fa':'2px solid transparent'}}>{label}</div>
+                ))}
+              </div>
+              {/* Content */}
+              <div style={{flex:1,padding:'16px 18px',overflow:'hidden'}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'14px'}}>
+                  <span style={{fontSize:'15px',fontWeight:700,color:'#0f172a'}}>Dashboard</span>
+                  <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                    <span style={{fontSize:'11px',color:'#64748b',background:'#f1f5f9',padding:'3px 8px',borderRadius:'5px'}}>Acme Europe Ltd. ▾</span>
+                    <div style={{width:'22px',height:'22px',borderRadius:'50%',background:'#265CFF',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',color:'white',fontWeight:700}}>JO</div>
+                  </div>
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'8px',marginBottom:'12px'}}>
+                  {[
+                    {l:'Total emissions',v:'12,480 t CO₂e',d:'↑ 12% vs. last quarter',c:'#ef4444'},
+                    {l:'CBAM declarations',v:'8',d:'↑ 2 pending',c:'#f59e0b'},
+                    {l:'Compliance status',v:'On track',d:'All requirements met',c:'#22c55e'},
+                  ].map(k => (
+                    <div key={k.l} style={{background:'#f8fafc',borderRadius:'8px',padding:'9px',border:'1px solid #f1f5f9'}}>
+                      <div style={{color:'#94a3b8',fontSize:'8.5px',marginBottom:'4px'}}>{k.l}</div>
+                      <div style={{color:'#0f172a',fontSize:'12.5px',fontWeight:800,marginBottom:'3px'}}>{k.v}</div>
+                      <div style={{color:k.c,fontSize:'8.5px'}}>{k.d}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:'8px'}}>
+                  <div style={{background:'#f8fafc',borderRadius:'8px',padding:'10px',border:'1px solid #f1f5f9'}}>
+                    <div style={{display:'flex',justifyContent:'space-between',marginBottom:'8px'}}>
+                      <span style={{fontSize:'9.5px',fontWeight:600,color:'#334155'}}>Emissions trend</span>
+                      <span style={{fontSize:'8.5px',color:'#94a3b8'}}>2025 ▾</span>
+                    </div>
+                    <svg viewBox="0 0 200 65" style={{width:'100%'}}>
+                      {[0,20,40,60].map(y => <line key={y} x1="0" y1={y} x2="200" y2={y} stroke="#f1f5f9" strokeWidth="0.5"/>)}
+                      <path d="M0 55 Q25 50 50 44 Q75 38 100 32 Q125 26 150 20 Q175 16 200 13" fill="none" stroke="#265CFF" strokeWidth="1.5"/>
+                      <path d="M0 55 Q25 50 50 44 Q75 38 100 32 Q125 26 150 20 Q175 16 200 13 L200 65 L0 65Z" fill="url(#mg)"/>
+                      <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#265CFF" stopOpacity="0.18"/><stop offset="100%" stopColor="#265CFF" stopOpacity="0"/></linearGradient></defs>
+                      {['Jan','Mar','May','Jul','Sep','Nov'].map((m,i) => <text key={m} x={i*40} y="63" fill="#94a3b8" fontSize="6.5" textAnchor="middle">{m}</text>)}
+                    </svg>
+                  </div>
+                  <div style={{background:'#f8fafc',borderRadius:'8px',padding:'10px',border:'1px solid #f1f5f9'}}>
+                    <div style={{fontSize:'9.5px',fontWeight:600,color:'#334155',marginBottom:'8px'}}>Top emission sources</div>
+                    <div style={{display:'flex',justifyContent:'center',marginBottom:'8px'}}>
+                      <svg viewBox="0 0 72 72" width="62" height="62">
+                        <circle cx="36" cy="36" r="26" fill="none" stroke="#f1f5f9" strokeWidth="12"/>
+                        <circle cx="36" cy="36" r="26" fill="none" stroke="#0B2471" strokeWidth="12" strokeDasharray="101 62" strokeDashoffset="-15"/>
+                        <circle cx="36" cy="36" r="26" fill="none" stroke="#265CFF" strokeWidth="12" strokeDasharray="25 138" strokeDashoffset="-116"/>
+                        <circle cx="36" cy="36" r="26" fill="none" stroke="#93c5fd" strokeWidth="12" strokeDasharray="14 149" strokeDashoffset="-141"/>
+                        <text x="36" y="40" textAnchor="middle" fontSize="11" fontWeight="800" fill="#0f172a">68%</text>
                       </svg>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/register" style={{
-                  display: 'block', textAlign: 'center', padding: '13px',
-                  borderRadius: '10px', fontSize: '14px', fontWeight: 700,
-                  background: p.highlight ? 'white' : '#0B2471',
-                  color: p.highlight ? '#0B2471' : 'white',
-                }}>
-                  {p.cta}
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── BOTTOM CTA — dark ─── */}
-      <section style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d1f3c 100%)', padding: '80px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px', display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'center', gap: '40px' }}>
-          <div>
-            <p style={{ color: '#60a5fa', fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>READY TO GET STARTED?</p>
-            <h2 style={{ fontSize: '38px', fontWeight: 800, color: 'white', lineHeight: 1.1, letterSpacing: '-0.025em', margin: 0 }}>
-              Your carbon compliance<br/>journey starts here.
-            </h2>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
-            <p style={{ color: '#64748b', fontSize: '14px', textAlign: 'right', margin: 0 }}>Start free trial and see how Carbonis simplifies your compliance.</p>
-            <Link href="/register" style={{
-              background: '#265CFF', color: 'white', fontWeight: 700, fontSize: '15px',
-              padding: '14px 30px', borderRadius: '10px',
-              boxShadow: '0 0 40px rgba(37,92,255,0.35)',
-              display: 'flex', alignItems: 'center', gap: '8px',
-            }}>
-              Get started →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── FOOTER — dark ─── */}
-      <footer style={{ background: '#0a1220', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '56px 0 32px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '40px', marginBottom: '48px' }}>
-            <div>
-              <div style={{ marginBottom: '16px' }}><img src="/carbonis-logo-dark.png" alt="Carbonis" style={{ height: '44px', width: 'auto' }}/></div>
-              <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.7, maxWidth: '280px', margin: 0 }}>
-                EU Environmental Compliance Marketplace — CBAM declarations, certificate trading, regulatory monitoring.
-              </p>
-            </div>
-            {[
-              { title: 'Product', links: [['Platform', '#platform'], ['Calculator', '#calculator'], ['Pricing', '#pricing']] },
-              { title: 'Solutions', links: [['Importers', '/register'], ['Manufacturers', '/register'], ['Enterprises', '/register']] },
-              { title: 'Company', links: [['Privacy Policy', '#'], ['Terms of Service', '#'], ['GDPR', '#']] },
-            ].map(col => (
-              <div key={col.title}>
-                <p style={{ color: 'white', fontSize: '13px', fontWeight: 700, marginBottom: '16px', letterSpacing: '0.04em' }}>{col.title}</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {col.links.map(([label, href]) => (
-                    <a key={label} href={href} style={{ color: '#475569', fontSize: '14px', transition: 'color .15s' }} className="nav-link">{label}</a>
-                  ))}
+                    </div>
+                    {[['#0B2471','Raw materials','68%'],['#265CFF','Transport','16%'],['#93c5fd','Production','9%'],['#bfdbfe','Other','7%']].map(([c,l,v]) => (
+                      <div key={l} style={{display:'flex',alignItems:'center',gap:'4px',marginBottom:'3px'}}>
+                        <div style={{width:'5px',height:'5px',borderRadius:'50%',background:c,flexShrink:0}}/>
+                        <span style={{color:'#64748b',fontSize:'7.5px',flex:1}}>{l}</span>
+                        <span style={{color:'#334155',fontSize:'7.5px',fontWeight:600}}>{v}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── INDUSTRIES ── */}
+      <section id="industries" style={{background:'white',padding:'88px 0'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px',display:'flex',gap:'80px',alignItems:'center'}}>
+          <div style={{flex:'0 0 280px'}}>
+            <h2 style={{fontSize:'30px',fontWeight:800,color:'#0f172a',lineHeight:1.25,letterSpacing:'-0.02em',marginBottom:'14px'}}>Built for your industry</h2>
+            <p style={{color:'#64748b',fontSize:'14px',lineHeight:1.7,marginBottom:'24px'}}>Whether you&apos;re an importer, manufacturer or distributor, Carbonis adapts to your business and supply chain.</p>
+            <Link href="/register" style={{display:'inline-flex',alignItems:'center',gap:'6px',color:'#265CFF',fontSize:'14px',fontWeight:600,border:'1.5px solid #265CFF',padding:'8px 18px',borderRadius:'8px'}}>See all solutions →</Link>
+          </div>
+          <div style={{flex:1,display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'16px'}}>
+            {[
+              {label:'Importers\n& Distributors',icon:<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="3" y="8" width="20" height="13" rx="2" stroke="#265CFF" strokeWidth="1.5"/><path d="M7 8V6a2 2 0 012-2h8a2 2 0 012 2v2" stroke="#265CFF" strokeWidth="1.5"/><line x1="3" y1="14" x2="23" y2="14" stroke="#265CFF" strokeWidth="1"/></svg>},
+              {label:'Manufacturers',icon:<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="5" y="9" width="16" height="14" rx="1" stroke="#265CFF" strokeWidth="1.5"/><path d="M9 9V7a4 4 0 018 0v2" stroke="#265CFF" strokeWidth="1.5"/><rect x="10" y="14" width="6" height="5" rx="1" stroke="#265CFF" strokeWidth="1"/></svg>},
+              {label:'Retail &\nE-commerce',icon:<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 7h18l-2 12H6L4 7z" stroke="#265CFF" strokeWidth="1.5" strokeLinejoin="round"/><path d="M8 7L9 4h8l1 3" stroke="#265CFF" strokeWidth="1.5"/><circle cx="9" cy="21" r="1.5" fill="#265CFF"/><circle cx="17" cy="21" r="1.5" fill="#265CFF"/></svg>},
+              {label:'Large\nEnterprises',icon:<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="5" y="5" width="16" height="18" rx="2" stroke="#265CFF" strokeWidth="1.5"/><line x1="9" y1="10" x2="17" y2="10" stroke="#265CFF" strokeWidth="1"/><line x1="9" y1="14" x2="17" y2="14" stroke="#265CFF" strokeWidth="1"/><line x1="9" y1="18" x2="13" y2="18" stroke="#265CFF" strokeWidth="1"/></svg>},
+            ].map(t => (
+              <div key={t.label} className="it" style={{padding:'28px 20px',borderRadius:'12px',border:'1.5px solid #e2e8f0',display:'flex',flexDirection:'column',alignItems:'center',textAlign:'center',gap:'14px'}}>
+                <div style={{width:'52px',height:'52px',background:'#EEF2FF',borderRadius:'12px',display:'flex',alignItems:'center',justifyContent:'center'}}>{t.icon}</div>
+                <span style={{fontSize:'13px',fontWeight:600,color:'#0f172a',whiteSpace:'pre-line',lineHeight:1.4}}>{t.label}</span>
+              </div>
             ))}
           </div>
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <p style={{ color: '#334155', fontSize: '12px', margin: 0 }}>© 2026 Carbonis. Not legal or tax advice. Compliance is the declarant&apos;s responsibility under EU Regulation 2023/956.</p>
-            <div style={{ display: 'flex', gap: '16px' }}>
-              {/* LinkedIn, X, YouTube placeholder icons */}
+        </div>
+      </section>
+
+      {/* ── TRUST ── */}
+      <section style={{background:'white',padding:'88px 0',borderTop:'1px solid #f1f5f9'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px',display:'flex',gap:'64px'}}>
+          <div style={{flex:'0 0 360px'}}>
+            <h2 style={{fontSize:'26px',fontWeight:800,color:'#0f172a',lineHeight:1.3,letterSpacing:'-0.02em',marginBottom:'12px'}}>Trusted by forward-thinking businesses across Europe</h2>
+            <p style={{color:'#64748b',fontSize:'14px',lineHeight:1.7,marginBottom:'36px'}}>Join companies that are already turning compliance into a competitive advantage.</p>
+            <div style={{display:'flex',gap:'24px',alignItems:'center',flexWrap:'wrap'}}>
               {[
-                <svg key="li" width="18" height="18" viewBox="0 0 24 24" fill="#475569"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2" fill="#475569"/></svg>,
-                <svg key="x" width="18" height="18" viewBox="0 0 24 24" fill="#475569"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>,
-                <svg key="yt" width="18" height="18" viewBox="0 0 24 24" fill="#475569"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58a2.78 2.78 0 001.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58zM9.75 15.02V8.98L15.5 12z"/></svg>,
-              ]}
+                {n:'BOSCH',s:{fontWeight:900,fontSize:'14px',letterSpacing:'0.04em',color:'#475569'}},
+                {n:'SIEMENS',s:{fontWeight:700,fontSize:'12px',letterSpacing:'0.06em',color:'#475569'}},
+                {n:'Schneider Electric',s:{fontWeight:700,fontSize:'11px',color:'#475569'}},
+                {n:"L'ORÉAL",s:{fontWeight:900,fontSize:'11px',letterSpacing:'0.08em',color:'#475569'}},
+              ].map(c => <span key={c.n} style={{...c.s,opacity:0.65}}>{c.n}</span>)}
+            </div>
+          </div>
+          <div style={{flex:1,background:'#f8fafc',borderRadius:'16px',padding:'36px',border:'1px solid #e2e8f0',position:'relative'}}>
+            <div style={{position:'absolute',top:'28px',right:'32px',display:'flex',gap:'8px'}}>
+              {['‹','›'].map(a => (
+                <button key={a} style={{width:'28px',height:'28px',borderRadius:'50%',border:'1.5px solid #e2e8f0',background:'white',color:'#64748b',fontSize:'16px',display:'flex',alignItems:'center',justifyContent:'center'}}>{a}</button>
+              ))}
+            </div>
+            <div style={{fontSize:'42px',color:'#265CFF',lineHeight:0.9,marginBottom:'18px',fontFamily:'Georgia,serif'}}>&ldquo;</div>
+            <p style={{color:'#1e293b',fontSize:'16px',lineHeight:1.75,marginBottom:'24px'}}>&ldquo;Carbonis has completely simplified our CBAM reporting process. What used to take weeks now takes hours. The platform is intuitive, reliable and the support team is outstanding.&rdquo;</p>
+            <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
+              <div style={{width:'40px',height:'40px',borderRadius:'50%',background:'linear-gradient(135deg,#0B2471,#265CFF)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:'13px',fontWeight:700}}>JW</div>
+              <div>
+                <p style={{fontWeight:600,color:'#0f172a',fontSize:'14px'}}>Julia Weber</p>
+                <p style={{color:'#64748b',fontSize:'12px'}}>Head of Sustainability, European Imports</p>
+              </div>
+            </div>
+            <div style={{display:'flex',gap:'6px',marginTop:'20px'}}>
+              <div style={{width:'20px',height:'4px',borderRadius:'2px',background:'#265CFF'}}/>
+              <div style={{width:'8px',height:'4px',borderRadius:'2px',background:'#e2e8f0'}}/>
+              <div style={{width:'8px',height:'4px',borderRadius:'2px',background:'#e2e8f0'}}/>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CBAM CALCULATOR ── */}
+      <section id="calculator" style={{background:'#f5f7fa',padding:'88px 0'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px'}}>
+          <div style={{textAlign:'center',marginBottom:'48px'}}>
+            <p style={{color:'#265CFF',fontSize:'11px',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:'12px'}}>Free CBAM Calculator</p>
+            <h2 style={{fontSize:'38px',fontWeight:800,color:'#0f172a',lineHeight:1.15,letterSpacing:'-0.03em',marginBottom:'20px'}}>Know your liability <span style={{color:'#265CFF'}}>before the deadline.</span></h2>
+            <div style={{display:'inline-flex',alignItems:'center',gap:'10px',background:'white',border:'1px solid #e2e8f0',borderRadius:'10px',padding:'10px 18px'}}>
+              <span style={{width:'7px',height:'7px',borderRadius:'50%',background:'#22c55e'}}/>
+              <span style={{color:'#64748b',fontSize:'13px'}}>EU ETS live price:</span>
+              <span style={{fontSize:'20px',fontWeight:800,color:'#0B2471'}}>€{etsPrice.toFixed(2)}</span>
+              <span style={{color:'#94a3b8',fontSize:'13px'}}>/ tCO₂</span>
+            </div>
+          </div>
+          <InlineCbamCalc etsPrice={etsPrice}/>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section id="demo" style={{background:'#0B1E3D',padding:'72px 0'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'40px'}}>
+          <div>
+            <p style={{color:'#93c5fd',fontSize:'11px',fontWeight:700,letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:'12px'}}>Ready to get started?</p>
+            <h2 style={{fontSize:'36px',fontWeight:800,color:'white',lineHeight:1.2,letterSpacing:'-0.02em'}}>Your carbon compliance journey<br/>starts here.</h2>
+          </div>
+          <div>
+            <p style={{color:'#94a3b8',fontSize:'14px',lineHeight:1.65,marginBottom:'20px',maxWidth:'280px'}}>Book a demo and see how Carbonis can simplify your compliance process.</p>
+            <Link href="/register" style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'#265CFF',color:'white',fontSize:'15px',fontWeight:700,padding:'13px 28px',borderRadius:'9px'}}>Book a demo →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer id="about" style={{background:'#060d1f',padding:'52px 0 26px',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'40px',flexWrap:'wrap',gap:'20px'}}>
+            <Link href="/"><img src="/carbonis-logo-dark.png" alt="Carbonis" style={{height:'32px',width:'auto'}}/></Link>
+            <nav style={{display:'flex',gap:'24px'}}>
+              {['Product','Solutions','Pricing','Resources','About'].map(l => (
+                <a key={l} href="#" style={{color:'#64748b',fontSize:'13px'}}>{l}</a>
+              ))}
+            </nav>
+            <div style={{display:'flex',gap:'8px'}}>
+              {[
+                {d:<><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" fill="#64748b"/><circle cx="4" cy="4" r="2" fill="#64748b"/></>},
+                {d:<><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25z" fill="#64748b"/></>},
+                {d:<><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42C1 8.13 1 12 1 12s0 3.87.46 5.58a2.78 2.78 0 001.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 001.95-1.95C23 15.87 23 12 23 12s0-3.87-.46-5.58z" fill="#64748b"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#060d1f"/></>},
+              ].map(({d},i) => (
+                <a key={i} href="#" style={{width:'30px',height:'30px',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'6px',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <svg width="14" height="14" viewBox="0 0 24 24">{d}</svg>
+                </a>
+              ))}
+            </div>
+          </div>
+          <div style={{borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:'22px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px'}}>
+            <p style={{color:'#334155',fontSize:'12px'}}>© 2026 Carbonis. All rights reserved.</p>
+            <div style={{display:'flex',gap:'18px'}}>
+              {['Privacy Policy','Terms of Service','Imprint'].map(l => <a key={l} href="#" style={{color:'#334155',fontSize:'12px'}}>{l}</a>)}
             </div>
           </div>
         </div>
