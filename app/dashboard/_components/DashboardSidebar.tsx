@@ -38,13 +38,9 @@ export default function DashboardSidebar({ companyName, initials, tier, isTrial,
   return (
     <aside style={{ width: '220px', background: '#0B2471', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
       {/* Logo */}
-      <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <svg width="24" height="24" viewBox="0 0 56 56" fill="none" aria-hidden="true">
-          <defs><linearGradient id="ds-g" x1="10" y1="8" x2="46" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#60A5FA"/><stop offset="50%" stopColor="#265CFF"/><stop offset="100%" stopColor="#93c5fd"/></linearGradient></defs>
-          <path d="M 37.5,44.5 A 19,19 0 1,1 44.5,18.5" stroke="url(#ds-g)" strokeWidth="4.5" strokeLinecap="round" fill="none"/>
-          <circle cx="37.5" cy="44.5" r="4.2" fill="url(#ds-g)"/><circle cx="11.5" cy="37.5" r="4.2" fill="url(#ds-g)"/><circle cx="18.5" cy="11.5" r="4.2" fill="url(#ds-g)"/><circle cx="44.5" cy="18.5" r="4.2" fill="url(#ds-g)"/>
-        </svg>
-        <span style={{ color: 'white', fontWeight: 700, fontSize: '14px', letterSpacing: '-0.01em' }}>Carbonis</span>
+      <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/carbonis-logo.png" alt="Carbonis" style={{ height: '28px', width: 'auto', filter: 'brightness(0) invert(1)', display: 'block' }} />
       </div>
 
       {/* Nav */}

@@ -14,7 +14,12 @@ const NAV = [
   { label: 'Settings', href: '/admin/settings',     icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.4"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.3 3.3l1 1M11.7 11.7l1 1M3.3 12.7l1-1M11.7 4.3l1-1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg> },
 ]
 
-export default function AdminSidebar() {
+interface Props {
+  adminEmail?: string
+  adminInitials?: string
+}
+
+export default function AdminSidebar({ adminEmail = 'admin', adminInitials = 'A' }: Props) {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -30,16 +35,10 @@ export default function AdminSidebar() {
   return (
     <aside style={{ width: '220px', background: '#0B2471', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
       {/* Logo */}
-      <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <svg width="24" height="24" viewBox="0 0 56 56" fill="none" aria-hidden="true">
-          <defs><linearGradient id="sl-g" x1="10" y1="8" x2="46" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#60A5FA"/><stop offset="50%" stopColor="#265CFF"/><stop offset="100%" stopColor="#93c5fd"/></linearGradient></defs>
-          <path d="M 37.5,44.5 A 19,19 0 1,1 44.5,18.5" stroke="url(#sl-g)" strokeWidth="4.5" strokeLinecap="round" fill="none"/>
-          <circle cx="37.5" cy="44.5" r="4.2" fill="url(#sl-g)"/><circle cx="11.5" cy="37.5" r="4.2" fill="url(#sl-g)"/><circle cx="18.5" cy="11.5" r="4.2" fill="url(#sl-g)"/><circle cx="44.5" cy="18.5" r="4.2" fill="url(#sl-g)"/>
-        </svg>
-        <div>
-          <span style={{ color: 'white', fontWeight: 700, fontSize: '14px' }}>Carbonis</span>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '9px', marginTop: '1px' }}>Admin Panel</p>
-        </div>
+      <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/carbonis-logo.png" alt="Carbonis" style={{ height: '28px', width: 'auto', filter: 'brightness(0) invert(1)', display: 'block' }} />
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '9px', marginTop: '4px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Admin Panel</p>
       </div>
 
       {/* Nav */}
@@ -65,9 +64,9 @@ export default function AdminSidebar() {
       {/* Footer */}
       <div style={{ padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #265CFF, #60a5fa)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '11px', fontWeight: 700, flexShrink: 0 }}>SA</div>
-          <div>
-            <p style={{ color: 'white', fontSize: '12px', fontWeight: 600 }}>Super Admin</p>
+          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #265CFF, #60a5fa)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '11px', fontWeight: 700, flexShrink: 0 }}>{adminInitials}</div>
+          <div style={{ minWidth: 0 }}>
+            <p style={{ color: 'white', fontSize: '12px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{adminEmail}</p>
             <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '10px' }}>Administrator</p>
           </div>
         </div>

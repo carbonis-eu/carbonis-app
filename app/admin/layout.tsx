@@ -18,9 +18,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const metaRole = (user.app_metadata as Record<string, string> | null)?.role
   if (metaRole !== 'admin' && profile?.role !== 'admin') redirect('/dashboard')
 
+  const email = user.email ?? 'admin'
+  const initials = email.slice(0, 2).toUpperCase()
+
   return (
     <div style={{ display: 'flex', height: '100vh', fontFamily: 'var(--font-geist-sans), system-ui, sans-serif', overflow: 'hidden', background: '#f1f5f9' }}>
-      <AdminSidebar />
+      <AdminSidebar adminEmail={email} adminInitials={initials} />
       <div style={{ flex: 1, overflow: 'auto' }}>
         {children}
       </div>

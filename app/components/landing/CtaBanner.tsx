@@ -15,7 +15,7 @@ export function CtaBanner() {
               Get CBAM-ready before your first annual declaration.
             </h2>
             <p className="mt-4 text-lg text-blue-100/80">
-              Start a free 30-day trial or speak with our compliance specialists.
+              Start a free 30-day trial. No credit card required.
             </p>
           </div>
           <div className="relative mt-8 flex flex-col gap-3 sm:flex-row lg:mt-0 lg:shrink-0">
@@ -26,12 +26,6 @@ export function CtaBanner() {
               Start free trial
               <ArrowRight className="size-4" aria-hidden />
             </Link>
-            <a
-              href="mailto:sales@carbonis.eu"
-              className="inline-flex items-center justify-center rounded-md border border-white/25 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-            >
-              Talk to sales
-            </a>
           </div>
         </div>
       </div>
