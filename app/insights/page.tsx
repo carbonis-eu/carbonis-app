@@ -8,6 +8,11 @@ import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/lib/types/article'
 import { SiteHeader } from '@/app/components/landing/SiteHeader'
 import { SiteFooter } from '@/app/components/landing/SiteFooter'
 
+const CARD_STYLE = `
+.article-card { transition: box-shadow 0.15s; }
+.article-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+` as const
+
 export const metadata: Metadata = {
   title: 'CBAM Insights — EU Carbon Border Adjustment News & Guides',
   description: 'Expert guides, regulatory updates, and country-specific resources on EU CBAM compliance, ETS, and carbon certificate trading.',
@@ -35,8 +40,8 @@ function ArticleCard({ article }: { article: Article }) {
     : null
 
   return (
-    <Link href={`/insights/${article.slug}`} style={{ textDecoration: 'none' }}>
-      <article style={{
+    <Link href={`/insights/${article.slug}`} className="article-card-link" style={{ textDecoration: 'none' }}>
+      <article className="article-card" style={{
         background: 'white',
         border: '1px solid #e2e8f0',
         borderRadius: '14px',
@@ -47,10 +52,7 @@ function ArticleCard({ article }: { article: Article }) {
         height: '100%',
         transition: 'box-shadow 0.15s',
         cursor: 'pointer',
-      }}
-        onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)')}
-        onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
-      >
+      }}>
         <CategoryBadge category={article.category} />
         <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', lineHeight: 1.35, margin: 0 }}>
           {article.title}
@@ -103,6 +105,7 @@ export default async function InsightsPage() {
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{ __html: CARD_STYLE }} />
       <SiteHeader />
       <main style={{ background: '#F8FAFC', minHeight: '100vh' }}>
 
