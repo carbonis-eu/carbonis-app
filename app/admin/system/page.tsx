@@ -18,11 +18,11 @@ export default async function AdminSystemPage() {
   const supabase = await createClient()
   const { error: dbError } = await supabase.from('profiles').select('id', { count: 'exact', head: true })
 
-  const services = [
-    { name: 'Database (Supabase)', status: dbError ? 'error' : 'ok' as const, detail: dbError ? dbError.message : 'Connected — profiles table reachable' },
-    { name: 'Auth service', status: 'ok' as const, detail: 'Supabase Auth active' },
-    { name: 'Email service (Brevo)', status: 'ok' as const, detail: 'SMTP configured — info@carbonis.eu' },
-    { name: 'CDN / Hosting', status: 'ok' as const, detail: 'Vercel — carbonis.eu' },
+  const services: Array<{ name: string; status: 'ok' | 'warn' | 'error'; detail: string }> = [
+    { name: 'Database (Supabase)', status: dbError ? 'error' : 'ok', detail: dbError ? dbError.message : 'Connected — profiles table reachable' },
+    { name: 'Auth service', status: 'ok', detail: 'Supabase Auth active' },
+    { name: 'Email service (Brevo)', status: 'ok', detail: 'SMTP configured — info@carbonis.eu' },
+    { name: 'CDN / Hosting', status: 'ok', detail: 'Vercel — carbonis.eu' },
   ]
 
   return (
