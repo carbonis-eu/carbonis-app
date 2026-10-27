@@ -4,7 +4,7 @@ import { SiteHeader } from './components/landing/SiteHeader'
 import { Hero } from './components/landing/Hero'
 import { StatsBand } from './components/landing/StatsBand'
 import { Features } from './components/landing/Features'
-import { Pricing } from './components/landing/Pricing'
+import { ConversionPaths } from './components/landing/ConversionPaths'
 import { RegulationTimeline } from './components/landing/RegulationTimeline'
 import { HowItWorks } from './components/landing/HowItWorks'
 import { CalculatorSection } from './components/landing/CalculatorSection'
@@ -37,7 +37,7 @@ export default async function HomePage() {
         <Hero etsPrice={etsPrice} />
         <StatsBand />
         <Features />
-        <Pricing />
+        <ConversionPaths />
         <RegulationTimeline />
         <HowItWorks />
         <CalculatorSection etsPrice={etsPrice} />
