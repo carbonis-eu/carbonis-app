@@ -1,21 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+import { createAdminClient } from '@/lib/supabase/admin'
 
 const SYSTEM_BASE = `You are Navi, the support assistant for Carbonis (carbonis.eu) — an EU CBAM compliance platform and carbon certificate marketplace.
 
-You ONLY answer questions about the Carbonis platform: its features, pricing plans, how to use tools, and how to get started.
+You ONLY answer questions about the Carbonis platform: its features, pricing plans, how to use tools, CBAM regulations, carbon certificates, and how to get started.
 
-If asked anything outside this scope, respond exactly: "I can help you with questions about the Carbonis platform. For CBAM regulatory advice, please consult your compliance team or the EU CBAM Registry directly."
-
-Keep answers short — maximum 3 sentences unless a step-by-step is needed. Always end with an actionable next step when relevant.`
+Keep answers short — maximum 3 sentences unless a step-by-step is needed. Always end with an actionable next step. Respond in the same language the user writes in.`
 
 type MessageParam = { role: 'user' | 'assistant'; content: string }
 
 export async function POST(request: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) {
     return NextResponse.json({ error: 'AI service not configured' }, { status: 503 })
   }
 
@@ -29,45 +26,98 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid message' }, { status: 400 })
   }
 
-  // Search knowledge base for relevant context
-  const supabase = await createClient()
-  const { data: kb } = await supabase
+  // RAG-lite: search knowledge base
+  const adminDb = createAdminClient()
+  const { data: kb } = await adminDb
     .from('navi_knowledge')
     .select('question, answer')
     .or(`question.ilike.%${message.slice(0, 50)}%,answer.ilike.%${message.slice(0, 50)}%`)
-    .eq('is_active', true)
     .limit(3)
 
   const kbContext = kb && kb.length > 0
-    ? `\n\nRelevant platform information:\n${kb.map((r: { question: string; answer: string }) => `Q: ${r.question}\nA: ${r.answer}`).join('\n\n')}`
+    ? `\n\nRelevant Carbonis platform info:\n${kb.map((r: { question: string; answer: string }) => `Q: ${r.question}\nA: ${r.answer}`).join('\n\n')}`
     : ''
 
   const systemPrompt = SYSTEM_BASE + kbContext
 
-  // Keep last 6 messages for context window efficiency
+  // Build Gemini contents (role: user/model, not assistant)
   const recentHistory = (history as MessageParam[]).slice(-6)
+  const contents = [
+    ...recentHistory.map(m => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }],
+    })),
+    { role: 'user', parts: [{ text: message }] },
+  ]
 
-  // Stream response
-  const stream = anthropic.messages.stream({
-    model: 'claude-haiku-4-5',
-    max_tokens: 300,
-    system: systemPrompt,
-    messages: [...recentHistory, { role: 'user', content: message }],
+  const geminiRes = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents,
+        generationConfig: { maxOutputTokens: 300, temperature: 0.7 },
+      }),
+    }
+  )
+
+  if (!geminiRes.ok || !geminiRes.body) {
+    return NextResponse.json({ error: 'AI service error' }, { status: 502 })
+  }
+
+  // Transform Gemini SSE → Anthropic SSE format (widget stays unchanged)
+  let fullText = ''
+  const encoder = new TextEncoder()
+
+  const transformed = new ReadableStream({
+    async start(controller) {
+      const reader = geminiRes.body!.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop() ?? ''
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue
+            const raw = line.slice(6).trim()
+            if (!raw || raw === '[DONE]') continue
+            try {
+              const parsed = JSON.parse(raw)
+              const text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+              if (!text) continue
+              fullText += text
+              // Emit Anthropic-compatible SSE chunk
+              const chunk = `data: ${JSON.stringify({ type: 'content_block_delta', delta: { type: 'text_delta', text } })}\n\n`
+              controller.enqueue(encoder.encode(chunk))
+            } catch { /* skip malformed */ }
+          }
+        }
+      } finally {
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+        controller.close()
+      }
+
+      // Save conversation (non-blocking)
+      const supabase = await createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      adminDb.from('navi_conversations').upsert({
+        session_id: sessionId,
+        user_id: user?.id ?? null,
+        messages: [...recentHistory, { role: 'user', content: message }, { role: 'assistant', content: fullText }],
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'session_id' }).then(() => {}).catch(() => {})
+    },
   })
 
-  // Save conversation async (non-blocking)
-  const { data: { user } } = await supabase.auth.getUser()
-  stream.finalMessage().then((msg) => {
-    const assistantText = msg.content[0]?.type === 'text' ? msg.content[0].text : ''
-    supabase.from('navi_conversations').upsert({
-      session_id: sessionId,
-      user_id: user?.id ?? null,
-      messages: [...recentHistory, { role: 'user', content: message }, { role: 'assistant', content: assistantText }],
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'session_id' }).then(() => {})
-  }).catch(() => {})
-
-  return new Response(stream.toReadableStream(), {
+  return new Response(transformed, {
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',

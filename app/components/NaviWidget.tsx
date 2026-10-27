@@ -146,22 +146,40 @@ export default function NaviWidget() {
           aria-label="Open Navi support chat"
           style={{
             position: 'fixed', bottom: '24px', right: '24px', zIndex: 50,
-            width: '56px', height: '56px', borderRadius: '50%',
+            height: '48px', borderRadius: '24px',
             background: '#0B1F4B', border: 'none', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            display: 'flex', alignItems: 'center', gap: '8px',
+            padding: '0 18px 0 14px',
             boxShadow: '0 4px 20px rgba(11,31,75,0.35)',
-            transition: 'box-shadow 0.2s',
+            transition: 'box-shadow 0.2s, transform 0.15s',
           }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 0 3px rgba(38,92,255,0.25), 0 4px 20px rgba(11,31,75,0.35)' }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 20px rgba(11,31,75,0.35)' }}
+          onMouseEnter={(e) => {
+            const b = e.currentTarget as HTMLButtonElement
+            b.style.boxShadow = '0 0 0 3px rgba(38,92,255,0.25), 0 4px 20px rgba(11,31,75,0.35)'
+            b.style.transform = 'scale(1.03)'
+          }}
+          onMouseLeave={(e) => {
+            const b = e.currentTarget as HTMLButtonElement
+            b.style.boxShadow = '0 4px 20px rgba(11,31,75,0.35)'
+            b.style.transform = 'scale(1)'
+          }}
         >
           {/* Compass/chat icon */}
-          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <svg width="22" height="22" viewBox="0 0 26 26" fill="none" style={{ flexShrink: 0 }}>
             <circle cx="13" cy="13" r="11" stroke="white" strokeWidth="1.5"/>
             <circle cx="13" cy="13" r="2" fill="white"/>
             <path d="M13 4v3M13 19v3M4 13h3M19 13h3" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
             <path d="M9 9l2.5 2.5M14.5 14.5L17 17" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
+          <span style={{ color: 'white', fontSize: '14px', fontWeight: 600, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
+            Ask Navi
+          </span>
+          {/* Pulse dot */}
+          <span style={{
+            width: '7px', height: '7px', borderRadius: '50%', background: '#4ade80',
+            flexShrink: 0, marginLeft: '2px',
+            boxShadow: '0 0 0 2px rgba(74,222,128,0.3)',
+          }} />
         </button>
       )}
 
