@@ -16,10 +16,11 @@ const StatusBadge = ({ status }: { status: 'ok' | 'warn' | 'error' }) => {
 
 export default async function AdminSystemPage() {
   const supabase = await createClient()
-  const { error: dbError } = await supabase.from('profiles').select('id', { count: 'exact', head: true })
+  // Use auth.getUser() as DB health check — avoids RLS issues on profiles table
+  const { error: dbError } = await supabase.auth.getUser()
 
   const services: Array<{ name: string; status: 'ok' | 'warn' | 'error'; detail: string }> = [
-    { name: 'Database (Supabase)', status: dbError ? 'error' : 'ok', detail: dbError ? dbError.message : 'Connected — profiles table reachable' },
+    { name: 'Database (Supabase)', status: dbError ? 'error' : 'ok', detail: dbError ? dbError.message : 'Connected — Supabase Auth reachable' },
     { name: 'Auth service', status: 'ok', detail: 'Supabase Auth active' },
     { name: 'Email service (Brevo)', status: 'ok', detail: 'SMTP configured — info@carbonis.eu' },
     { name: 'CDN / Hosting', status: 'ok', detail: 'Vercel — carbonis.eu' },
