@@ -48,7 +48,11 @@ export default async function AdminPage() {
       {/* ── SIDEBAR ── */}
       <aside style={{ width: '220px', background: '#0B2471', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
         <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <img src="/carbonis-icon.png" alt="Carbonis" style={{ height: '24px', width: 'auto' }}/>
+          <svg width="24" height="24" viewBox="0 0 56 56" fill="none" aria-hidden="true">
+            <defs><linearGradient id="ag" x1="10" y1="8" x2="46" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#60A5FA"/><stop offset="50%" stopColor="#265CFF"/><stop offset="100%" stopColor="#93c5fd"/></linearGradient></defs>
+            <path d="M 37.5,44.5 A 19,19 0 1,1 44.5,18.5" stroke="url(#ag)" strokeWidth="4.5" strokeLinecap="round" fill="none"/>
+            <circle cx="37.5" cy="44.5" r="4.2" fill="url(#ag)"/><circle cx="11.5" cy="37.5" r="4.2" fill="url(#ag)"/><circle cx="18.5" cy="11.5" r="4.2" fill="url(#ag)"/><circle cx="44.5" cy="18.5" r="4.2" fill="url(#ag)"/>
+          </svg>
           <div>
             <span style={{ color: 'white', fontWeight: 700, fontSize: '14px' }}>Carbonis</span>
             <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '9px', marginTop: '1px' }}>Admin Panel</p>

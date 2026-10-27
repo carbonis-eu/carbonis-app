@@ -63,11 +63,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFBF3]">
+    <div className="min-h-screen bg-[#f8fafc]">
       {/* Minimal nav */}
-      <nav style={{ background: 'rgba(255,251,243,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e5e7eb', padding: '0 24px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <nav style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e2e8f0', padding: '0 24px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <img src="/carbonis-logo-light.png" alt="Carbonis" style={{ height: '28px', width: 'auto' }}/>
+          <img src="/carbonis-logo.png" alt="Carbonis" style={{ height: '32px', width: 'auto' }}/>
         </Link>
         <Link href="/" style={{ fontSize: '13px', color: '#64748b', textDecoration: 'none' }}>← Back to home</Link>
       </nav>
