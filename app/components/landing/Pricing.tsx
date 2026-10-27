@@ -10,6 +10,7 @@ const PLANS = [
     desc: 'List surplus certificates. Get matched. Zero cost.',
     highlight: false,
     badge: null,
+    toolsHighlight: null as string | null,
     features: [
       'VAT/VIES-verified listing',
       'Publish CBAM & GO certificates',
@@ -26,6 +27,7 @@ const PLANS = [
     desc: 'Calculate, track and export your CBAM obligations.',
     highlight: false,
     badge: null,
+    toolsHighlight: 'Multi-shipment planner · Supplier tools · XML export' as string | null,
     features: [
       'CBAM & ETS calculator (all sectors)',
       'Compliance dashboard',
@@ -44,6 +46,7 @@ const PLANS = [
     desc: 'The only EU platform with built-in OTC certificate trading.',
     highlight: true,
     badge: '⚡ 10 founding spots at 1,990 €/year',
+    toolsHighlight: 'ETS tracker · OTC marketplace · Match alerts' as string | null,
     features: [
       'Everything in PRO Compliance',
       'OTC bulletin board (CBAM + GO)',
@@ -116,6 +119,12 @@ export function Pricing() {
                   </li>
                 ))}
               </ul>
+              {plan.toolsHighlight && (
+                <p className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-500">
+                  <span className="font-semibold text-slate-600">Advanced: </span>
+                  {plan.toolsHighlight}
+                </p>
+              )}
             </div>
           ))}
         </div>
