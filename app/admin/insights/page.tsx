@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Article, ArticleCategory } from '@/lib/types/article'
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/lib/types/article'
 
@@ -27,7 +27,7 @@ function StatusBadge({ published }: { published: boolean }) {
 }
 
 export default async function AdminInsightsPage() {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data } = await supabase
     .from('articles')
     .select('*')
