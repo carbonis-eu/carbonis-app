@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Article, ArticleCategory } from '@/lib/types/article'
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/lib/types/article'
 import { SiteHeader } from '@/app/components/landing/SiteHeader'
@@ -92,7 +92,7 @@ function EmptyState() {
 }
 
 export default async function InsightsPage() {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: articles } = await supabase
     .from('articles')
     .select('*')

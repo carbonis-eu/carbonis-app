@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Article, ArticleCategory } from '@/lib/types/article'
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/lib/types/article'
 import { SiteHeader } from '@/app/components/landing/SiteHeader'
@@ -27,7 +27,7 @@ interface Props {
 }
 
 async function getArticle(slug: string): Promise<Article | null> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data } = await supabase
     .from('articles')
     .select('*')
@@ -38,7 +38,7 @@ async function getArticle(slug: string): Promise<Article | null> {
 }
 
 async function getRelated(category: ArticleCategory, currentSlug: string): Promise<Article[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data } = await supabase
     .from('articles')
     .select('id, slug, title, category, reading_time_min, published_at')
