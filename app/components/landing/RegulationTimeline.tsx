@@ -14,15 +14,15 @@ const MILESTONES = [
     state: 'current',
   },
   {
-    date: 'Feb 2027',
-    title: 'Certificate sales open',
-    body: 'CBAM certificates become available, priced on the EU ETS auction average.',
+    date: 'May 2027',
+    title: 'First annual declaration',
+    body: 'File CBAM declaration for 2026 imports (deadline 31 May). Certificate surrender window: Feb – Sep 2027.',
     state: 'upcoming',
   },
   {
-    date: 'Sep 2027',
-    title: 'First annual declaration',
-    body: 'Declare 2026 imports and surrender the matching number of certificates.',
+    date: 'Annually',
+    title: 'Recurring obligation',
+    body: 'Each year: declaration by 31 May, certificate surrender by 30 September — for the previous calendar year.',
     state: 'upcoming',
   },
 ] as const

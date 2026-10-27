@@ -21,7 +21,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('id', user.id)
     .single()
 
-  if (profile?.role === 'admin') redirect('/admin')
+  // Check role from app_metadata (JWT) first, fall back to profiles table
+  const metaRole = (user.app_metadata as Record<string, string> | null)?.role
+  if (metaRole === 'admin' || profile?.role === 'admin') redirect('/admin')
 
   const firstName = getFirstName(user.email ?? 'there')
   const companyName = profile?.company_name ?? 'Your Company'

@@ -1,7 +1,7 @@
 const STATS = [
   { value: '6', label: 'CBAM sectors covered', detail: 'Steel, aluminium, cement, fertilisers, hydrogen, electricity' },
   { value: '27', label: 'EU member states', detail: 'Aligned with every national competent authority' },
-  { value: '400+', label: 'CN codes mapped', detail: 'Default values and emission factors built in' },
+  { value: 'Annex I', label: 'All CN codes mapped', detail: 'Default values and emission factors built in per Regulation (EU) 2023/956' },
   { value: '< 1 day', label: 'To first declaration', detail: 'Guided onboarding for compliance teams' },
 ]
 
