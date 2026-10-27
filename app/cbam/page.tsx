@@ -1,238 +1,184 @@
-import type { Metadata } from 'next'
+﻿export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import { SiteHeader } from '../components/landing/SiteHeader'
 import { SiteFooter } from '../components/landing/SiteFooter'
-import CbamCalculatorSection from './_components/CbamCalculatorSection'
-import type { CbamSector } from '@/lib/cbam/data'
+import { CalculatorSection } from '../components/landing/CalculatorSection'
+import { Faq } from '../components/landing/Faq'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'What is CBAM? Carbon Border Adjustment Mechanism Explained | Carbonis',
-  description: 'CBAM (Carbon Border Adjustment Mechanism) applies from January 2026. Learn what it means for EU importers, which sectors are affected, timelines, and how to comply with Regulation (EU) 2023/956.',
-  keywords: ['CBAM', 'Carbon Border Adjustment Mechanism', 'EU carbon compliance', 'CBAM certificates', 'carbon compliance software', 'CBAM 2026', 'EU importers carbon tax'],
-  openGraph: {
-    title: 'What is CBAM? Carbon Border Adjustment Mechanism Explained | Carbonis',
-    description: 'CBAM applies from January 2026. Complete guide for EU importers — sectors, timelines, obligations and free cost calculator.',
-    type: 'article',
-  },
+  title: 'What is CBAM? EU Carbon Border Adjustment Mechanism Explained',
+  description: 'CBAM (Carbon Border Adjustment Mechanism) is EU Regulation 2023/956. Learn who must comply, which goods are covered, deadlines, penalties, and how to calculate your CBAM cost.',
+  keywords: ['CBAM', 'carbon border adjustment mechanism', 'EU 2023/956', 'CBAM compliance', 'CBAM calculator', 'CBAM declaration', 'CBAM penalty'],
 }
 
-const SECTORS_PHOTOS: { key: CbamSector; name: string; codes: string; desc: string; img: string; accent: string }[] = [
-  { key: 'steel', name: 'Iron & Steel', codes: 'CN 72, 73', desc: 'Crude steel, rolled products, pipes and tubes', img: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=700&h=500&fit=crop&auto=format&q=80', accent: '#1e3a5f' },
-  { key: 'aluminum', name: 'Aluminium', codes: 'CN 76', desc: 'Primary aluminium, alloys and downstream products', img: 'https://images.unsplash.com/photo-1547555706-54bcf05bbad1?w=700&h=500&fit=crop&auto=format&q=80', accent: '#2d4a7a' },
-  { key: 'cement', name: 'Cement', codes: 'CN 2507, 2523', desc: 'Clinker, Portland cement and construction materials', img: 'https://images.unsplash.com/photo-1666219462105-2909c2d72d01?w=700&h=500&fit=crop&auto=format&q=80', accent: '#374151' },
-  { key: 'fertilizers', name: 'Fertilisers', codes: 'CN 2808, 2814, 31', desc: 'Nitric acid, ammonia and nitrogen-based fertilisers', img: 'https://images.unsplash.com/photo-1591630529805-63486bbce578?w=700&h=500&fit=crop&auto=format&q=80', accent: '#1a4731' },
-  { key: 'hydrogen', name: 'Hydrogen', codes: 'CN 2804 10', desc: 'Pure hydrogen for industrial and energy applications', img: 'https://images.unsplash.com/photo-1759299983582-085079c31bdc?w=700&h=500&fit=crop&auto=format&q=80', accent: '#0c3547' },
-  { key: 'electricity', name: 'Electricity', codes: 'CN 2716', desc: 'Electricity imported via cross-border interconnectors', img: 'https://images.unsplash.com/photo-1509391111737-9b07f052f6b6?w=700&h=500&fit=crop&auto=format&q=80', accent: '#1a2f5e' },
+async function getEtsPrice(): Promise<number> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://carbonis.eu'}/api/ets-price`, { next: { revalidate: 3600 } })
+    if (res.ok) { const d = await res.json(); return d.price ?? 65.4 }
+  } catch { /* fallback */ }
+  return 65.4
+}
+
+const SECTORS = [
+  { name: 'Iron & Steel', cn: 'CN 72–73', icon: '🏗️' },
+  { name: 'Aluminium', cn: 'CN 76', icon: '🔩' },
+  { name: 'Cement', cn: 'CN 2523', icon: '🏛️' },
+  { name: 'Fertilisers', cn: 'CN 28, 31', icon: '🌱' },
+  { name: 'Hydrogen', cn: 'CN 2804', icon: '⚡' },
+  { name: 'Electricity', cn: 'CN 2716', icon: '🔌' },
+]
+
+const TIMELINE = [
+  { date: 'Oct 2023 – Dec 2025', phase: 'Transitional period', desc: 'Quarterly emissions reporting required. No certificate surrender.' },
+  { date: 'Jan 2026', phase: 'Financial phase begins', desc: 'CBAM certificates must be purchased and surrendered annually.' },
+  { date: 'May 2027', phase: 'First annual declaration', desc: 'Declaration for 2026 imports due 31 May 2027. Certificate surrender window: Feb–Sep 2027.' },
+  { date: 'Ongoing', phase: 'Full enforcement', desc: 'Quarterly monitoring, annual declaration, mandatory authorisation as CBAM declarant.' },
 ]
 
 const STEPS = [
-  { num: '01', title: 'Get authorised declarant status', body: 'Register in the EU CBAM Registry. Required for importers of covered goods from 1 Jan 2026 (Art. 2, Regulation (EU) 2023/956). Consult your national customs authority for your specific threshold.' },
-  { num: '02', title: 'Collect embedded emissions data', body: 'Gather verified carbon data from your suppliers (actual values) or use EU Commission default values — Carbonis tracks both methods automatically.' },
-  { num: '03', title: 'File your annual declaration', body: 'Submit your CBAM declaration by 31 May each year, covering all imports from the prior calendar year with verified emission data.' },
-  { num: '04', title: 'Purchase & surrender certificates', body: 'Buy CBAM certificates at the EU ETS quarterly auction price (1 cert = 1 tCO₂e). Surrender the exact number corresponding to your declared emissions.' },
+  { n: '01', title: 'Register as CBAM declarant', desc: 'Apply through the EU CBAM Registry via your national authority. Required for all authorised CBAM declarants.' },
+  { n: '02', title: 'Track embedded emissions', desc: 'Collect embedded carbon data from each supplier. Default values apply if supplier data is unavailable.' },
+  { n: '03', title: 'Purchase CBAM certificates', desc: 'Buy CBAM certificates at the current EU ETS price, set weekly by the European Commission.' },
+  { n: '04', title: 'File annual declaration', desc: 'Submit your CBAM declaration by 31 May each year. Carbonis generates the XML automatically.' },
+  { n: '05', title: 'Surrender certificates', desc: 'Surrender the required number of certificates to the CBAM Registry. Unused certificates can be repurchased by the Commission.' },
 ]
 
-const DEADLINES = [
-  { date: 'Oct 2023 – Dec 2025', label: 'Transitional period', desc: 'Reporting only, no financial obligation', done: true },
-  { date: '1 Jan 2026', label: 'Definitive period begins', desc: 'Authorised declarant status required. Check EU CBAM Registry for applicable thresholds.', done: true },
-  { date: '1 Feb – 30 Sep 2027', label: 'Certificate purchase window', desc: 'Buy and surrender CBAM certificates for 2026 imports', done: false },
-  { date: '31 May 2027', label: 'First annual declaration due', desc: 'File CBAM declaration covering 2026 imports (Art. 6, Regulation (EU) 2023/956)', done: false },
-  { date: 'Annually thereafter', label: 'Recurring obligation', desc: 'Declaration by 31 May, certificate surrender by 30 September each year', done: false },
-]
+export default async function CbamPage() {
+  const etsPrice = await getEtsPrice()
 
-export default function CbamPage() {
   return (
     <>
       <SiteHeader />
       <main>
-
-        {/* ── HERO ── */}
-        <section className="relative overflow-hidden bg-navy py-20 lg:py-28">
-          <div className="pointer-events-none absolute inset-0 opacity-5"
-            style={{ backgroundImage: 'linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)', backgroundSize: '48px 48px' }} />
-          <div className="relative mx-auto max-w-4xl px-6 text-center lg:px-8">
-            <span className="inline-block rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white/80 mb-6">
-              Regulation (EU) 2023/956 &mdash; All 27 EU member states
-            </span>
-            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl" style={{ letterSpacing: '-0.03em' }}>
-              Carbon Border Adjustment<br />
-              <span className="text-[#60a5fa]">Mechanism (CBAM)</span>
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-white/70">
-              The EU&apos;s landmark climate policy placing a carbon price on imports — ensuring fair competition between EU and non-EU producers.
-            </p>
-            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <a href="#calculator" className="rounded-lg bg-cobalt px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#1a4ce0] transition-colors">
-                Calculate your liability ↓
-              </a>
-              <a href="#sectors" className="rounded-lg border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
-                See covered sectors ↓
-              </a>
-            </div>
-          </div>
-        </section>
-
-        {/* ── WHAT IS CBAM ── */}
-        <section className="bg-white py-20">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-              <div>
-                <span className="text-sm font-semibold uppercase tracking-widest text-cobalt">The basics</span>
-                <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-navy sm:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-                  What is CBAM and why does it matter?
-                </h2>
-                <p className="mt-5 text-base text-slate-600 leading-relaxed">
-                  CBAM prevents <strong>carbon leakage</strong> — the risk that EU climate policies push carbon-intensive production to countries with weaker standards. Importers of covered goods must purchase <strong>CBAM certificates</strong> equal to the carbon price they would have paid under the EU ETS.
-                </p>
-                <p className="mt-4 text-base text-slate-600 leading-relaxed">
-                  It applies across all <strong>27 EU member states</strong> to imports from any non-EU country, with deductions where equivalent carbon pricing already exists in the country of origin.
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { value: '27', label: 'EU member states covered', icon: '🇪🇺' },
-                  { value: '6', label: 'Annex I sectors in scope', icon: '🏭' },
-                  { value: 'Live*', label: 'Certificate price (EU CBAM Registry)', icon: '💶' },
-                  { value: '2050', label: 'EU climate neutrality goal', icon: '🌱' },
-                ].map((s) => (
-                  <div key={s.label} className="rounded-xl border border-border bg-slate-50 p-5">
-                    <span className="text-2xl">{s.icon}</span>
-                    <p className="mt-3 text-2xl font-extrabold text-navy">{s.value}</p>
-                    <p className="mt-1 text-sm text-slate-500">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── SECTORS ── */}
-        <section id="sectors" className="scroll-mt-16 bg-slate-50 py-20">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <span className="text-sm font-semibold uppercase tracking-widest text-cobalt">Annex I</span>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-navy sm:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-                Which goods are covered by CBAM?
-              </h2>
-              <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
-                CBAM currently covers six carbon-intensive sectors. The scope is expected to expand in future EU amendments.
-              </p>
-            </div>
-            <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {SECTORS_PHOTOS.map((s) => (
-                <li key={s.name} className="group relative overflow-hidden rounded-2xl shadow-sm">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={s.img} alt={s.name} width={700} height={500} loading="lazy"
-                    className="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute inset-0"
-                    style={{ background: `linear-gradient(to top, ${s.accent}f0 0%, ${s.accent}aa 40%, transparent 68%)` }} />
-                  <div className="absolute right-3 top-3">
-                    <span className="rounded-md bg-white/15 px-2 py-0.5 font-mono text-[11px] text-white backdrop-blur-sm">{s.codes}</span>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <p className="text-xl font-bold text-white">{s.name}</p>
-                    <p className="mt-1 text-sm text-white/75">{s.desc}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* ── WHO MUST COMPLY ── */}
-        <section className="bg-white py-20">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <span className="text-sm font-semibold uppercase tracking-widest text-cobalt">Obligations</span>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-navy sm:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-                Who is subject to CBAM?
-              </h2>
-            </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {[
-                { role: 'Importers', icon: '📦', desc: 'Any EU-established company importing CBAM goods above the de minimis threshold. Consult your national customs authority for your specific obligations.' },
-                { role: 'Indirect importers', icon: '🔗', desc: 'Companies whose products contain CBAM goods even if they do not import directly.' },
-                { role: 'Customs representatives', icon: '📋', desc: 'Indirect representatives may fulfil CBAM obligations on behalf of the importer.' },
-                { role: 'Enterprise groups', icon: '🏢', desc: 'Groups with subsidiaries across multiple EU member states must consolidate CBAM reporting.' },
-              ].map((item) => (
-                <div key={item.role} className="rounded-xl border border-border p-6 hover:border-cobalt hover:shadow-md transition-all">
-                  <span className="text-3xl">{item.icon}</span>
-                  <p className="mt-4 font-bold text-navy">{item.role}</p>
-                  <p className="mt-2 text-sm text-slate-500 leading-relaxed">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── HOW IT WORKS ── */}
-        <section className="bg-navy py-20">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <span className="text-sm font-semibold uppercase tracking-widest text-[#60a5fa]">Process</span>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-white sm:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-                How CBAM compliance works
-              </h2>
-            </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {STEPS.map((step) => (
-                <div key={step.num} className="rounded-xl p-6" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <span className="font-mono text-3xl font-bold text-[#60a5fa]">{step.num}</span>
-                  <p className="mt-4 font-semibold text-white">{step.title}</p>
-                  <p className="mt-2 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>{step.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── TIMELINE ── */}
-        <section className="bg-white py-20">
+        {/* Hero */}
+        <section className="border-b border-border bg-white py-20">
           <div className="mx-auto max-w-4xl px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <span className="text-sm font-semibold uppercase tracking-widest text-cobalt">Key dates</span>
-              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-navy sm:text-4xl" style={{ letterSpacing: '-0.02em' }}>
-                CBAM timeline &amp; deadlines
-              </h2>
+            <p className="text-sm font-semibold uppercase tracking-widest text-cobalt">EU Regulation 2023/956</p>
+            <h1 className="mt-4 text-4xl font-extrabold leading-tight text-navy sm:text-5xl">
+              What is CBAM?<br />
+              <span className="text-cobalt">Carbon Border Adjustment Mechanism</span>
+            </h1>
+            <p className="mt-6 text-lg leading-relaxed text-muted-foreground max-w-2xl">
+              CBAM is the EU&apos;s carbon border tax that puts a price on the embedded CO₂ in imports of selected goods. It entered financial enforcement in January 2026. Any EU importer of covered goods must purchase CBAM certificates or face penalties of up to €50 per tonne.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/register" className="rounded-lg bg-navy px-6 py-3 text-sm font-semibold text-white hover:bg-navy-deep transition-colors">
+                Calculate my CBAM cost →
+              </Link>
+              <Link href="#calculator" className="rounded-lg border border-border px-6 py-3 text-sm font-semibold text-navy hover:bg-muted transition-colors">
+                Free calculator ↓
+              </Link>
             </div>
-            <ol className="relative border-l-2 border-border ml-4">
-              {DEADLINES.map((d) => (
-                <li key={d.date} className="mb-8 ml-8">
-                  <div className={`absolute -left-[9px] mt-1 size-4 rounded-full border-2 ${d.done ? 'border-cobalt bg-cobalt' : 'border-border bg-white'}`} />
-                  <span className={`mb-1 inline-block rounded-full px-3 py-0.5 text-xs font-semibold ${d.done ? 'bg-cobalt/10 text-cobalt' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
-                    {d.date}
-                  </span>
-                  <h3 className="font-bold text-navy mt-1">{d.label}</h3>
-                  <p className="text-sm text-slate-500 mt-0.5">{d.desc}</p>
-                </li>
-              ))}
-            </ol>
           </div>
         </section>
 
-        {/* ── CALCULATOR (client component) ── */}
-        <CbamCalculatorSection />
-
-        {/* ── CTA ── */}
-        <section className="bg-cobalt py-16">
-          <div className="mx-auto max-w-3xl px-6 text-center lg:px-8">
-            <h2 className="text-2xl font-extrabold text-white sm:text-3xl">
-              Ready to automate your CBAM compliance?
-            </h2>
-            <p className="mt-4" style={{ color: 'rgba(255,255,255,0.8)' }}>
-              Carbonis handles emissions data collection, declaration filing and certificate management — for all 6 sectors, across all 27 EU member states.
+        {/* Sectors */}
+        <section id="platform" className="scroll-mt-16 bg-muted py-20">
+          <div className="mx-auto max-w-5xl px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-navy mb-4">Who must comply with CBAM?</h2>
+            <p className="text-muted-foreground mb-10 max-w-2xl">
+              Any EU importer bringing in goods from these sectors must become an authorised CBAM declarant and surrender certificates annually.
             </p>
-            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link href="/register" className="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-cobalt shadow hover:bg-slate-100 transition-colors">
-                Start free trial
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {SECTORS.map(s => (
+                <div key={s.name} className="rounded-xl border border-border bg-white p-5">
+                  <p className="text-2xl mb-2">{s.icon}</p>
+                  <p className="font-semibold text-navy">{s.name}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{s.cn}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Steps */}
+        <section className="bg-white py-20">
+          <div className="mx-auto max-w-5xl px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-navy mb-10">How CBAM compliance works — 5 steps</h2>
+            <div className="flex flex-col gap-6">
+              {STEPS.map(s => (
+                <div key={s.n} className="flex gap-5 items-start">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-cobalt flex items-center justify-center text-white text-sm font-bold">{s.n}</div>
+                  <div>
+                    <p className="font-semibold text-navy">{s.title}</p>
+                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{s.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Timeline */}
+        <section id="regulation" className="scroll-mt-16 border-y border-border bg-muted py-20">
+          <div className="mx-auto max-w-5xl px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-navy mb-10">CBAM timeline &amp; key dates</h2>
+            <div className="flex flex-col gap-6">
+              {TIMELINE.map((t, i) => (
+                <div key={i} className="flex gap-5 items-start">
+                  <div className="flex-shrink-0 w-36 text-xs font-semibold text-cobalt">{t.date}</div>
+                  <div>
+                    <p className="font-semibold text-navy text-sm">{t.phase}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">{t.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Penalties */}
+        <section className="bg-white py-20">
+          <div className="mx-auto max-w-5xl px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-navy mb-6">CBAM penalties for non-compliance</h2>
+            <div className="grid gap-6 sm:grid-cols-3">
+              {[
+                { penalty: 'Up to €50/tonne', label: 'For failure to surrender certificates', cls: 'bg-red-50 border-red-200' },
+                { penalty: '3× certificate value', label: 'Maximum penalty for non-compliance', cls: 'bg-amber-50 border-amber-200' },
+                { penalty: 'Customs delays', label: 'Possible border stops for non-declarants', cls: 'bg-orange-50 border-orange-200' },
+              ].map(p => (
+                <div key={p.label} className={`rounded-xl border p-6 ${p.cls}`}>
+                  <p className="text-2xl font-extrabold text-navy">{p.penalty}</p>
+                  <p className="text-sm text-muted-foreground mt-2">{p.label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-10 rounded-xl border border-cobalt/20 bg-cobalt/5 p-6">
+              <p className="text-sm font-semibold text-navy mb-2">Carbonis automates your CBAM calculations</p>
+              <p className="text-sm text-muted-foreground mb-4">PRO Compliance starts at 79 €/month — far less than any CBAM penalty.</p>
+              <Link href="/register" className="inline-flex items-center rounded-lg bg-cobalt px-5 py-2.5 text-sm font-semibold text-white hover:bg-cobalt/90 transition-colors">
+                Start free — calculate my CBAM →
               </Link>
-              <Link href="/pricing" className="rounded-lg border px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors" style={{ borderColor: 'rgba(255,255,255,0.3)' }}>
+            </div>
+          </div>
+        </section>
+
+        {/* Calculator */}
+        <CalculatorSection etsPrice={etsPrice} />
+
+        {/* FAQ */}
+        <section id="faq" className="scroll-mt-16">
+          <Faq />
+        </section>
+
+        {/* CTA */}
+        <section className="border-t border-border bg-navy py-16">
+          <div className="mx-auto max-w-3xl px-6 text-center lg:px-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-cobalt mb-3">Founding Member offer · 10 spots only</p>
+            <h2 className="text-3xl font-bold text-white mb-4">Get CBAM-ready today</h2>
+            <p className="text-muted-foreground mb-8">First 10 companies lock in PRO Trading at 1,990 €/year forever. Free 30-day trial, no credit card.</p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="/register" className="rounded-lg bg-white px-8 py-3 text-sm font-bold text-navy hover:bg-muted transition-colors">
+                Start free trial →
+              </Link>
+              <Link href="/pricing" className="rounded-lg border border-white/30 px-8 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
                 See pricing
               </Link>
             </div>
           </div>
         </section>
-
       </main>
       <SiteFooter />
     </>

@@ -5,17 +5,17 @@ const COLUMNS = [
   {
     title: 'Platform',
     links: [
-      { label: 'CBAM compliance', href: '#platform' },
-      { label: 'CBAM calculator', href: '#calculator' },
-      { label: 'Sector coverage', href: '#sectors' },
+      { label: 'CBAM compliance', href: '/#platform' },
+      { label: 'CBAM calculator', href: '/#calculator' },
+      { label: 'Sector coverage', href: '/#sectors' },
     ],
   },
   {
     title: 'Resources',
     links: [
-      { label: 'Regulation timeline', href: '#regulation' },
-      { label: 'FAQ', href: '#faq' },
-      { label: 'CBAM tool', href: '/cbam' },
+      { label: 'Regulation timeline', href: '/#regulation' },
+      { label: 'FAQ', href: '/#faq' },
+      { label: 'What is CBAM?', href: '/cbam' },
     ],
   },
   {
