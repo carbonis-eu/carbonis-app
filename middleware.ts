@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const PUBLIC_ROUTES = ['/', '/login', '/register', '/auth/callback', '/marketplace', '/cbam']
+const PUBLIC_PREFIXES = ['/api/auth/', '/api/ets-price']
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -29,6 +30,7 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
   const isPublic = PUBLIC_ROUTES.some(route => pathname === route || pathname.startsWith('/auth/'))
+    || PUBLIC_PREFIXES.some(prefix => pathname.startsWith(prefix))
 
   if (!user && !isPublic) {
     return NextResponse.redirect(new URL('/login', request.url))
