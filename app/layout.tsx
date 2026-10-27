@@ -47,7 +47,17 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: APP_URL,
-    languages: { 'en': `${APP_URL}/en`, 'x-default': APP_URL },
+    languages: {
+      'en':         APP_URL,
+      'de':         APP_URL,
+      'fr':         APP_URL,
+      'pl':         APP_URL,
+      'it':         APP_URL,
+      'nl':         APP_URL,
+      'cs':         APP_URL,
+      'ro':         APP_URL,
+      'x-default':  APP_URL,
+    },
   },
   icons: {
     icon: '/favicon.ico',

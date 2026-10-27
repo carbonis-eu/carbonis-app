@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import LockedFeatureCard from './_components/LockedFeatureCard'
 
 function getFirstName(email: string): string {
   const local = email.split('@')[0]
@@ -79,13 +80,26 @@ function BuyerDashboard({ firstName }: { firstName: string }) {
         </div>
       </div>
 
-      <div style={{ background: 'white', borderRadius: '12px', padding: '18px', border: '1px solid #e2e8f0' }}>
+      <div style={{ background: 'white', borderRadius: '12px', padding: '18px', border: '1px solid #e2e8f0', marginBottom: '16px' }}>
         <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>Estimate your CBAM obligation</h3>
         <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px' }}>Before purchasing, calculate how many CBAM certificates you need based on your imports.</p>
         <Link href="/dashboard/emissions" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#265CFF', color: 'white', borderRadius: '8px', padding: '8px 14px', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 10L5 5l3 3 2.5-4 2.5 4" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
           Open CBAM Calculator
         </Link>
+      </div>
+
+      {/* PRO tools locked — upgrade prompt */}
+      <div style={{ background: 'white', borderRadius: '12px', padding: '18px', border: '1px solid #e2e8f0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>PRO Compliance tools</h3>
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="5.5" width="9" height="6.5" rx="1.5" stroke="#cbd5e1" strokeWidth="1.2"/><path d="M4 5.5V4a2.5 2.5 0 015 0v1.5" stroke="#cbd5e1" strokeWidth="1.2"/></svg>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <LockedFeatureCard title="Multi-shipment CBAM Planner" description="Plan annual CBAM liability across multiple shipments and CN codes." requiredPlan="PRO Compliance" />
+          <LockedFeatureCard title="Supplier Emissions Tool" description="Send standardised questionnaires to suppliers and collect embedded CO₂ data." requiredPlan="PRO Compliance" />
+          <LockedFeatureCard title="CBAM Declaration Builder" description="Build and export XML-ready CBAM declarations for the EU CBAM Register." requiredPlan="PRO Compliance" />
+        </div>
       </div>
     </>
   )
@@ -210,6 +224,7 @@ function ComplianceDashboard({ firstName }: { firstName: string }) {
 
         <div style={{ background: 'white', borderRadius: '12px', padding: '18px', border: '1px solid #e2e8f0' }}>
           <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '12px' }}>Key CBAM dates</h3>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {[
               { date: 'Oct 2023 – Dec 2025', label: 'Transitional period', status: 'past', desc: 'Reporting only, no certificates' },
@@ -227,6 +242,19 @@ function ComplianceDashboard({ firstName }: { firstName: string }) {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* PRO tools locked — upgrade prompt */}
+      <div style={{ background: 'white', borderRadius: '12px', padding: '18px', border: '1px solid #e2e8f0', marginTop: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>PRO Compliance tools</h3>
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="5.5" width="9" height="6.5" rx="1.5" stroke="#cbd5e1" strokeWidth="1.2"/><path d="M4 5.5V4a2.5 2.5 0 015 0v1.5" stroke="#cbd5e1" strokeWidth="1.2"/></svg>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <LockedFeatureCard title="Multi-shipment CBAM Planner" description="Plan annual CBAM liability across multiple shipments and CN codes." requiredPlan="PRO Compliance" />
+          <LockedFeatureCard title="Supplier Emissions Tool" description="Send standardised questionnaires to suppliers and collect embedded CO₂ data." requiredPlan="PRO Compliance" />
+          <LockedFeatureCard title="CBAM Declaration Builder" description="Build and export XML-ready CBAM declarations for the EU CBAM Register." requiredPlan="PRO Compliance" />
         </div>
       </div>
     </>
@@ -269,7 +297,12 @@ function RoleSelector({ firstName }: { firstName: string }) {
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ welcome?: string }>
+}) {
+  const { welcome } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -336,6 +369,16 @@ export default async function DashboardPage() {
 
       {/* Content */}
       <main style={{ flex: 1, overflow: 'auto', padding: '24px' }}>
+
+        {/* One-time welcome banner after registration */}
+        {welcome === '1' && (
+          <div style={{ background: '#EEF2FF', border: '1px solid #c7d2fe', borderRadius: '10px', padding: '12px 18px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="#265CFF" strokeWidth="1.4"/><path d="M6 9l2 2 4-4" stroke="#265CFF" strokeWidth="1.4" strokeLinecap="round"/></svg>
+            <p style={{ fontSize: '13px', color: '#1e3a8a', fontWeight: 500 }}>
+              Welcome to Carbonis! Start by selecting your role below.
+            </p>
+          </div>
+        )}
 
         {!hasRole ? (
           <RoleSelector firstName={firstName} />

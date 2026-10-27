@@ -79,7 +79,7 @@ export default function RegisterPage() {
       }).eq('id', user.id)
     }
 
-    router.push('/dashboard')
+    router.push('/dashboard?welcome=1')
     router.refresh()
   }
 
