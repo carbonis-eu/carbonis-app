@@ -25,8 +25,8 @@ export default async function HomePage() {
         *{box-sizing:border-box;margin:0;padding:0}
         a{text-decoration:none}
         button{cursor:pointer;border:none;background:none}
-        .nl{color:rgba(255,255,255,0.72);font-size:14px;transition:color .15s}
-        .nl:hover{color:white}
+        .nl{color:#475569;font-size:14px;transition:color .15s}
+        .nl:hover{color:#0B2471}
         .fc{transition:background .2s}
         .fc:hover{background:#f8faff!important}
         .it{transition:all .2s;cursor:pointer}
@@ -37,11 +37,11 @@ export default async function HomePage() {
       `}</style>
 
       {/* ── NAV ── */}
-      <nav style={{position:'sticky',top:0,zIndex:100,background:'#0B2471',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+      <nav style={{position:'sticky',top:0,zIndex:100,background:'white',borderBottom:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 1px 8px rgba(0,0,0,0.05)'}}>
         <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px',height:'68px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-          <Link href="/"><img src="/carbonis-logo-dark.png" alt="Carbonis" style={{height:'52px',width:'auto'}}/></Link>
+          <Link href="/"><img src="/carbonis-logo-light.png" alt="Carbonis" style={{height:'44px',width:'auto'}}/></Link>
           <div style={{display:'flex',gap:'28px',alignItems:'center'}}>
-            <a href="#" style={{color:'white',fontSize:'14px',fontWeight:600,borderBottom:'2px solid rgba(255,255,255,0.5)',paddingBottom:'2px'}}>Home</a>
+            <a href="#" style={{color:'#0B2471',fontSize:'14px',fontWeight:600,borderBottom:'2px solid #265CFF',paddingBottom:'2px'}}>Home</a>
             <a href="#platform" className="nl">Product</a>
             <a href="#industries" className="nl">Solutions</a>
             <a href="#calculator" className="nl">Pricing</a>
@@ -49,7 +49,7 @@ export default async function HomePage() {
             <a href="#about" className="nl">About</a>
           </div>
           <div style={{display:'flex',gap:'16px',alignItems:'center'}}>
-            <Link href="/login" style={{color:'rgba(255,255,255,0.85)',fontSize:'14px',fontWeight:500}}>Login</Link>
+            <Link href="/login" style={{color:'#475569',fontSize:'14px',fontWeight:500}}>Login</Link>
             <Link href="/register" style={{background:'#265CFF',color:'white',fontSize:'14px',fontWeight:600,padding:'9px 20px',borderRadius:'8px',display:'inline-flex',alignItems:'center',gap:'5px'}}>Get started →</Link>
           </div>
         </div>
@@ -262,6 +262,34 @@ export default async function HomePage() {
         </div>
       </section>
 
+
+      {/* ── TRUSTED / SOCIAL PROOF ── */}
+      <section style={{background:'#f8fafc',padding:'64px 0',borderTop:'1px solid #f1f5f9',borderBottom:'1px solid #f1f5f9'}}>
+        <div style={{maxWidth:'1200px',margin:'0 auto',padding:'0 32px'}}>
+          <div style={{display:'flex',gap:'64px',alignItems:'center'}}>
+            <div style={{flex:'0 0 260px'}}>
+              <h3 style={{fontSize:'22px',fontWeight:800,color:'#0f172a',lineHeight:1.3,marginBottom:'12px'}}>Trusted by forward-thinking businesses across Europe</h3>
+              <p style={{color:'#64748b',fontSize:'13.5px',lineHeight:1.65}}>Join companies that are already turning compliance into a competitive advantage.</p>
+            </div>
+            <div style={{flex:1,borderLeft:'1px solid #e2e8f0',paddingLeft:'64px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'16px'}}>
+                {[...Array(5)].map((_,i) => <svg key={i} width="16" height="16" viewBox="0 0 16 16" fill="#F59E0B"><path d="M8 1l1.8 3.6L14 5.4l-3 2.9.7 4.1L8 10.4l-3.7 1.9.7-4.1-3-2.9 4.2-.8z"/></svg>)}
+                <span style={{color:'#64748b',fontSize:'13px',marginLeft:'4px'}}>4.9 / 5</span>
+              </div>
+              <blockquote style={{color:'#0f172a',fontSize:'15px',lineHeight:1.7,fontStyle:'italic',marginBottom:'16px',maxWidth:'520px'}}>
+                &ldquo;Carbonis has completely simplified our CBAM reporting process. What used to take weeks now takes hours. The platform is intuitive, reliable and the support team is outstanding.&rdquo;
+              </blockquote>
+              <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
+                <div style={{width:'38px',height:'38px',borderRadius:'50%',background:'#0B2471',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:'13px',fontWeight:700}}>JW</div>
+                <div>
+                  <div style={{fontSize:'13.5px',fontWeight:600,color:'#0f172a'}}>Julia Weber</div>
+                  <div style={{fontSize:'12px',color:'#64748b'}}>Head of Sustainability, European Imports</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ── CBAM CALCULATOR ── */}
       <section id="calculator" style={{background:'#f5f7fa',padding:'88px 0'}}>
