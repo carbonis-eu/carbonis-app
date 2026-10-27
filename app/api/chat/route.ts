@@ -108,12 +108,16 @@ export async function POST(request: NextRequest) {
       // Save conversation (non-blocking)
       const supabase = await createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      adminDb.from('navi_conversations').upsert({
-        session_id: sessionId,
-        user_id: user?.id ?? null,
-        messages: [...recentHistory, { role: 'user', content: message }, { role: 'assistant', content: fullText }],
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'session_id' }).then(() => {}).catch(() => {})
+      void (async () => {
+        try {
+          await adminDb.from('navi_conversations').upsert({
+            session_id: sessionId,
+            user_id: user?.id ?? null,
+            messages: [...recentHistory, { role: 'user', content: message }, { role: 'assistant', content: fullText }],
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'session_id' })
+        } catch { /* ignore */ }
+      })()
     },
   })
 

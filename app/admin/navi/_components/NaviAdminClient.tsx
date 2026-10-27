@@ -26,10 +26,33 @@ interface Props {
   conversations: Conversation[]
 }
 
-const CATEGORIES = ['general', 'pricing', 'features', 'onboarding', 'technical']
+const CATEGORIES = ['general', 'pricing', 'features', 'onboarding', 'technical', 'calculator', 'registration', 'selling', 'compliance', 'market']
+
+const NAVI_RULES = {
+  canDo: [
+    'Answer questions about Carbonis platform features, pricing, tools',
+    'Explain CBAM regulations (EU 2023/956) and ETS basics',
+    'Guide users through registration and onboarding steps',
+    'Describe how to sell or buy carbon certificates on Carbonis',
+    'Explain compliance deadlines and reporting requirements',
+    'Suggest the right plan (Seller / PRO Compliance / PRO Trading) based on user needs',
+    'Answer in the same language the user writes in (multilingual)',
+    'Use knowledge base entries to give accurate, platform-specific answers',
+  ],
+  cannotDo: [
+    'Give specific legal or financial advice (not a licensed advisor)',
+    'Quote specific carbon prices as facts (prices change daily)',
+    'Discuss competitor platforms by name',
+    'Promise features or prices that are not yet confirmed',
+    'Access or reveal user account data',
+    'Perform actions on behalf of the user (buy, sell, submit forms)',
+    'Answer questions unrelated to Carbonis / CBAM / EU carbon markets',
+  ],
+  systemPromptSummary: 'You are Navi, the support assistant for Carbonis (carbonis.eu). You ONLY answer questions about the Carbonis platform. Keep answers short — max 3 sentences. Always end with an actionable next step. Respond in the same language the user writes in. Knowledge base context is injected automatically for relevant queries.',
+}
 
 export default function NaviAdminClient({ knowledge: initial, conversations }: Props) {
-  const [tab, setTab] = useState<'kb' | 'conversations'>('kb')
+  const [tab, setTab] = useState<'kb' | 'conversations' | 'rules'>('kb')
   const [knowledge, setKnowledge] = useState(initial)
   const [editing, setEditing] = useState<KnowledgeEntry | null>(null)
   const [creating, setCreating] = useState(false)
@@ -107,9 +130,24 @@ export default function NaviAdminClient({ knowledge: initial, conversations }: P
         <p style={{ color: '#64748b', fontSize: '13px', marginTop: '4px' }}>Knowledge base management &amp; conversation history</p>
       </div>
 
+      {/* Stats */}
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
+        {[
+          { label: 'KB Entries', value: knowledge.length, color: '#265CFF' },
+          { label: 'Conversations', value: conversations.length, color: '#0B2471' },
+          { label: 'Active entries', value: knowledge.filter(k => k.is_active).length, color: '#16a34a' },
+          { label: 'Total messages', value: conversations.reduce((s, c) => s + c.messages.length, 0), color: '#7c3aed' },
+        ].map(s => (
+          <div key={s.label} style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px 20px', textAlign: 'center' }}>
+            <p style={{ fontSize: '22px', fontWeight: 800, color: s.color }}>{s.value}</p>
+            <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>{s.label}</p>
+          </div>
+        ))}
+      </div>
+
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', background: '#f1f5f9', borderRadius: '8px', padding: '4px', width: 'fit-content' }}>
-        {(['kb', 'conversations'] as const).map(t => (
+        {(['kb', 'conversations', 'rules'] as const).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -120,7 +158,7 @@ export default function NaviAdminClient({ knowledge: initial, conversations }: P
               boxShadow: tab === t ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
             }}
           >
-            {t === 'kb' ? `Knowledge Base (${knowledge.length})` : `Conversations (${conversations.length})`}
+            {t === 'kb' ? `Knowledge Base (${knowledge.length})` : t === 'conversations' ? `Conversations (${conversations.length})` : 'Rules & Restrictions'}
           </button>
         ))}
       </div>
@@ -245,6 +283,44 @@ export default function NaviAdminClient({ knowledge: initial, conversations }: P
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* Rules tab */}
+      {tab === 'rules' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* System prompt */}
+          <div style={{ background: '#0B1F4B', borderRadius: '12px', padding: '20px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>System Prompt (hardcoded in /api/chat)</p>
+            <p style={{ fontSize: '13px', color: 'white', lineHeight: 1.6, fontFamily: 'monospace' }}>{NAVI_RULES.systemPromptSummary}</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '20px' }}>
+              <p style={{ fontSize: '13px', fontWeight: 700, color: '#15803d', marginBottom: '12px' }}>✓ Navi CAN</p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {NAVI_RULES.canDo.map(r => (
+                  <li key={r} style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#166534', lineHeight: 1.4 }}>
+                    <span style={{ color: '#16a34a', flexShrink: 0 }}>✓</span> {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div style={{ background: '#fff5f5', border: '1px solid #fecaca', borderRadius: '12px', padding: '20px' }}>
+              <p style={{ fontSize: '13px', fontWeight: 700, color: '#dc2626', marginBottom: '12px' }}>✗ Navi CANNOT</p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {NAVI_RULES.cannotDo.map(r => (
+                  <li key={r} style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#991b1b', lineHeight: 1.4 }}>
+                    <span style={{ color: '#dc2626', flexShrink: 0 }}>✗</span> {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '16px' }}>
+            <p style={{ fontSize: '12px', color: '#1e40af', lineHeight: 1.6 }}>
+              <strong>Kako dodati omejitev ali pravilo:</strong> Uredi system prompt v <code style={{ background: '#dbeafe', padding: '1px 4px', borderRadius: '3px' }}>app/api/chat/route.ts</code> → konstanta <code style={{ background: '#dbeafe', padding: '1px 4px', borderRadius: '3px' }}>SYSTEM_BASE</code>. Za specifične odgovore na pogosta vprašanja dodaj KB vnos v zavihku "Knowledge Base" — Navi ga bo avtomatično injektiral pri relevantnih poizvedbah.
+            </p>
+          </div>
         </div>
       )}
 
