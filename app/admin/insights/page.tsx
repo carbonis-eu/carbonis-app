@@ -73,7 +73,9 @@ export default async function AdminInsightsPage() {
                   <tr key={a.id} style={{ borderBottom: i < articles.length - 1 ? '1px solid #f8fafc' : 'none' }}>
                     <td style={{ padding: '14px 16px', color: '#0f172a', fontWeight: 500, maxWidth: '320px' }}>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.title}</div>
-                      <div style={{ color: '#94a3b8', fontSize: '11px', marginTop: '2px' }}>/insights/{a.slug}</div>
+                      <Link href={`/insights/${a.slug}`} target="_blank" style={{ color: '#265CFF', fontSize: '11px', marginTop: '2px', display: 'block', textDecoration: 'none' }}>
+                        /insights/{a.slug} ↗
+                      </Link>
                     </td>
                     <td style={{ padding: '14px 16px' }}><CategoryBadge category={a.category} /></td>
                     <td style={{ padding: '14px 16px' }}><StatusBadge published={a.is_published} /></td>
