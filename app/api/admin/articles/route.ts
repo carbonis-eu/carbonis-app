@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { ArticleCategory } from '@/lib/types/article'
 
 const VALID_CATEGORIES: ArticleCategory[] = ['regulation', 'how-to', 'country', 'industry', 'market', 'platform']
@@ -7,14 +8,15 @@ const VALID_CATEGORIES: ArticleCategory[] = ['regulation', 'how-to', 'country', 
 async function requireAdmin() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { supabase: null, error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
+  if (!user) return { db: null, error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
+  const metaRole = (user.app_metadata as Record<string, string> | null)?.role
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-  if (profile?.role !== 'admin') return { supabase: null, error: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
-  return { supabase, error: null }
+  if (metaRole !== 'admin' && profile?.role !== 'admin') return { db: null, error: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  return { db: createAdminClient(), error: null }
 }
 
 export async function POST(request: NextRequest) {
-  const { supabase, error } = await requireAdmin()
+  const { db, error } = await requireAdmin()
   if (error) return error
 
   const body = await request.json() as Record<string, unknown>
@@ -27,7 +29,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid category' }, { status: 400 })
   }
 
-  const { data, error: dbError } = await supabase!.from('articles').insert({
+  const { data, error: dbError } = await db!.from('articles').insert({
     title,
     slug,
     excerpt,
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const { supabase, error } = await requireAdmin()
+  const { db, error } = await requireAdmin()
   if (error) return error
 
   const body = await request.json() as Record<string, unknown>
@@ -54,7 +56,6 @@ export async function PATCH(request: NextRequest) {
 
   if (!id) return NextResponse.json({ error: 'id is required' }, { status: 400 })
 
-  // Auto-set published_at when publishing
   if (updates.is_published === true) {
     (updates as Record<string, unknown>).published_at = new Date().toISOString()
   }
@@ -62,19 +63,19 @@ export async function PATCH(request: NextRequest) {
     (updates as Record<string, unknown>).published_at = null
   }
 
-  const { data, error: dbError } = await supabase!.from('articles').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id).select().single()
+  const { data, error: dbError } = await db!.from('articles').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id).select().single()
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
   return NextResponse.json(data)
 }
 
 export async function DELETE(request: NextRequest) {
-  const { supabase, error } = await requireAdmin()
+  const { db, error } = await requireAdmin()
   if (error) return error
 
   const { id } = await request.json() as { id: string }
   if (!id) return NextResponse.json({ error: 'id is required' }, { status: 400 })
 
-  const { error: dbError } = await supabase!.from('articles').delete().eq('id', id)
+  const { error: dbError } = await db!.from('articles').delete().eq('id', id)
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }
