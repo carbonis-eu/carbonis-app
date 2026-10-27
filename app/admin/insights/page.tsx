@@ -28,7 +28,7 @@ function StatusBadge({ published }: { published: boolean }) {
 
 export default async function AdminInsightsPage() {
   const supabase = createAdminClient()
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('articles')
     .select('*')
     .order('created_at', { ascending: false })
@@ -37,6 +37,11 @@ export default async function AdminInsightsPage() {
 
   return (
     <div style={{ padding: '32px 28px' }}>
+      {error && (
+        <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '8px', padding: '12px 16px', marginBottom: '20px', fontSize: '13px', color: '#b91c1c' }}>
+          DB Error: {error.message} (code: {error.code})
+        </div>
+      )}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a' }}>Insights</h1>
         <Link
