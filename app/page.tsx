@@ -11,7 +11,6 @@ import { CalculatorSection } from './components/landing/CalculatorSection'
 import { Faq } from './components/landing/Faq'
 import { CtaBanner } from './components/landing/CtaBanner'
 import { SiteFooter } from './components/landing/SiteFooter'
-import NaviWidget from './components/NaviWidget'
 
 async function getEtsPrice(): Promise<number> {
   try {
@@ -46,7 +45,6 @@ export default async function HomePage() {
         <CtaBanner />
       </main>
       <SiteFooter />
-      <NaviWidget />
     </>
   )
 }
