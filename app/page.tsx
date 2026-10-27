@@ -6,7 +6,6 @@ import { StatsBand } from './components/landing/StatsBand'
 import { Features } from './components/landing/Features'
 import { RegulationTimeline } from './components/landing/RegulationTimeline'
 import { HowItWorks } from './components/landing/HowItWorks'
-import { Sectors } from './components/landing/Sectors'
 import { CalculatorSection } from './components/landing/CalculatorSection'
 import { Faq } from './components/landing/Faq'
 import { CtaBanner } from './components/landing/CtaBanner'
@@ -39,7 +38,6 @@ export default async function HomePage() {
         <Features />
         <RegulationTimeline />
         <HowItWorks />
-        <Sectors />
         <CalculatorSection etsPrice={etsPrice} />
         <Faq />
         <CtaBanner />

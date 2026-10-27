@@ -3,11 +3,11 @@ import { SectionHeading } from './SectionHeading'
 
 const SECTORS = [
   { name: 'Iron & Steel', codes: 'CN 72, 73', img: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=600&h=420&fit=crop&auto=format&q=75', color: '#1e3a5f' },
-  { name: 'Aluminium', codes: 'CN 76', img: 'https://images.unsplash.com/photo-1565043666747-69f6646db940?w=600&h=420&fit=crop&auto=format&q=75', color: '#2d4a7a' },
-  { name: 'Cement', codes: 'CN 2507, 2523', img: 'https://images.unsplash.com/photo-1590674899484-13da3f931396?w=600&h=420&fit=crop&auto=format&q=75', color: '#374151' },
-  { name: 'Fertilisers', codes: 'CN 2808, 2814, 31', img: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=600&h=420&fit=crop&auto=format&q=75', color: '#1a4731' },
-  { name: 'Hydrogen', codes: 'CN 2804 10', img: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&h=420&fit=crop&auto=format&q=75', color: '#0c3547' },
-  { name: 'Electricity', codes: 'CN 2716', img: 'https://images.unsplash.com/photo-1473073899705-6a6dd2b16ec8?w=600&h=420&fit=crop&auto=format&q=75', color: '#1a2f5e' },
+  { name: 'Aluminium', codes: 'CN 76', img: 'https://images.unsplash.com/photo-1547555706-54bcf05bbad1?w=600&h=420&fit=crop&auto=format&q=75', color: '#2d4a7a' },
+  { name: 'Cement', codes: 'CN 2507, 2523', img: 'https://images.unsplash.com/photo-1666219462105-2909c2d72d01?w=600&h=420&fit=crop&auto=format&q=75', color: '#374151' },
+  { name: 'Fertilisers', codes: 'CN 2808, 2814, 31', img: 'https://images.unsplash.com/photo-1591630529805-63486bbce578?w=600&h=420&fit=crop&auto=format&q=75', color: '#1a4731' },
+  { name: 'Hydrogen', codes: 'CN 2804 10', img: 'https://images.unsplash.com/photo-1759299983582-085079c31bdc?w=600&h=420&fit=crop&auto=format&q=75', color: '#0c3547' },
+  { name: 'Electricity', codes: 'CN 2716', img: 'https://images.unsplash.com/photo-1509391111737-9b07f052f6b6?w=600&h=420&fit=crop&auto=format&q=75', color: '#1a2f5e' },
 ]
 
 export function Sectors() {

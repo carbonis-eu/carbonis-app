@@ -31,11 +31,11 @@ function calcCbam(qty: number, ef: number, etsPrice: number, country: OriginCoun
 
 const SECTORS_PHOTOS = [
   { key: 'steel' as CbamSector, name: 'Iron & Steel', codes: 'CN 72, 73', desc: 'Crude steel, rolled products, pipes and tubes', img: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=700&h=500&fit=crop&auto=format&q=80', accent: '#1e3a5f' },
-  { key: 'aluminum' as CbamSector, name: 'Aluminium', codes: 'CN 76', desc: 'Primary aluminium, alloys and downstream products', img: 'https://images.unsplash.com/photo-1565043666747-69f6646db940?w=700&h=500&fit=crop&auto=format&q=80', accent: '#2d4a7a' },
-  { key: 'cement' as CbamSector, name: 'Cement', codes: 'CN 2507, 2523', desc: 'Clinker, Portland cement and construction materials', img: 'https://images.unsplash.com/photo-1590674899484-13da3f931396?w=700&h=500&fit=crop&auto=format&q=80', accent: '#374151' },
-  { key: 'fertilizers' as CbamSector, name: 'Fertilisers', codes: 'CN 2808, 2814, 31', desc: 'Nitric acid, ammonia and nitrogen-based fertilisers', img: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=700&h=500&fit=crop&auto=format&q=80', accent: '#1a4731' },
-  { key: 'hydrogen' as CbamSector, name: 'Hydrogen', codes: 'CN 2804 10', desc: 'Pure hydrogen for industrial and energy applications', img: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=700&h=500&fit=crop&auto=format&q=80', accent: '#0c3547' },
-  { key: 'electricity' as CbamSector, name: 'Electricity', codes: 'CN 2716', desc: 'Electricity imported via cross-border interconnectors', img: 'https://images.unsplash.com/photo-1473073899705-6a6dd2b16ec8?w=700&h=500&fit=crop&auto=format&q=80', accent: '#1a2f5e' },
+  { key: 'aluminum' as CbamSector, name: 'Aluminium', codes: 'CN 76', desc: 'Primary aluminium, alloys and downstream products', img: 'https://images.unsplash.com/photo-1547555706-54bcf05bbad1?w=700&h=500&fit=crop&auto=format&q=80', accent: '#2d4a7a' },
+  { key: 'cement' as CbamSector, name: 'Cement', codes: 'CN 2507, 2523', desc: 'Clinker, Portland cement and construction materials', img: 'https://images.unsplash.com/photo-1666219462105-2909c2d72d01?w=700&h=500&fit=crop&auto=format&q=80', accent: '#374151' },
+  { key: 'fertilizers' as CbamSector, name: 'Fertilisers', codes: 'CN 2808, 2814, 31', desc: 'Nitric acid, ammonia and nitrogen-based fertilisers', img: 'https://images.unsplash.com/photo-1591630529805-63486bbce578?w=700&h=500&fit=crop&auto=format&q=80', accent: '#1a4731' },
+  { key: 'hydrogen' as CbamSector, name: 'Hydrogen', codes: 'CN 2804 10', desc: 'Pure hydrogen for industrial and energy applications', img: 'https://images.unsplash.com/photo-1759299983582-085079c31bdc?w=700&h=500&fit=crop&auto=format&q=80', accent: '#0c3547' },
+  { key: 'electricity' as CbamSector, name: 'Electricity', codes: 'CN 2716', desc: 'Electricity imported via cross-border interconnectors', img: 'https://images.unsplash.com/photo-1509391111737-9b07f052f6b6?w=700&h=500&fit=crop&auto=format&q=80', accent: '#1a2f5e' },
 ]
 
 const STEPS = [

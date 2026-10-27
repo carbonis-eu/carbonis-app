@@ -15,7 +15,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') redirect('/dashboard')
+  const metaRole = (user.app_metadata as Record<string, string> | null)?.role
+  if (metaRole !== 'admin' && profile?.role !== 'admin') redirect('/dashboard')
 
   return (
     <div style={{ display: 'flex', height: '100vh', fontFamily: 'var(--font-geist-sans), system-ui, sans-serif', overflow: 'hidden', background: '#f1f5f9' }}>
