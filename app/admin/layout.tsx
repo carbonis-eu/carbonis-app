@@ -1,3 +1,5 @@
+export const instant = false
+
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import AdminSidebar from './_components/AdminSidebar'
