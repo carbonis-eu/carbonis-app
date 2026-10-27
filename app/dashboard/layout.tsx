@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import DashboardSidebar from './_components/DashboardSidebar'
+import NaviWidget from '@/app/components/NaviWidget'
 
 function getFirstName(email: string) {
   const local = email.split('@')[0]
@@ -46,6 +47,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <div style={{ flex: 1, overflow: 'auto' }}>
         {children}
       </div>
+      <NaviWidget />
     </div>
   )
 }
