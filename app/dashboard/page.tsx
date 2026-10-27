@@ -2,7 +2,6 @@ export const instant = false
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 
 function getFirstName(email: string): string {
   const local = email.split('@')[0]
@@ -16,16 +15,6 @@ function getGreeting(): string {
   if (h < 18) return 'Good afternoon'
   return 'Good evening'
 }
-
-const SIDEBAR_ITEMS = [
-  { label: 'Dashboard', href: '/dashboard', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.4"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.4"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.4"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.4"/></svg> },
-  { label: 'Emissions', href: '/dashboard/emissions', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 14l4-5 3 3 3-4 4-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  { label: 'Supply Chain', href: '/dashboard/supply-chain', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="2" stroke="currentColor" strokeWidth="1.4"/><circle cx="13" cy="4" r="2" stroke="currentColor" strokeWidth="1.4"/><circle cx="13" cy="12" r="2" stroke="currentColor" strokeWidth="1.4"/><path d="M5 7.5L11 4.5M5 8.5L11 11.5" stroke="currentColor" strokeWidth="1.2"/></svg> },
-  { label: 'Regulations', href: '/dashboard/regulations', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><line x1="5" y1="5" x2="11" y2="5" stroke="currentColor" strokeWidth="1.2"/><line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" strokeWidth="1.2"/><line x1="5" y1="11" x2="8" y2="11" stroke="currentColor" strokeWidth="1.2"/></svg> },
-  { label: 'Reports', href: '/dashboard/reports', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M4 8l2 2 5-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg> },
-  { label: 'Documents', href: '/dashboard/documents', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M9 1H3a1 1 0 00-1 1v12a1 1 0 001 1h10a1 1 0 001-1V6L9 1z" stroke="currentColor" strokeWidth="1.4"/><path d="M9 1v5h5" stroke="currentColor" strokeWidth="1.4"/></svg> },
-  { label: 'Settings', href: '/dashboard/settings', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.4"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.3 3.3l1 1M11.7 11.7l1 1M3.3 12.7l1-1M11.7 4.3l1-1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg> },
-]
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -52,54 +41,7 @@ export default async function DashboardPage() {
     : 30
 
   return (
-    <div style={{ display: 'flex', height: '100vh', fontFamily: 'var(--font-geist-sans), system-ui, sans-serif', overflow: 'hidden', background: '#f1f5f9' }}>
-
-      {/* ── SIDEBAR ── */}
-      <aside style={{ width: '220px', background: '#0B2471', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-        <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <svg width="24" height="24" viewBox="0 0 56 56" fill="none" aria-hidden="true">
-            <defs><linearGradient id="dg" x1="10" y1="8" x2="46" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#60A5FA"/><stop offset="50%" stopColor="#265CFF"/><stop offset="100%" stopColor="#93c5fd"/></linearGradient></defs>
-            <path d="M 37.5,44.5 A 19,19 0 1,1 44.5,18.5" stroke="url(#dg)" strokeWidth="4.5" strokeLinecap="round" fill="none"/>
-            <circle cx="37.5" cy="44.5" r="4.2" fill="url(#dg)"/><circle cx="11.5" cy="37.5" r="4.2" fill="url(#dg)"/><circle cx="18.5" cy="11.5" r="4.2" fill="url(#dg)"/><circle cx="44.5" cy="18.5" r="4.2" fill="url(#dg)"/>
-          </svg>
-          <span style={{ color: 'white', fontWeight: 700, fontSize: '14px', letterSpacing: '-0.01em' }}>Carbonis</span>
-        </div>
-
-        <nav style={{ flex: 1, padding: '10px 0', overflow: 'auto' }}>
-          {SIDEBAR_ITEMS.map(item => {
-            const active = item.href === '/dashboard'
-            return (
-              <Link key={item.label} href={item.href} style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                padding: '9px 16px', fontSize: '13px', textDecoration: 'none',
-                color: active ? 'white' : 'rgba(255,255,255,0.5)',
-                background: active ? 'rgba(255,255,255,0.12)' : 'transparent',
-                borderLeft: active ? '2px solid #60a5fa' : '2px solid transparent',
-                fontWeight: active ? 600 : 400,
-                transition: 'all .15s',
-              }}>
-                {item.icon}
-                {item.label}
-              </Link>
-            )
-          })}
-        </nav>
-
-        <div style={{ padding: '14px 16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1C3.7 1 1 3.7 1 7s2.7 6 6 6 6-2.7 6-6" stroke="#4ade80" strokeWidth="1.4" strokeLinecap="round"/></svg>
-            <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: '11px' }}>Your carbon journey is on track.</span>
-          </div>
-          <div style={{ height: '4px', background: 'rgba(255,255,255,0.12)', borderRadius: '2px', marginBottom: '10px' }}>
-            <div style={{ width: '78%', height: '100%', background: '#4ade80', borderRadius: '2px' }}/>
-          </div>
-          <p style={{ color: 'white', fontSize: '12px', fontWeight: 600, marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{companyName}</p>
-          <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '11px' }}>Supervised company</p>
-        </div>
-      </aside>
-
-      {/* ── MAIN ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}>
 
         {/* Header */}
         <header style={{ background: 'white', borderBottom: '1px solid #e2e8f0', padding: '0 24px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
@@ -259,7 +201,6 @@ export default async function DashboardPage() {
           </div>
 
         </main>
-      </div>
     </div>
   )
 }
