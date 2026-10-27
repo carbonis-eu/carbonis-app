@@ -7,8 +7,8 @@ import { Menu, X } from 'lucide-react'
 
 const NAV_LINKS = [
   { href: '#platform', label: 'Platform' },
-  { href: '#regulation', label: 'Regulation' },
   { href: '/cbam', label: 'What is CBAM?' },
+  { href: '/pricing', label: 'Pricing' },
   { href: '#calculator', label: 'Calculator' },
   { href: '#faq', label: 'FAQ' },
 ]

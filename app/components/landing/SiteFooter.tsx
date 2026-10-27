@@ -21,7 +21,7 @@ const COLUMNS = [
   {
     title: 'Company',
     links: [
-      { label: 'Contact sales', href: 'mailto:sales@carbonis.eu' },
+      { label: 'Pricing', href: '/pricing' },
       { label: 'Log in', href: '/login' },
       { label: 'Create account', href: '/register' },
     ],

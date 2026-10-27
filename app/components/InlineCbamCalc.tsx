@@ -140,6 +140,10 @@ export default function InlineCbamCalc({ etsPrice }: { etsPrice: number }) {
           Get full CBAM declaration →
         </Link>
         <p className="text-center text-xs text-slate-400">Free 30-day trial · No credit card</p>
+        <p className="text-[10px] text-slate-400 leading-relaxed border-t border-slate-100 pt-3 mt-1">
+          * Carbon prices shown are indicative estimates based on publicly available market data. Actual CBAM certificate prices are set weekly by the European Commission based on the EU ETS auction price average.{' '}
+          <a href="https://cbam.ec.europa.eu" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Verify at the EU CBAM Registry.</a>
+        </p>
       </div>
     </div>
   )

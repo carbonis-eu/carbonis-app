@@ -48,6 +48,12 @@ export function Hero({ etsPrice }: { etsPrice: number }) {
               Estimate your liability
             </a>
           </div>
+          <p className="mt-3 text-sm text-muted-foreground">
+            ✓ 30-day free trial &nbsp;·&nbsp; ✓ No credit card required &nbsp;·&nbsp; ✓ Cancel anytime
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground/70">
+            For importers, certificate sellers, and compliance teams
+          </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-border pt-6">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
