@@ -1,4 +1,4 @@
-export const instant = false
+﻿export const dynamic = 'force-dynamic'
 
 import { SiteHeader } from './components/landing/SiteHeader'
 import { Hero } from './components/landing/Hero'

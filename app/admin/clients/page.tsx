@@ -1,4 +1,4 @@
-export const instant = false
+﻿export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function AdminClientsPage() {
@@ -30,9 +30,9 @@ export default async function AdminClientsPage() {
           <tbody>
             {clients && clients.length > 0 ? clients.map((c, i) => (
               <tr key={c.id} style={{ borderBottom: i < clients.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
-                <td style={{ padding: '12px 16px', fontWeight: 600, color: '#0f172a' }}>{c.company_name ?? '—'}</td>
+                <td style={{ padding: '12px 16px', fontWeight: 600, color: '#0f172a' }}>{c.company_name ?? 'â€”'}</td>
                 <td style={{ padding: '12px 16px', color: '#475569' }}>{c.email}</td>
-                <td style={{ padding: '12px 16px', color: '#475569' }}>{c.country ?? '—'}</td>
+                <td style={{ padding: '12px 16px', color: '#475569' }}>{c.country ?? 'â€”'}</td>
                 <td style={{ padding: '12px 16px' }}>
                   <span style={{ background: c.tier === 'free' ? '#f1f5f9' : '#eff6ff', color: c.tier === 'free' ? '#64748b' : '#1d4ed8', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase' }}>
                     {c.tier ?? 'free'}
@@ -42,7 +42,7 @@ export default async function AdminClientsPage() {
                   <span style={{ background: '#f0fdf4', color: '#16a34a', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>Active</span>
                 </td>
                 <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: '12px' }}>
-                  {c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
+                  {c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'â€”'}
                 </td>
               </tr>
             )) : (

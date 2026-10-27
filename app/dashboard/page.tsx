@@ -1,4 +1,4 @@
-export const instant = false
+﻿export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
               {companyName}
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#64748b" strokeWidth="1.3" strokeLinecap="round"/></svg>
             </button>
-            <span style={{ fontSize: '11px', color: '#64748b' }}>🇸🇮 Slovenia</span>
+            <span style={{ fontSize: '11px', color: '#64748b' }}>đź‡¸đź‡® Slovenia</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {isTrial && (
@@ -89,14 +89,14 @@ export default async function DashboardPage() {
             <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '10px', padding: '12px 18px', minWidth: '160px', textAlign: 'center', position: 'relative' }}>
               <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '11px', marginBottom: '4px' }}>Compliance score</p>
               <p style={{ color: 'white', fontSize: '28px', fontWeight: 800, lineHeight: 1 }}>92%</p>
-              <p style={{ color: '#4ade80', fontSize: '11px', marginTop: '4px' }}>↑ On track</p>
+              <p style={{ color: '#4ade80', fontSize: '11px', marginTop: '4px' }}>â†‘ On track</p>
             </div>
           </div>
 
           {/* KPI Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
             {[
-              { label: 'Total emissions', value: '12,480 tCO₂e', change: '↑ 12% vs. last quarter', changeColor: '#ef4444', icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 14L6 8l3.5 3.5 3-5 3.5 5.5" stroke="#265CFF" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>, iconBg: '#EEF2FF' },
+              { label: 'Total emissions', value: '12,480 tCOâ‚‚e', change: 'â†‘ 12% vs. last quarter', changeColor: '#ef4444', icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 14L6 8l3.5 3.5 3-5 3.5 5.5" stroke="#265CFF" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>, iconBg: '#EEF2FF' },
               { label: 'CBAM declarations', value: '8', change: '2 pending review', changeColor: '#f59e0b', icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#265CFF" strokeWidth="1.4"/><path d="M5 7h8M5 10h5" stroke="#265CFF" strokeWidth="1.4" strokeLinecap="round"/></svg>, iconBg: '#EEF2FF' },
               { label: 'Compliance status', value: 'On track', change: 'All requirements met', changeColor: '#22c55e', icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="#265CFF" strokeWidth="1.4"/><path d="M6 9l2 2 4-4" stroke="#265CFF" strokeWidth="1.4" strokeLinecap="round"/></svg>, iconBg: '#EEF2FF' },
             ].map(k => (
@@ -119,7 +119,7 @@ export default async function DashboardPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <div>
                   <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>Emissions trend</h3>
-                  <p style={{ fontSize: '12px', color: '#64748b' }}>CO₂ equivalent, tonnes</p>
+                  <p style={{ fontSize: '12px', color: '#64748b' }}>COâ‚‚ equivalent, tonnes</p>
                 </div>
                 <select style={{ fontSize: '11px', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '4px 8px', color: '#334155', background: 'white' }}>
                   <option>2025</option>
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
                   <circle cx="70" cy="70" r="54" fill="none" stroke="#93c5fd" strokeWidth="20"
                     strokeDasharray="40.7 298.5" strokeDashoffset="-298.7"/>
                   <text x="70" y="66" textAnchor="middle" fontSize="16" fontWeight="800" fill="#0f172a">12,480</text>
-                  <text x="70" y="80" textAnchor="middle" fontSize="9" fill="#94a3b8">tCO₂e</text>
+                  <text x="70" y="80" textAnchor="middle" fontSize="9" fill="#94a3b8">tCOâ‚‚e</text>
                 </svg>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

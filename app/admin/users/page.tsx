@@ -1,4 +1,4 @@
-export const instant = false
+﻿export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function AdminUsersPage() {
@@ -28,7 +28,7 @@ export default async function AdminUsersPage() {
             {users && users.length > 0 ? users.map((u, i) => (
               <tr key={u.id} style={{ borderBottom: i < users.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
                 <td style={{ padding: '12px 16px', color: '#0f172a' }}>{u.email}</td>
-                <td style={{ padding: '12px 16px', color: '#475569' }}>{u.company_name ?? '—'}</td>
+                <td style={{ padding: '12px 16px', color: '#475569' }}>{u.company_name ?? 'â€”'}</td>
                 <td style={{ padding: '12px 16px' }}>
                   <span style={{ background: u.role === 'admin' ? '#fef3c7' : '#f1f5f9', color: u.role === 'admin' ? '#92400e' : '#475569', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase' }}>
                     {u.role ?? 'user'}
@@ -36,7 +36,7 @@ export default async function AdminUsersPage() {
                 </td>
                 <td style={{ padding: '12px 16px', color: '#64748b', fontSize: '12px' }}>{u.tier ?? 'free'}</td>
                 <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: '12px' }}>
-                  {u.created_at ? new Date(u.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
+                  {u.created_at ? new Date(u.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'â€”'}
                 </td>
               </tr>
             )) : (
