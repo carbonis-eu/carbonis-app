@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import CarbonisLogo from '../CarbonisLogo'
+import Image from 'next/image'
 
 const COLUMNS = [
   {
@@ -33,7 +33,7 @@ export function SiteFooter() {
     <footer className="border-t border-border bg-white">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-[2fr_3fr] lg:px-8">
         <div>
-          <CarbonisLogo size="md" variant="light" showTagline />
+          <Image src="/carbonis-logo-tagline.png" alt="Carbonis" width={200} height={60} />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
             The EU carbon compliance platform for importers and manufacturers.
           </p>

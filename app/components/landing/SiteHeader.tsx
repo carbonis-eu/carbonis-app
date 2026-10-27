@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import CarbonisLogo from '../CarbonisLogo'
 
 const NAV_LINKS = [
   { href: '#platform', label: 'Platform' },
@@ -20,7 +20,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-border bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/75">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
         <Link href="/" className="flex items-center" aria-label="Carbonis home">
-          <CarbonisLogo size="md" variant="light" />
+          <Image src="/carbonis-logo.png" alt="Carbonis" width={160} height={40} priority />
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-8 md:flex">
