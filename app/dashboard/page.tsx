@@ -38,6 +38,8 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
+  if (profile?.role === 'admin') redirect('/admin')
+
   const firstName = getFirstName(user.email ?? 'there')
   const greeting = getGreeting()
   const companyName = profile?.company_name ?? 'Your Company'
