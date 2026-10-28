@@ -15,11 +15,30 @@ STRICT RULES:
 
 type MessageParam = { role: 'user' | 'assistant'; content: string }
 
+// ISO-639-1 detection from message text (basic heuristic by common words)
+function detectLang(text: string): string {
+  const t = text.toLowerCase()
+  if (/\b(kaj|kako|kdaj|zakaj|prosim|hvala|sem|ali|pa|da)\b/.test(t)) return 'sl'
+  if (/\b(wie|was|warum|bitte|danke|ich|haben|ist|sind)\b/.test(t)) return 'de'
+  if (/\b(jak|co|dlaczego|proszę|dziękuję|jest|mam|czy)\b/.test(t)) return 'pl'
+  if (/\b(ce|comment|pourquoi|merci|s'il vous|avoir|est)\b/.test(t)) return 'fr'
+  if (/\b(cosa|come|perché|grazie|prego|avere|essere)\b/.test(t)) return 'it'
+  if (/\b(qué|cómo|por qué|gracias|tener|estar|hacer)\b/.test(t)) return 'es'
+  if (/\b(co|jak|proč|prosím|děkuji|mít|být)\b/.test(t)) return 'cs'
+  if (/\b(mi|az|egy|hogy|nem|van|volt|lesz)\b/.test(t)) return 'hu'
+  if (/\b(ce|cum|de ce|mulțumesc|aveți|este|sunt)\b/.test(t)) return 'ro'
+  return 'en'
+}
+
 export async function POST(request: NextRequest) {
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
     return NextResponse.json({ error: 'AI service not configured' }, { status: 503 })
   }
+
+  // Geo detection via Vercel headers
+  const country = request.headers.get('x-vercel-ip-country') ?? 'unknown'
+  const city = request.headers.get('x-vercel-ip-city') ?? ''
 
   const { message, sessionId, history = [] } = await request.json() as {
     message: string
@@ -110,16 +129,23 @@ export async function POST(request: NextRequest) {
         controller.close()
       }
 
-      // Save conversation (non-blocking)
+      // Save conversation with geo + language metadata (non-blocking)
       const supabase = await createClient()
       const { data: { user } } = await supabase.auth.getUser()
       void (async () => {
         try {
+          const allMessages = [...recentHistory, { role: 'user', content: message }, { role: 'assistant', content: fullText }]
+          const firstUserMsg = allMessages.find(m => m.role === 'user')?.content ?? message
+          const detectedLang = detectLang(firstUserMsg)
           await adminDb.from('navi_conversations').upsert({
             session_id: sessionId,
             user_id: user?.id ?? null,
-            messages: [...recentHistory, { role: 'user', content: message }, { role: 'assistant', content: fullText }],
+            messages: allMessages,
             updated_at: new Date().toISOString(),
+            country,
+            city,
+            lang: detectedLang,
+            first_question: firstUserMsg.slice(0, 200),
           }, { onConflict: 'session_id' })
         } catch { /* ignore */ }
       })()

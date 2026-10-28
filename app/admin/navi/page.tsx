@@ -15,7 +15,7 @@ export default async function NaviAdminPage() {
       .order('category', { ascending: true }),
     supabase
       .from('navi_conversations')
-      .select('id, session_id, user_id, messages, created_at, updated_at')
+      .select('id, session_id, user_id, messages, created_at, updated_at, country, city, lang, first_question')
       .order('updated_at', { ascending: false })
       .limit(100),
   ])

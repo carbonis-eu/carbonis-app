@@ -19,6 +19,28 @@ interface Conversation {
   messages: Array<{ role: string; content: string }>
   created_at: string
   updated_at: string
+  country?: string | null
+  city?: string | null
+  lang?: string | null
+  first_question?: string | null
+}
+
+const LANG_LABELS: Record<string, string> = {
+  sl: 'SLO', de: 'DE', en: 'EN', pl: 'PL', fr: 'FR',
+  it: 'IT', es: 'ES', cs: 'CS', hu: 'HU', ro: 'RO',
+}
+
+const LANG_COLORS: Record<string, string> = {
+  sl: '#16a34a', de: '#dc2626', en: '#2563eb', pl: '#dc2626',
+  fr: '#2563eb', it: '#16a34a', es: '#d97706', cs: '#7c3aed',
+  hu: '#dc2626', ro: '#d97706',
+}
+
+function countryFlag(code: string | null | undefined): string {
+  if (!code || code === 'unknown' || code.length !== 2) return '🌍'
+  return Array.from(code.toUpperCase()).map(c =>
+    String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)
+  ).join('')
 }
 
 interface Props {
@@ -59,6 +81,27 @@ export default function NaviAdminClient({ knowledge: initial, conversations }: P
   const [form, setForm] = useState({ question: '', answer: '', category: 'general' })
   const [saving, setSaving] = useState(false)
   const [expandedConv, setExpandedConv] = useState<string | null>(null)
+  const [translations, setTranslations] = useState<Record<string, string>>({})
+  const [translating, setTranslating] = useState<Record<string, boolean>>({})
+
+  async function translateConv(conv: Conversation) {
+    if (translations[conv.id]) return
+    setTranslating(p => ({ ...p, [conv.id]: true }))
+    const text = conv.messages
+      .map(m => `${m.role === 'user' ? 'Obiskovalec' : 'Navi'}: ${m.content}`)
+      .join('\n')
+    try {
+      const res = await fetch('/api/admin/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      })
+      const { translation } = await res.json()
+      setTranslations(p => ({ ...p, [conv.id]: translation }))
+    } finally {
+      setTranslating(p => ({ ...p, [conv.id]: false }))
+    }
+  }
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -330,43 +373,110 @@ export default function NaviAdminClient({ knowledge: initial, conversations }: P
           {conversations.length === 0 && (
             <p style={{ color: '#94a3b8', fontSize: '13px' }}>No conversations yet.</p>
           )}
-          {conversations.map(conv => (
-            <div key={conv.id} style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden' }}>
-              <button
-                onClick={() => setExpandedConv(expandedConv === conv.id ? null : conv.id)}
-                style={{
-                  width: '100%', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
-                }}
-              >
-                <div>
-                  <p style={{ fontSize: '12px', fontWeight: 600, color: '#0B1F4B' }}>
-                    {conv.user_id ? `User ${conv.user_id.slice(0, 8)}…` : 'Anonymous'}
-                    <span style={{ fontWeight: 400, color: '#94a3b8', marginLeft: '8px' }}>{conv.session_id.slice(0, 20)}…</span>
-                  </p>
-                  <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
-                    {conv.messages.length} messages · {new Date(conv.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                </div>
-                <span style={{ color: '#94a3b8', fontSize: '12px' }}>{expandedConv === conv.id ? '▲' : '▼'}</span>
-              </button>
-              {expandedConv === conv.id && (
-                <div style={{ borderTop: '1px solid #f1f5f9', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {conv.messages.map((msg, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                      <div style={{
-                        maxWidth: '75%', padding: '8px 12px', borderRadius: '8px', fontSize: '12px', lineHeight: 1.5,
-                        background: msg.role === 'user' ? '#265CFF' : '#f8fafc',
-                        color: msg.role === 'user' ? 'white' : '#0B1F4B',
-                      }}>
-                        {msg.content}
-                      </div>
+          {conversations.map(conv => {
+            const flag = countryFlag(conv.country)
+            const langCode = conv.lang ?? 'en'
+            const langLabel = LANG_LABELS[langCode] ?? langCode.toUpperCase()
+            const langColor = LANG_COLORS[langCode] ?? '#64748b'
+            const location = [conv.city, conv.country].filter(Boolean).join(', ') || 'Unknown'
+            const isExpanded = expandedConv === conv.id
+            const hasTrans = !!translations[conv.id]
+            const isTranslating = !!translating[conv.id]
+
+            return (
+              <div key={conv.id} style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden' }}>
+                <button
+                  onClick={() => setExpandedConv(isExpanded ? null : conv.id)}
+                  style={{
+                    width: '100%', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+                    background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: '12px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', flex: 1, minWidth: 0 }}>
+                    {/* Flag + lang badge */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', flexShrink: 0, paddingTop: '2px' }}>
+                      <span style={{ fontSize: '20px', lineHeight: 1 }}>{flag}</span>
+                      <span style={{
+                        fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '3px',
+                        background: langColor + '18', color: langColor,
+                      }}>{langLabel}</span>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+                    {/* Content */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: '12px', fontWeight: 600, color: '#0B1F4B', marginBottom: '2px' }}>
+                        {location}
+                        {conv.user_id && (
+                          <span style={{ fontWeight: 400, color: '#94a3b8', marginLeft: '8px' }}>· user {conv.user_id.slice(0, 8)}</span>
+                        )}
+                      </p>
+                      {conv.first_question ? (
+                        <p style={{ fontSize: '12px', color: '#374151', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          &ldquo;{conv.first_question}&rdquo;
+                        </p>
+                      ) : (
+                        <p style={{ fontSize: '12px', color: '#94a3b8', fontStyle: 'italic' }}>{conv.messages.length > 0 ? conv.messages[0]?.content?.slice(0, 80) : 'No messages'}</p>
+                      )}
+                      <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '3px' }}>
+                        {conv.messages.length} sporočil · {new Date(conv.updated_at).toLocaleDateString('sl-SI', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                  <span style={{ color: '#94a3b8', fontSize: '12px', flexShrink: 0, paddingTop: '4px' }}>{isExpanded ? '▲' : '▼'}</span>
+                </button>
+
+                {isExpanded && (
+                  <div style={{ borderTop: '1px solid #f1f5f9', padding: '16px' }}>
+                    {/* Translate button (only for non-SLO) */}
+                    {langCode !== 'sl' && (
+                      <div style={{ marginBottom: '12px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <button
+                          onClick={() => translateConv(conv)}
+                          disabled={isTranslating || hasTrans}
+                          style={{
+                            padding: '5px 12px', fontSize: '11px', fontWeight: 600, borderRadius: '6px', border: '1px solid #e2e8f0',
+                            background: hasTrans ? '#f0fdf4' : '#f8fafc', color: hasTrans ? '#16a34a' : '#0B1F4B',
+                            cursor: hasTrans || isTranslating ? 'default' : 'pointer',
+                          }}
+                        >
+                          {isTranslating ? '⏳ Prevajam…' : hasTrans ? '✓ Prevedeno' : '🇸🇮 Prevedi v SLO'}
+                        </button>
+                        {hasTrans && (
+                          <button
+                            onClick={() => setTranslations(p => { const n = { ...p }; delete n[conv.id]; return n })}
+                            style={{ fontSize: '11px', color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer' }}
+                          >
+                            Skrij prevod
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Translation view */}
+                    {hasTrans && (
+                      <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '12px', marginBottom: '12px', fontSize: '12px', color: '#166534', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                        {translations[conv.id]}
+                      </div>
+                    )}
+
+                    {/* Original messages */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {conv.messages.map((msg, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
+                          <div style={{
+                            maxWidth: '75%', padding: '8px 12px', borderRadius: '8px', fontSize: '12px', lineHeight: 1.5,
+                            background: msg.role === 'user' ? '#265CFF' : '#f8fafc',
+                            color: msg.role === 'user' ? 'white' : '#0B1F4B',
+                          }}>
+                            {msg.content}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
