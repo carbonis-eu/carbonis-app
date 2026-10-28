@@ -129,26 +129,24 @@ export async function POST(request: NextRequest) {
         controller.close()
       }
 
-      // Save conversation with geo + language metadata (non-blocking)
+      // Save conversation with geo + language metadata — must await so Vercel doesn't kill the fn
       const supabase = await createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      void (async () => {
-        try {
-          const allMessages = [...recentHistory, { role: 'user', content: message }, { role: 'assistant', content: fullText }]
-          const firstUserMsg = allMessages.find(m => m.role === 'user')?.content ?? message
-          const detectedLang = detectLang(firstUserMsg)
-          await adminDb.from('navi_conversations').upsert({
-            session_id: sessionId,
-            user_id: user?.id ?? null,
-            messages: allMessages,
-            updated_at: new Date().toISOString(),
-            country,
-            city,
-            lang: detectedLang,
-            first_question: firstUserMsg.slice(0, 200),
-          }, { onConflict: 'session_id' })
-        } catch { /* ignore */ }
-      })()
+      try {
+        const allMessages = [...recentHistory, { role: 'user', content: message }, { role: 'assistant', content: fullText }]
+        const firstUserMsg = allMessages.find(m => m.role === 'user')?.content ?? message
+        const detectedLang = detectLang(firstUserMsg)
+        await adminDb.from('navi_conversations').upsert({
+          session_id: sessionId,
+          user_id: user?.id ?? null,
+          messages: allMessages,
+          updated_at: new Date().toISOString(),
+          country,
+          city,
+          lang: detectedLang,
+          first_question: firstUserMsg.slice(0, 200),
+        }, { onConflict: 'session_id' })
+      } catch { /* ignore */ }
     },
   })
 
