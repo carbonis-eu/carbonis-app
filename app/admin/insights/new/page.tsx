@@ -1,9 +1,70 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import type { ArticleCategory } from '@/lib/types/article'
 import { CATEGORY_LABELS } from '@/lib/types/article'
+
+interface PexelsPhoto { id: number; url: string; thumb: string; alt: string; photographer: string }
+
+function PexelsSearch({ onSelect }: { onSelect: (url: string) => void }) {
+  const [query, setQuery] = useState('')
+  const [photos, setPhotos] = useState<PexelsPhoto[]>([])
+  const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false)
+
+  const search = useCallback(async () => {
+    if (!query.trim()) return
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/admin/pexels/search?q=${encodeURIComponent(query)}`)
+      const data = await res.json() as { photos: PexelsPhoto[] }
+      setPhotos(data.photos ?? [])
+      setOpen(true)
+    } finally { setLoading(false) }
+  }, [query])
+
+  return (
+    <div style={{ marginTop: '8px' }}>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <input
+          style={{ flex: 1, border: '1px solid #e2e8f0', borderRadius: '8px', padding: '9px 12px', fontSize: '13px', color: '#0f172a' }}
+          placeholder="Search Pexels (e.g. carbon factory, industrial Europe)…"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), search())}
+        />
+        <button type="button" onClick={search} disabled={loading}
+          style={{ background: '#0B2471', color: 'white', border: 'none', borderRadius: '8px', padding: '9px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+          {loading ? '…' : 'Search Pexels'}
+        </button>
+      </div>
+
+      {open && photos.length > 0 && (
+        <div style={{ marginTop: '10px', border: '1px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden', background: '#f8fafc' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', padding: '10px' }}>
+            {photos.map(p => (
+              <div key={p.id} style={{ position: 'relative', cursor: 'pointer' }}
+                onClick={() => { onSelect(p.url); setOpen(false) }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p.thumb} alt={p.alt} style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '6px', display: 'block' }} />
+                <div style={{ position: 'absolute', inset: 0, borderRadius: '6px', background: 'rgba(0,0,0,0)', transition: 'background 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(38,92,255,0.25)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,0,0,0)')} />
+                <p style={{ fontSize: '9px', color: '#94a3b8', marginTop: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  © {p.photographer}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div style={{ padding: '6px 10px', borderTop: '1px solid #e2e8f0', fontSize: '11px', color: '#94a3b8' }}>
+            Photos from Pexels · Click to use
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 const CATEGORIES = Object.keys(CATEGORY_LABELS) as ArticleCategory[]
 const GEO_OPTIONS = ['DE', 'FR', 'PL', 'IT', 'NL', 'CZ', 'ES', 'BE', 'AT', 'SE']
@@ -116,8 +177,19 @@ export default function NewArticlePage() {
         </div>
 
         <div>
-          <label style={labelStyle}>Hero image URL (optional)</label>
+          <label style={labelStyle}>Hero image</label>
           <input style={inputStyle} type="url" value={heroUrl} onChange={e => setHeroUrl(e.target.value)} placeholder="https://..." />
+          <PexelsSearch onSelect={url => setHeroUrl(url)} />
+          {heroUrl && (
+            <div style={{ marginTop: '8px', position: 'relative', display: 'inline-block' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={heroUrl} alt="Hero preview" style={{ height: '120px', borderRadius: '8px', objectFit: 'cover', maxWidth: '100%' }} />
+              <button type="button" onClick={() => setHeroUrl('')}
+                style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '4px', color: 'white', fontSize: '11px', padding: '2px 6px', cursor: 'pointer' }}>
+                ✕
+              </button>
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: '16px' }}>
