@@ -124,19 +124,16 @@ export async function POST(request: NextRequest) {
             } catch { /* skip malformed */ }
           }
         }
-      } finally {
-        controller.enqueue(encoder.encode('data: [DONE]\n\n'))
-        controller.close()
-      }
+      } catch { /* stream error */ }
 
-      // Save conversation with geo + language metadata — must await so Vercel doesn't kill the fn
-      const supabase = await createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      // Save BEFORE closing stream — Vercel kills function on controller.close()
       try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
         const allMessages = [...recentHistory, { role: 'user', content: message }, { role: 'assistant', content: fullText }]
         const firstUserMsg = allMessages.find(m => m.role === 'user')?.content ?? message
         const detectedLang = detectLang(firstUserMsg)
-        await adminDb.from('navi_conversations').upsert({
+        const { error } = await adminDb.from('navi_conversations').upsert({
           session_id: sessionId,
           user_id: user?.id ?? null,
           messages: allMessages,
@@ -146,7 +143,11 @@ export async function POST(request: NextRequest) {
           lang: detectedLang,
           first_question: firstUserMsg.slice(0, 200),
         }, { onConflict: 'session_id' })
-      } catch { /* ignore */ }
+        if (error) console.error('[navi-save]', error.message)
+      } catch (e) { console.error('[navi-save-catch]', e) }
+
+      controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+      controller.close()
     },
   })
 
