@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState } from 'react'
 
 const COLUMNS = [
   {
@@ -28,6 +31,42 @@ const COLUMNS = [
   },
 ]
 
+function NewsletterForm() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'sending' | 'ok' | 'err'>('idle')
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email) return
+    setStatus('sending')
+    try {
+      const res = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'footer' }),
+      })
+      setStatus(res.ok ? 'ok' : 'err')
+    } catch { setStatus('err') }
+  }
+
+  if (status === 'ok') return <p className="text-sm text-cobalt font-semibold">✓ Prijavljeni ste na CBAM obvestila.</p>
+
+  return (
+    <form onSubmit={submit} className="mt-4 flex gap-2 max-w-xs">
+      <input
+        type="email" value={email} onChange={e => setEmail(e.target.value)}
+        placeholder="email@podjetje.com"
+        className="flex-1 rounded-md border border-border px-3 py-2 text-sm text-foreground bg-white focus:outline-none focus:ring-2 focus:ring-cobalt/30"
+        required
+      />
+      <button type="submit" disabled={status === 'sending'}
+        className="rounded-md bg-navy px-3 py-2 text-sm font-semibold text-white hover:bg-navy-deep transition-colors disabled:opacity-60">
+        {status === 'sending' ? '…' : 'OK'}
+      </button>
+    </form>
+  )
+}
+
 export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-white">
@@ -37,6 +76,9 @@ export function SiteFooter() {
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
             The EU carbon compliance platform for importers and manufacturers.
           </p>
+          <p className="mt-6 text-xs font-semibold text-navy uppercase tracking-wider">CBAM & ETS updates</p>
+          <p className="text-xs text-muted-foreground mt-1">Get regulatory alerts and platform news.</p>
+          <NewsletterForm />
         </div>
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
           {COLUMNS.map((col) => (
