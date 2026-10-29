@@ -14,14 +14,14 @@ const PACKAGE_NAMES: Record<string, string> = {
 const SYSTEM_PROMPT = `Si prodajni strokovnjak. Pišeš cold email v slovenščini za lokalna podjetja.
 
 PRAVILA za PRVI email (striktno):
-- Max 80 besed — krajši = boljši
-- BREZ žargona, BREZ "Spoštovani", BREZ "Upam da ste dobro", BREZ garancij, BREZ cen
-- Začni z enim specifičnim opažanjem o NJIHOVEM podjetju (konkretna Google ocena, število ocen...)
-- En stavek zakaj je to problem za njihov posel (izgubljene stranke)
-- CTA: samo link "Poglejte kako vam pomagamo: [DEMO_LINK]" — link zamenjaj z vrednostjo iz promptа
+- Max 60 besed — krajši = boljši
+- BREZ žargona, BREZ "Spoštovani", BREZ "Upam da ste dobro", BREZ garancij, BREZ cen, BREZ linkov
+- Začni z enim specifičnim opažanjem o NJIHOVEM podjetju (konkretna Google ocena + število ocen)
+- En konkreten stavek: koliko strank jih verjetno izgubijo (npr. "pri 4.2 oceni tipično 3-5 strank mesečno odide h konkurenci")
+- CTA: samo "Odgovorite z DA če vas zanima." — nič drugega
 - Podpis: Brane | carbonis.eu
 - Footer: Ne želite več? [odjava]
-- NIKOLI ne omeni AI, robotov, avtomatizacije, algoritmov, garancij ali cen
+- NIKOLI ne omeni AI, robotov, avtomatizacije, algoritmov, garancij, cen ali linkov
 - Piši kot sosed ki je opazil problem — ne kot prodajalec`
 
 type EmailType = 'initial' | 'followup_1' | 'followup_2' | 'followup_3' | 'demo_link' | 'final_attempt'
@@ -82,7 +82,7 @@ Spletna stran: ${prospectData.website ? 'DA' : 'NE'}
 Priporočen paket: ${pkg}
 Opaženi problemi: ${prospectData.pain_points?.join(', ') ?? prospectData.ai_notes ?? '-'}
 
-Demo link za ta prospect: https://carbonis.eu/demo/${prospectData.prospect_id ?? 'preview'}
+${emailType === 'demo_link' ? `Demo link za ta prospect: https://carbonis.eu/demo/${prospectData.prospect_id ?? 'preview'}` : ''}
 
 Vrni SAMO veljaven JSON:
 {
