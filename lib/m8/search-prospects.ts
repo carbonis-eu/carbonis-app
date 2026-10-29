@@ -157,8 +157,9 @@ export async function searchProspects(maxPerRun = 100): Promise<{ found: number;
             .maybeSingle()
           if (existing) continue
 
-          // Skip prospects without website — no website = no email = can't contact
+          // Skip prospects without website or with only FB/social page
           if (!place.website) continue
+          if (place.website.includes('facebook.com') || place.website.includes('instagram.com') || place.website.includes('linkedin.com')) continue
 
           // Try to get email from website
           await sleep(500)
