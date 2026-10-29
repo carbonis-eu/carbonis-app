@@ -73,7 +73,7 @@ Vrni JSON:
         body: JSON.stringify({
           system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 256, temperature: 0.2, thinkingConfig: { thinkingBudget: 0 } },
+          generationConfig: { maxOutputTokens: 256, temperature: 0.2 },
         }),
       }
     )

@@ -83,7 +83,7 @@ Vrni SAMO veljaven JSON:
       body: JSON.stringify({
         system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 512, temperature: 0.7, thinkingConfig: { thinkingBudget: 0 } },
+        generationConfig: { maxOutputTokens: 512, temperature: 0.7 },
       }),
     }
   )
