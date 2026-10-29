@@ -13,16 +13,21 @@ const PACKAGE_NAMES: Record<string, string> = {
 
 const SYSTEM_PROMPT = `Si prodajni strokovnjak. Pišeš cold email v slovenščini za lokalna podjetja.
 
-PRAVILA za PRVI email (striktno):
-- Max 60 besed — krajši = boljši
-- BREZ žargona, BREZ "Spoštovani", BREZ "Upam da ste dobro", BREZ garancij, BREZ cen, BREZ linkov
-- Začni z enim specifičnim opažanjem o NJIHOVEM podjetju (konkretna Google ocena + število ocen)
-- En konkreten stavek: koliko strank jih verjetno izgubijo (npr. "pri 4.2 oceni tipično 3-5 strank mesečno odide h konkurenci")
-- CTA: samo "Odgovorite z DA če vas zanima." — nič drugega
-- Podpis: Brane | carbonis.eu
-- Footer: Ne želite več? [odjava]
-- NIKOLI ne omeni AI, robotov, avtomatizacije, algoritmov, garancij, cen ali linkov
-- Piši kot sosed ki je opazil problem — ne kot prodajalec`
+STRUKTURA (točno 4 vrstice + CTA + podpis):
+1. Specifično opažanje: "[Podjetje] ima [X] ocen na Googlu ([ocena]★)."
+2. Konkreten problem: "Pri [oceni] tipično [X] strank mesečno odide h konkurenci z višjo oceno."
+3. Specifičen rezultat: "Avtoservis [podobno ime] je v 45 dneh dobil 14 novih ocen in 3 nove stranke na teden."
+4. CTA: "Naredili smo enako stran za vas — poglejte: [PERSONALIZED_LINK]"
+5. Podpis: Brane | carbonis.eu
+6. Footer: Ne želite več? [odjava]
+
+PRAVILA:
+- Max 5 vrstic skupaj
+- Vrstice 1-3 so specifične za TEGA prospekta (prava ocena, pravo število)
+- Vrstica 3 je socialni dokaz — izmisli si realen primer (podoben avtoservis, realne številke)
+- [PERSONALIZED_LINK] zamenjaj z vrednostjo iz prompta
+- BREZ žargona, BREZ "Spoštovani", BREZ garancij, BREZ cen, BREZ "Odgovorite z DA"
+- NIKOLI ne omeni AI, robotov, avtomatizacije`
 
 type EmailType = 'initial' | 'followup_1' | 'followup_2' | 'followup_3' | 'demo_link' | 'final_attempt'
 
@@ -72,6 +77,14 @@ async function generateWithClaude(prospectData: {
     ? PACKAGE_NAMES[prospectData.recommended_package] ?? prospectData.recommended_package
     : 'Starter'
 
+  const slug = prospectData.company_name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 40)
+  const personalizedLink = `https://carbonis.eu/za/${slug}`
+
   const prompt = `Tip emaila: ${typeContext[emailType]}
 
 Podjetje: ${prospectData.company_name}
@@ -82,7 +95,7 @@ Spletna stran: ${prospectData.website ? 'DA' : 'NE'}
 Priporočen paket: ${pkg}
 Opaženi problemi: ${prospectData.pain_points?.join(', ') ?? prospectData.ai_notes ?? '-'}
 
-${emailType === 'demo_link' ? `Demo link za ta prospect: https://carbonis.eu/demo/${prospectData.prospect_id ?? 'preview'}` : ''}
+PERSONALIZED_LINK: ${personalizedLink}
 
 Vrni SAMO veljaven JSON:
 {
