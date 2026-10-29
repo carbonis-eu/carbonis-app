@@ -1,0 +1,23 @@
+export const dynamic = 'force-dynamic'
+
+export default function NaviPage() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <header style={{ background: 'white', borderBottom: '1px solid #e2e8f0', padding: '0 24px', height: '56px', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+        <h1 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a' }}>Navi — AI pomočnik</h1>
+      </header>
+      <main style={{ flex: 1, overflow: 'auto', padding: '24px' }}>
+        <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '60px', textAlign: 'center' }}>
+          <div style={{ width: '48px', height: '48px', background: '#EEF2FF', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#265CFF" strokeWidth="1.5"/><circle cx="12" cy="12" r="2.5" fill="#265CFF"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke="#265CFF" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          </div>
+          <p style={{ fontSize: '16px', fontWeight: 700, color: '#334155', marginBottom: '8px' }}>Navi — v redesajnu</p>
+          <p style={{ fontSize: '13px', color: '#94a3b8', maxWidth: '360px', margin: '0 auto' }}>
+            Navi AI pomočnik je ohranjen in bo prenovljen v naslednji fazi.
+            Nov dizajn in posodobljene logike prihajajo kmalu.
+          </p>
+        </div>
+      </main>
+    </div>
+  )
+}
