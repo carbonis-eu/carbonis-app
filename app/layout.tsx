@@ -19,11 +19,11 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://carbonis.eu'
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: 'Carbonis — EU CBAM Compliance & Carbon Certificate Marketplace',
+    default: 'Carbonis — Vaše stranke se vračajo same',
     template: '%s | Carbonis',
   },
-  description: 'Calculate your EU CBAM carbon border adjustment liability instantly. Compare sourcing alternatives, trade CBAM and GO certificates, and generate audit-ready declarations for EU Regulation 2023/956.',
-  keywords: ['CBAM', 'carbon border adjustment mechanism', 'EU ETS', 'CBAM compliance', 'carbon certificate', 'emission allowance', 'EU 2023/956', 'carbon marketplace', 'CBAM declaration', 'CBAM calculator'],
+  description: 'Sistem ki reaktivira stare stranke, zapolni urnik in skrbi za vaš ugled online — medtem ko vi delate tisto v čemer ste najboljši.',
+  keywords: ['reaktivacija strank', 'Google ocene', 'booking sistem', 'lokalno podjetje', 'avtoservis stranke', 'fitnes stranke', 'kozmetika salon', 'Slovenia', 'Hrvaška'],
   authors: [{ name: 'Carbonis', url: APP_URL }],
   creator: 'Carbonis',
   publisher: 'Carbonis',
@@ -34,31 +34,25 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'en_EU',
+    locale: 'sl_SI',
     url: APP_URL,
     siteName: 'Carbonis',
-    title: 'Carbonis — EU CBAM Compliance & Carbon Certificate Marketplace',
-    description: 'Calculate EU CBAM liability instantly. Trade carbon certificates. Generate audit-ready declarations. Built for EU importers and compliance teams.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Carbonis CBAM Compliance Platform' }],
+    title: 'Carbonis — Vaše stranke se vračajo same',
+    description: '15–25% starih strank se vrne. 4,8★ povprečna ocena. 30 dni do prvih rezultatov. Za lokalna podjetja v Sloveniji in Hrvaški.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Carbonis — reaktivacija strank' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Carbonis — EU CBAM Compliance',
-    description: 'Calculate EU CBAM carbon border adjustment liability. Trade CBAM certificates. Audit-ready declarations.',
+    title: 'Carbonis — Vaše stranke se vračajo same',
+    description: 'Sistem ki reaktivira stare stranke in zapolni urnik. Za avtoservise, salone, fitnes, gostince.',
     images: ['/og-image.png'],
   },
   alternates: {
     canonical: APP_URL,
     languages: {
-      'en':         APP_URL,
-      'de':         APP_URL,
-      'fr':         APP_URL,
-      'pl':         APP_URL,
-      'it':         APP_URL,
-      'nl':         APP_URL,
-      'cs':         APP_URL,
-      'ro':         APP_URL,
-      'x-default':  APP_URL,
+      'sl': APP_URL,
+      'hr': APP_URL,
+      'x-default': APP_URL,
     },
   },
   icons: {
@@ -78,7 +72,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
+      lang="sl"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>

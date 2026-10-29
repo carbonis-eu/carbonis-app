@@ -8,10 +8,10 @@ interface Message {
 }
 
 const QUICK_REPLIES = [
-  "What's included in PRO?",
-  'How does XML export work?',
-  'Is there a free trial?',
-  'How does OTC trading work?',
+  'Kako deluje za avtoservise?',
+  'Koliko strank bi pridobil?',
+  'Kaj je vključeno v Growth?',
+  'Kakšna je garancija?',
 ]
 
 function getOrCreateSessionId(): string {
@@ -143,7 +143,8 @@ export default function NaviWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          aria-label="Open Navi support chat"
+          data-vera-open="true"
+          aria-label="Open Vera support chat"
           style={{
             position: 'fixed', bottom: '24px', right: '24px', zIndex: 50,
             height: '48px', borderRadius: '24px',
@@ -172,7 +173,7 @@ export default function NaviWidget() {
             <path d="M9 9l2.5 2.5M14.5 14.5L17 17" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
           <span style={{ color: 'white', fontSize: '14px', fontWeight: 600, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
-            Ask Navi
+            Vprašajte Vero
           </span>
           {/* Pulse dot */}
           <span style={{
@@ -210,10 +211,10 @@ export default function NaviWidget() {
                 </svg>
               </div>
               <div>
-                <p style={{ color: 'white', fontSize: '14px', fontWeight: 700, lineHeight: 1.2 }}>Navi</p>
+                <p style={{ color: 'white', fontSize: '14px', fontWeight: 700, lineHeight: 1.2 }}>Vera</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', flexShrink: 0 }} />
-                  <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>Online</span>
+                  <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>Na voljo zdaj</span>
                 </div>
               </div>
             </div>
@@ -233,7 +234,7 @@ export default function NaviWidget() {
             {/* Welcome */}
             {messages.length === 0 && (
               <div style={{ background: '#F8FAFC', borderRadius: '12px', padding: '12px 14px', fontSize: '13px', color: '#0B1F4B', lineHeight: 1.5 }}>
-                Hi — I&apos;m <strong>Navi</strong>. Ask me anything about the Carbonis platform — features, pricing, or how to get started.
+                Pozdravljeni! Sem <strong>Vera</strong> iz Carbonis. Povejte mi o svojem podjetju — pogledam kakšne rezultate bi lahko pričakovali.
               </div>
             )}
 
@@ -298,7 +299,7 @@ export default function NaviWidget() {
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about Carbonis…"
+                placeholder="Napišite sporočilo…"
                 disabled={isStreaming}
                 style={{
                   flex: 1, border: '1px solid #e2e8f0', borderRadius: '8px',
@@ -324,7 +325,7 @@ export default function NaviWidget() {
               </button>
             </form>
             <p style={{ textAlign: 'center', fontSize: '10px', color: '#cbd5e1', marginTop: '6px' }}>
-              Navi · Carbonis platform support
+              Vera · Carbonis
             </p>
           </div>
         </div>
