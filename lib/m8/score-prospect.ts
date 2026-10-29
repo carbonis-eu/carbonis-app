@@ -78,7 +78,10 @@ Vrni JSON:
       }
     )
 
-    if (!res.ok) throw new Error(`Gemini error: ${res.status}`)
+    if (!res.ok) {
+      const errBody = await res.text()
+      throw new Error(`Gemini error: ${res.status} — key_set=${!!GEMINI_KEY} key_len=${GEMINI_KEY?.length ?? 0} — ${errBody.slice(0, 300)}`)
+    }
     const data = await res.json() as { candidates: Array<{ content: { parts: Array<{ text: string }> } }> }
     const raw = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
     const json = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
