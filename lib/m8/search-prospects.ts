@@ -157,12 +157,12 @@ export async function searchProspects(maxPerRun = 100): Promise<{ found: number;
             .maybeSingle()
           if (existing) continue
 
+          // Skip prospects without website — no website = no email = can't contact
+          if (!place.website) continue
+
           // Try to get email from website
-          let email: string | null = null
-          if (place.website) {
-            await sleep(500)
-            email = await scrapeEmail(place.website)
-          }
+          await sleep(500)
+          const email = await scrapeEmail(place.website)
 
           const { error } = await db.from('prospects').insert({
             company_name: place.name,
