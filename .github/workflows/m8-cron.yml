@@ -1,10 +1,10 @@
 name: M8 Daily Cron
 
 on:
-  schedule:
-    - cron: '0 6 * * *'   # 08:00 CET (UTC+2) = 06:00 UTC
-    - cron: '0 5 * * 1'   # Monday 07:00 CET = 05:00 UTC (weekly report)
-  workflow_dispatch:       # manual trigger from GitHub UI
+  # schedule:
+  #   - cron: '0 6 * * *'   # 08:00 CET — PAUSED
+  #   - cron: '0 5 * * 1'   # Monday 07:00 CET — PAUSED
+  workflow_dispatch:       # manual trigger only
 
 jobs:
   m8-daily:

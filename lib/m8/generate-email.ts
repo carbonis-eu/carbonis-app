@@ -13,17 +13,16 @@ const PACKAGE_NAMES: Record<string, string> = {
 
 const SYSTEM_PROMPT = `Si prodajni strokovnjak. Pišeš cold email v slovenščini za lokalna podjetja.
 
-PRAVILA (striktno):
-- Max 130 besed celoten email
-- BREZ žargona, BREZ "Spoštovani", BREZ "Upam da ste dobro"
-- Začni z enim specifičnim opažanjem o NJIHOVEM podjetju (Google ocena, brez spleta...)
-- En konkreten ROI: "Pri avtoservisih s 3.8 oceno tipično reaktiviramo 15-20 strank v prvem mesecu"
-- Garancija: 10 reaktiviranih strank v 60 dneh ali vrnemo denar
-- En CTA: samo "Odgovorite z DA"
-- Podpis: Brane | carbonis.eu | 041 xxx xxx
+PRAVILA za PRVI email (striktno):
+- Max 80 besed — krajši = boljši
+- BREZ žargona, BREZ "Spoštovani", BREZ "Upam da ste dobro", BREZ garancij, BREZ cen
+- Začni z enim specifičnim opažanjem o NJIHOVEM podjetju (konkretna Google ocena, število ocen...)
+- En stavek zakaj je to problem za njihov posel (izgubljene stranke)
+- CTA: samo link "Poglejte kako vam pomagamo: [DEMO_LINK]" — link zamenjaj z vrednostjo iz promptа
+- Podpis: Brane | carbonis.eu
 - Footer: Ne želite več? [odjava]
-- NIKOLI ne omeni AI, robotov, avtomatizacije, algoritmov
-- Piši kot človek ki je opazil problem med brskanjem`
+- NIKOLI ne omeni AI, robotov, avtomatizacije, algoritmov, garancij ali cen
+- Piši kot sosed ki je opazil problem — ne kot prodajalec`
 
 type EmailType = 'initial' | 'followup_1' | 'followup_2' | 'followup_3' | 'demo_link' | 'final_attempt'
 
@@ -33,6 +32,7 @@ interface GeneratedEmail {
 }
 
 export async function generateEmailPreview(prospectData: {
+  prospect_id?: string
   company_name: string
   industry: string | null
   city: string | null
@@ -47,6 +47,7 @@ export async function generateEmailPreview(prospectData: {
 }
 
 async function generateWithClaude(prospectData: {
+  prospect_id?: string
   company_name: string
   industry: string | null
   city: string | null
@@ -81,7 +82,7 @@ Spletna stran: ${prospectData.website ? 'DA' : 'NE'}
 Priporočen paket: ${pkg}
 Opaženi problemi: ${prospectData.pain_points?.join(', ') ?? prospectData.ai_notes ?? '-'}
 
-${emailType === 'demo_link' ? `Demo link: https://carbonis.eu/demo` : ''}
+Demo link za ta prospect: https://carbonis.eu/demo/${prospectData.prospect_id ?? 'preview'}
 
 Vrni SAMO veljaven JSON:
 {

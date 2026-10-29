@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
         results.preview_email = { message: 'Ni ocenjenih prospects. Najprej poženi search + score.' }
       } else {
         const generated = await generateEmailPreview({
+          prospect_id: prospect.id,
           company_name: prospect.company_name,
           industry: prospect.industry,
           city: prospect.city,
