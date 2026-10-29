@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { searchProspects } from '@/lib/m8/search-prospects'
 import { scoreNewProspects } from '@/lib/m8/score-prospect'
+import { generateEmailPreview } from '@/lib/m8/generate-email'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
@@ -50,21 +51,26 @@ export async function POST(req: NextRequest) {
       if (!prospect) {
         results.preview_email = { message: 'Ni ocenjenih prospects. Najprej poženi search + score.' }
       } else {
+        const generated = await generateEmailPreview({
+          company_name: prospect.company_name,
+          industry: prospect.industry,
+          city: prospect.city,
+          google_rating: prospect.google_rating,
+          google_reviews_count: prospect.google_reviews_count,
+          website: prospect.website,
+          recommended_package: prospect.recommended_package,
+          pain_points: prospect.pain_points,
+          ai_notes: prospect.ai_notes,
+        })
         results.preview_email = {
           prospect: {
             company_name: prospect.company_name,
-            city: prospect.city,
-            industry: prospect.industry,
-            lead_score: prospect.lead_score,
-            google_rating: prospect.google_rating,
-            google_reviews_count: prospect.google_reviews_count,
             email: prospect.email,
-            website: prospect.website,
+            lead_score: prospect.lead_score,
             recommended_package: prospect.recommended_package,
-            pain_points: prospect.pain_points,
-            ai_notes: prospect.ai_notes,
           },
-          note: 'Email bi bil poslan na zgornji naslov. Preveri podatke preden aktiviraš pravi cron.',
+          email: generated,
+          note: 'Email NI poslan — samo predogled.',
         }
       }
     }

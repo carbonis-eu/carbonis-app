@@ -7,7 +7,7 @@ interface TestResult {
   step?: string
   search?: { found: number; inserted: number }
   score?: { scored: number }
-  preview_email?: { prospect?: Record<string, unknown>; message?: string; note?: string }
+  preview_email?: { prospect?: Record<string, unknown>; email?: { subject: string; body: string }; message?: string; note?: string }
   stats?: {
     total: number
     scored: number
@@ -103,12 +103,25 @@ export default function M8TestPanel() {
               {result.preview_email.message ? (
                 <p style={{ color: '#64748b' }}>{result.preview_email.message}</p>
               ) : (
-                <div>
-                  <pre style={{ background: 'white', padding: '12px', borderRadius: '6px', overflow: 'auto', fontSize: '11px', lineHeight: 1.6 }}>
-                    {JSON.stringify(result.preview_email.prospect, null, 2)}
-                  </pre>
+                <div style={{ fontFamily: 'sans-serif' }}>
+                  {result.preview_email.prospect && (
+                    <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px' }}>
+                      <b>{(result.preview_email.prospect as Record<string, string>).company_name}</b> · {(result.preview_email.prospect as Record<string, string>).email} · Score: {(result.preview_email.prospect as Record<string, string | number>).lead_score} · {(result.preview_email.prospect as Record<string, string>).recommended_package}
+                    </p>
+                  )}
+                  {result.preview_email.email && (
+                    <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                      <p style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>
+                        Zadeva: {result.preview_email.email.subject}
+                      </p>
+                      <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: '8px 0' }} />
+                      <pre style={{ fontSize: '12px', lineHeight: 1.7, color: '#334155', whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
+                        {result.preview_email.email.body}
+                      </pre>
+                    </div>
+                  )}
                   {result.preview_email.note && (
-                    <p style={{ color: '#d97706', marginTop: '8px', fontFamily: 'sans-serif' }}>⚠️ {result.preview_email.note}</p>
+                    <p style={{ color: '#d97706', marginTop: '8px', fontSize: '11px' }}>⚠️ {result.preview_email.note}</p>
                   )}
                 </div>
               )}

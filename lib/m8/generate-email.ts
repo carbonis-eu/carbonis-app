@@ -32,6 +32,20 @@ interface GeneratedEmail {
   body: string
 }
 
+export async function generateEmailPreview(prospectData: {
+  company_name: string
+  industry: string | null
+  city: string | null
+  google_rating: number | null
+  google_reviews_count: number | null
+  website: string | null
+  recommended_package: string | null
+  pain_points: string[] | null
+  ai_notes: string | null
+}): Promise<{ subject: string; body: string }> {
+  return generateWithClaude(prospectData, 'initial')
+}
+
 async function generateWithClaude(prospectData: {
   company_name: string
   industry: string | null
