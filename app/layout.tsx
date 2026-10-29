@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NaviWidget from "./components/NaviWidget";
+import VeraWidget from "./components/VeraWidget";
 import FoundingMemberPopup from "./components/FoundingMemberPopup";
 
 const geistSans = Geist({
@@ -102,7 +102,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}<NaviWidget /><FoundingMemberPopup /></body>
+      <body className="min-h-full flex flex-col">{children}<VeraWidget /><FoundingMemberPopup /></body>
     </html>
   );
 }

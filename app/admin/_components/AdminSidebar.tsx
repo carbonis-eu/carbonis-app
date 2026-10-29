@@ -36,6 +36,11 @@ const NAV = [
     icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4"/><path d="M8 4v1.5M8 10.5V12M6 7.5C6 6.7 6.9 6 8 6s2 .7 2 1.5S9.1 9 8 9s-2 .7-2 1.5S6.9 11 8 11" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
   },
   {
+    label: 'Vera Leads',
+    href: '/admin/organic-leads',
+    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 8.5C13 11.54 10.87 14 8 14C6.85 14 5.76 13.62 4.82 12.95L2 14L2.78 11.18C2.28 10.24 2 9.15 2 8C2 4.96 4.69 2.5 8 2.5C11.31 2.5 14 4.96 14 8Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  },
+  {
     label: 'Navi',
     href: '/admin/navi',
     icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.4"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><path d="M8 2v2M8 12v2M2 8h2M12 8h2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
