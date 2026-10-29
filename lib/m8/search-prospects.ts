@@ -1,18 +1,32 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 
+const SLO_CITIES = [
+  'Ljubljana', 'Maribor', 'Celje', 'Kranj', 'Koper', 'Novo Mesto',
+  'Velenje', 'Ptuj', 'Murska Sobota', 'Nova Gorica', 'Jesenice',
+  'Trbovlje', 'Slovenj Gradec', 'Kamnik', 'Domžale', 'Škofja Loka',
+  'Izola', 'Postojna', 'Ravne na Koroškem', 'Brežice', 'Žalec',
+  'Ajdovščina', 'Sežana', 'Ilirska Bistrica', 'Litija', 'Zagorje ob Savi',
+  'Logatec', 'Kočevje', 'Črnomelj', 'Trebnje', 'Sevnica', 'Laško',
+  'Ljutomer', 'Gornja Radgona', 'Ormož', 'Radlje ob Dravi', 'Šempeter pri Gorici',
+]
+
 const SEARCH_TARGETS = [
   {
     industry: 'avtoservis',
     query: 'avtoservis',
-    cities: ['Ljubljana', 'Maribor', 'Celje', 'Kranj', 'Koper', 'Novo Mesto', 'Velenje', 'Ptuj', 'Murska Sobota'],
+    cities: SLO_CITIES,
   },
   {
     industry: 'avtoservis',
     query: 'avtomehanik',
-    cities: ['Ljubljana', 'Maribor', 'Celje', 'Kranj', 'Koper', 'Novo Mesto'],
+    cities: SLO_CITIES,
   },
-  // Ostale branže — aktiviramo kasneje:
-  // kozmetika, fitnes, gostinstvo, nepremicnine, ordinacija
+  // Ostale branže — aktiviramo kasneje (uporabi SLO_CITIES):
+  // { industry: 'kozmetika', query: 'kozmetični salon', cities: SLO_CITIES },
+  // { industry: 'fitnes', query: 'fitnes studio', cities: SLO_CITIES },
+  // { industry: 'gostinstvo', query: 'restavracija', cities: SLO_CITIES },
+  // { industry: 'nepremicnine', query: 'nepremičninska agencija', cities: SLO_CITIES },
+  // { industry: 'ordinacija', query: 'zobozdravnik ordinacija', cities: SLO_CITIES },
 ]
 
 interface PlacesResult {
