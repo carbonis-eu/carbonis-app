@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import M8TestPanel from './_components/M8TestPanel'
 
 function KpiCard({ label, value, sub, color = '#265CFF' }: { label: string; value: string; sub: string; color?: string }) {
   return (
@@ -159,6 +160,8 @@ export default async function AdminPage() {
 
           </div>
         </div>
+
+        <M8TestPanel />
 
       </main>
     </div>
