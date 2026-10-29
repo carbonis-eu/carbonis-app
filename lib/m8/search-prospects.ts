@@ -7,30 +7,12 @@ const SEARCH_TARGETS = [
     cities: ['Ljubljana', 'Maribor', 'Celje', 'Kranj', 'Koper', 'Novo Mesto', 'Velenje', 'Ptuj', 'Murska Sobota'],
   },
   {
-    industry: 'kozmetika',
-    query: 'kozmetični salon',
-    cities: ['Ljubljana', 'Maribor', 'Celje', 'Kranj', 'Koper'],
+    industry: 'avtoservis',
+    query: 'avtomehanik',
+    cities: ['Ljubljana', 'Maribor', 'Celje', 'Kranj', 'Koper', 'Novo Mesto'],
   },
-  {
-    industry: 'fitnes',
-    query: 'fitnes studio',
-    cities: ['Ljubljana', 'Maribor', 'Celje', 'Kranj'],
-  },
-  {
-    industry: 'gostinstvo',
-    query: 'restavracija',
-    cities: ['Ljubljana', 'Maribor', 'Bled', 'Portorož', 'Piran', 'Celje'],
-  },
-  {
-    industry: 'nepremicnine',
-    query: 'nepremičninska agencija',
-    cities: ['Ljubljana', 'Maribor', 'Koper', 'Kranj'],
-  },
-  {
-    industry: 'ordinacija',
-    query: 'zobozdravnik ordinacija',
-    cities: ['Ljubljana', 'Maribor', 'Celje', 'Kranj'],
-  },
+  // Ostale branže — aktiviramo kasneje:
+  // kozmetika, fitnes, gostinstvo, nepremicnine, ordinacija
 ]
 
 interface PlacesResult {
