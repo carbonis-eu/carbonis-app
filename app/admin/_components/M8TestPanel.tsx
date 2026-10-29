@@ -73,6 +73,7 @@ export default function M8TestPanel() {
         {btn('score', '2. Oceni (Gemini)', '#7c3aed')}
         {btn('preview_email', '3. Predogled emaila', '#d97706')}
         {btn('stats', '📊 Statistika', '#16a34a')}
+        {btn('list_models', '🔍 Gemini modeli', '#64748b')}
       </div>
 
       {result && (

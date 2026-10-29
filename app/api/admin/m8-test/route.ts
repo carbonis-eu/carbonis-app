@@ -69,6 +69,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    if (step === 'list_models') {
+      const geminiKey = process.env.GEMINI_API_KEY
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${geminiKey}`)
+      const data = await res.json()
+      results.list_models = data
+    }
+
     if (step === 'stats') {
       const [
         { count: total },
