@@ -29,6 +29,17 @@ const SEARCH_TARGETS = [
   // { industry: 'ordinacija', query: 'zobozdravnik ordinacija', cities: SLO_CITIES },
 ]
 
+// Places API (New) response types
+interface NewPlace {
+  id: string
+  displayName?: { text: string }
+  formattedAddress?: string
+  rating?: number
+  userRatingCount?: number
+  websiteUri?: string
+  nationalPhoneNumber?: string
+}
+
 interface PlacesResult {
   place_id: string
   name: string
@@ -36,12 +47,7 @@ interface PlacesResult {
   rating?: number
   user_ratings_total?: number
   website?: string
-}
-
-interface PlaceDetails {
-  formatted_phone_number?: string
-  website?: string
-  email?: string
+  phone?: string
 }
 
 const MAPS_KEY = process.env.GOOGLE_MAPS_API_KEY!
@@ -50,25 +56,38 @@ async function sleep(ms: number) {
   return new Promise(r => setTimeout(r, ms))
 }
 
+// Uses Places API (New) — POST /v1/places:searchText
 async function textSearch(query: string, city: string): Promise<PlacesResult[]> {
-  const q = encodeURIComponent(`${query} ${city} Slovenija`)
-  const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${q}&region=si&language=sl&key=${MAPS_KEY}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Places textsearch failed: ${res.status}`)
-  const data = await res.json() as { results: PlacesResult[]; status: string }
-  if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
-    throw new Error(`Places API status: ${data.status}`)
-  }
-  return data.results ?? []
-}
+  const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': MAPS_KEY,
+      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.websiteUri,places.nationalPhoneNumber',
+    },
+    body: JSON.stringify({
+      textQuery: `${query} ${city} Slovenija`,
+      languageCode: 'sl',
+      regionCode: 'SI',
+      maxResultCount: 20,
+    }),
+  })
 
-async function getDetails(placeId: string): Promise<PlaceDetails> {
-  const fields = 'formatted_phone_number,website'
-  const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=${fields}&key=${MAPS_KEY}`
-  const res = await fetch(url)
-  if (!res.ok) return {}
-  const data = await res.json() as { result: PlaceDetails; status: string }
-  return data.result ?? {}
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`Places API (New) failed: ${res.status} — ${err}`)
+  }
+
+  const data = await res.json() as { places?: NewPlace[] }
+  return (data.places ?? []).map(p => ({
+    place_id: p.id,
+    name: p.displayName?.text ?? '',
+    formatted_address: p.formattedAddress ?? '',
+    rating: p.rating,
+    user_ratings_total: p.userRatingCount,
+    website: p.websiteUri,
+    phone: p.nationalPhoneNumber,
+  }))
 }
 
 function extractCity(address: string): string {
@@ -105,18 +124,14 @@ export async function searchProspects(maxPerRun = 100): Promise<{ found: number;
             .maybeSingle()
           if (existing) continue
 
-          // Get phone + website via Details API
-          await sleep(100)
-          const details = await getDetails(place.place_id)
-
           const { error } = await db.from('prospects').insert({
             company_name: place.name,
             industry: target.industry,
             country: 'SI',
             city: extractCity(place.formatted_address),
             address: place.formatted_address,
-            website: details.website ?? place.website ?? null,
-            phone: details.formatted_phone_number ?? null,
+            website: place.website ?? null,
+            phone: place.phone ?? null,
             google_place_id: place.place_id,
             google_rating: place.rating ?? null,
             google_reviews_count: place.user_ratings_total ?? 0,
