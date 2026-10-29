@@ -56,6 +56,39 @@ async function sleep(ms: number) {
   return new Promise(r => setTimeout(r, ms))
 }
 
+// Scrape email from website — tries mailto: links first, then regex
+async function scrapeEmail(url: string): Promise<string | null> {
+  try {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 6000)
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; bot/1.0)' },
+    })
+    clearTimeout(timeout)
+    if (!res.ok) return null
+
+    const html = await res.text()
+
+    // 1. mailto: links (most reliable)
+    const mailtoMatch = html.match(/mailto:([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/i)
+    if (mailtoMatch) return mailtoMatch[1].toLowerCase()
+
+    // 2. Generic email pattern in HTML
+    const emailMatch = html.match(/\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})\b/g)
+    if (emailMatch) {
+      // Filter out common false positives
+      const skip = ['@example.com', '@sentry.io', '@google.com', '@facebook.com', '@schema.org', '@w3.org', '.png', '.jpg', '.gif', '.svg', '.woff']
+      const valid = emailMatch.find(e => !skip.some(s => e.includes(s)))
+      if (valid) return valid.toLowerCase()
+    }
+
+    return null
+  } catch {
+    return null
+  }
+}
+
 // Uses Places API (New) — POST /v1/places:searchText
 async function textSearch(query: string, city: string): Promise<PlacesResult[]> {
   const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
@@ -124,14 +157,22 @@ export async function searchProspects(maxPerRun = 100): Promise<{ found: number;
             .maybeSingle()
           if (existing) continue
 
+          // Try to get email from website
+          let email: string | null = null
+          if (place.website) {
+            await sleep(500)
+            email = await scrapeEmail(place.website)
+          }
+
           const { error } = await db.from('prospects').insert({
             company_name: place.name,
             industry: target.industry,
             country: 'SI',
-            city: extractCity(place.formatted_address),
+            city: city,
             address: place.formatted_address,
             website: place.website ?? null,
             phone: place.phone ?? null,
+            email: email,
             google_place_id: place.place_id,
             google_rating: place.rating ?? null,
             google_reviews_count: place.user_ratings_total ?? 0,
