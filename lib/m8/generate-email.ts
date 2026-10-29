@@ -1,6 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY!
+const GEMINI_KEY = process.env.GEMINI_API_KEY!
 const BREVO_API_KEY = process.env.BREVO_API_KEY!
 const FROM_EMAIL = 'info@carbonis.eu'
 const FROM_NAME = 'Brane | carbonis.eu'
@@ -75,24 +75,22 @@ Vrni SAMO veljaven JSON:
   "body": "<telo emaila v navadnem tekstu, z \\n za prelome vrstic>"
 }`
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5',
-      max_tokens: 512,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  })
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${GEMINI_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 512, temperature: 0.7 },
+      }),
+    }
+  )
 
-  if (!res.ok) throw new Error(`Anthropic error: ${res.status}`)
-  const data = await res.json() as { content: Array<{ text: string }> }
-  const raw = data.content?.[0]?.text ?? ''
+  if (!res.ok) throw new Error(`Gemini error: ${res.status}`)
+  const data = await res.json() as { candidates: Array<{ content: { parts: Array<{ text: string }> } }> }
+  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
   const json = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
   return JSON.parse(json) as GeneratedEmail
 }

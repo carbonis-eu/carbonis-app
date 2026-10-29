@@ -7,7 +7,7 @@ interface ScoreResult {
   pain_points: string[]
 }
 
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY!
+const GEMINI_KEY = process.env.GEMINI_API_KEY!
 
 const SYSTEM_PROMPT = `Si lead scoring expert za podjetje ki prodaja AI growth sistem lokalnim podjetjem v Sloveniji.
 Sistem ima 3 pakete: Starter (€149/mes — reaktivacija strank, SMS kampanje, zbiranje ocen), Growth (€249/mes — +GEO vidljivost, booking), Pro (€349/mes — +voice klici).
@@ -65,24 +65,22 @@ Vrni JSON:
 }`
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5',
-        max_tokens: 256,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    })
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 256, temperature: 0.2 },
+        }),
+      }
+    )
 
-    if (!res.ok) throw new Error(`Anthropic error: ${res.status}`)
-    const data = await res.json() as { content: Array<{ text: string }> }
-    const raw = data.content?.[0]?.text ?? ''
+    if (!res.ok) throw new Error(`Gemini error: ${res.status}`)
+    const data = await res.json() as { candidates: Array<{ content: { parts: Array<{ text: string }> } }> }
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
     const json = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
     const result = JSON.parse(json) as ScoreResult
 
