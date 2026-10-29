@@ -43,13 +43,12 @@ export async function POST(req: NextRequest) {
         .from('prospects')
         .select('*')
         .eq('status', 'scored')
-        .gte('lead_score', 7)
         .order('lead_score', { ascending: false })
         .limit(1)
         .single()
 
       if (!prospect) {
-        results.preview_email = { message: 'Ni ocenjenih prospects s score ≥7. Najprej poženi search + score.' }
+        results.preview_email = { message: 'Ni ocenjenih prospects. Najprej poženi search + score.' }
       } else {
         results.preview_email = {
           prospect: {
