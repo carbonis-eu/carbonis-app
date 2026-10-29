@@ -32,8 +32,8 @@ const SOLUTIONS: Record<string, string[]> = {
 export default function IndustrySelector() {
   const [selected, setSelected] = useState<string | null>(null)
   const ind = selected ? INDUSTRIES.find(i => i.id === selected) : null
-  const cobalt = '#265CFF'
-  const navy = '#0B2471'
+  const cobalt = '#356AE6'
+  const navy = '#102A56'
 
   const openVera = () => {
     const btn = document.querySelector('[data-vera-open]') as HTMLButtonElement | null
@@ -71,12 +71,12 @@ export default function IndustrySelector() {
           <div style={{ background: navy, padding: '24px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
             <div>
               <p style={{ color: '#93c5fd', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }}>{ind.label}</p>
-              <h3 style={{ color: 'white', fontSize: '22px', fontWeight: 800, lineHeight: 1.2, margin: 0 }}>ROI izračun: {ind.metric}</h3>
-              <p style={{ color: '#93c5fd', fontSize: '13px', marginTop: '6px', margin: '6px 0 0' }}>{ind.detail}</p>
+              <h3 style={{ color: 'white', fontSize: '22px', fontWeight: 800, lineHeight: 1.2, margin: 0 }}>Ocena potenciala: {ind.metric}</h3>
+              <p style={{ color: '#93c5fd', fontSize: '13px', marginTop: '6px', margin: '6px 0 0' }}>{ind.detail} · ocena, ni zagotovilo</p>
             </div>
             <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px 18px', textAlign: 'center', flexShrink: 0 }}>
               <div style={{ color: '#4ade80', fontSize: '24px', fontWeight: 800 }}>{ind.metric}</div>
-              <div style={{ color: '#93c5fd', fontSize: '12px' }}>potencialni prihodek</div>
+              <div style={{ color: '#93c5fd', fontSize: '12px' }}>ocena potenciala</div>
             </div>
           </div>
 
