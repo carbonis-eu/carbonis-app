@@ -20,9 +20,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  const body = await req.json() as { step?: string; limit?: number }
+  const body = await req.json() as { step?: string; limit?: number; prospect_id?: string }
   const step = body.step ?? 'search'
   const limit = body.limit ?? 10
+  const prospectIdParam = body.prospect_id
 
   const db = createAdminClient()
   const results: Record<string, unknown> = {}
@@ -39,14 +40,10 @@ export async function POST(req: NextRequest) {
     }
 
     if (step === 'preview_email') {
-      // Show top scored prospect without sending
-      const { data: prospect } = await db
-        .from('prospects')
-        .select('*')
-        .eq('status', 'scored')
-        .order('lead_score', { ascending: false })
-        .limit(1)
-        .single()
+      const query = prospectIdParam
+        ? db.from('prospects').select('*').eq('id', prospectIdParam).single()
+        : db.from('prospects').select('*').eq('status', 'scored').order('lead_score', { ascending: false }).limit(1).single()
+      const { data: prospect } = await query
 
       if (!prospect) {
         results.preview_email = { message: 'Ni ocenjenih prospects. Najprej poženi search + score.' }

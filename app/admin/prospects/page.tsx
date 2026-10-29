@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import EmailPreviewButton from './_components/EmailPreviewButton'
 
 const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
   new:          { label: 'Nov',          color: '#64748b', bg: '#f1f5f9' },
@@ -54,7 +55,7 @@ export default async function ProspectsPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                {['Podjetje', 'Mesto', 'Branža', 'Ocena', 'Rating', 'Email', 'Paket', 'Status', 'Zadnja akcija'].map(h => (
+                {['Podjetje', 'Mesto', 'Branža', 'Ocena', 'Rating', 'Email', 'Paket', 'Status', 'Zadnja akcija', ''].map(h => (
                   <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
@@ -81,6 +82,9 @@ export default async function ProspectsPage() {
                     </td>
                     <td style={{ padding: '10px 14px', color: '#94a3b8', fontSize: '12px' }}>
                       {p.last_action_at ? new Date(p.last_action_at).toLocaleDateString('sl-SI') : '—'}
+                    </td>
+                    <td style={{ padding: '10px 14px' }}>
+                      <EmailPreviewButton prospectId={p.id} hasEmail={!!p.email} />
                     </td>
                   </tr>
                 )
