@@ -1,0 +1,31 @@
+name: M8 Daily Cron
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # 08:00 CET (UTC+2) = 06:00 UTC
+    - cron: '0 5 * * 1'   # Monday 07:00 CET = 05:00 UTC (weekly report)
+  workflow_dispatch:       # manual trigger from GitHub UI
+
+jobs:
+  m8-daily:
+    if: github.event.schedule == '0 6 * * *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run M8 daily cron
+        run: |
+          curl -f -X GET \
+            "https://carbonis.eu/api/cron/m8-daily?secret=${{ secrets.CRON_SECRET }}" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            --max-time 300
+        continue-on-error: false
+
+  m8-weekly-report:
+    if: github.event.schedule == '0 5 * * 1'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send weekly report
+        run: |
+          curl -f -X GET \
+            "https://carbonis.eu/api/cron/m8-weekly-report?secret=${{ secrets.CRON_SECRET }}" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            --max-time 120
