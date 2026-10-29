@@ -15,6 +15,7 @@ interface TestResult {
     repliedYes: number
     top5: Array<{ company_name: string; city: string; industry: string; lead_score: number; status: string; email: string | null; recommended_package: string | null }>
   }
+  list_models?: Record<string, unknown>
   error?: string
 }
 
@@ -111,6 +112,15 @@ export default function M8TestPanel() {
                   )}
                 </div>
               )}
+            </div>
+          )}
+
+          {result.list_models && (
+            <div style={{ marginBottom: '12px' }}>
+              <p style={{ fontWeight: 700, color: '#64748b', marginBottom: '8px' }}>🔍 Gemini modeli:</p>
+              <pre style={{ background: 'white', padding: '12px', borderRadius: '6px', overflow: 'auto', fontSize: '10px', maxHeight: '300px' }}>
+                {JSON.stringify(result.list_models, null, 2)}
+              </pre>
             </div>
           )}
 
