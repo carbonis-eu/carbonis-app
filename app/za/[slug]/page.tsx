@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
+import VeraChat from './_components/VeraChat'
 
 function makeSlug(name: string) {
   return name
@@ -147,6 +148,18 @@ export default async function ZaPage({ params }: { params: Promise<{ slug: strin
           Carbonis d.o.o. · EU Carbon Compliance · <a href="https://carbonis.eu" style={{ color: '#94a3b8' }}>carbonis.eu</a>
         </p>
       </div>
+
+      <VeraChat
+        companyName={prospect.company_name}
+        prospectContext={[
+          `Podjetje: ${prospect.company_name}`,
+          `Branža: ${prospect.industry ?? 'lokalno podjetje'}`,
+          `Mesto: ${prospect.city ?? 'Slovenija'}`,
+          `Google ocena: ${prospect.google_rating ?? 'ni podatka'} (${prospect.google_reviews_count ?? 0} ocen)`,
+          `Ugotovljeni problemi: ${prospect.pain_points?.join(', ') ?? prospect.ai_notes ?? 'splošna optimizacija'}`,
+          `Priporočen paket: ${prospect.recommended_package ?? 'PRO Compliance'}`,
+        ].join('\n')}
+      />
     </div>
   )
 }
