@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:streamGenerateContent?key=${process.env.GEMINI_API_KEY}&alt=sse`
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`
 
 const SYSTEM = `Si Vera, AI asistentka podjetja Carbonis (carbonis.eu) — marketing automation za lokalna podjetja.
 
@@ -61,7 +61,6 @@ export async function POST(req: NextRequest) {
       messages: Array<{ role: 'user' | 'assistant'; content: string }>
     }
 
-    // Convert to Gemini format: map 'assistant' -> 'model', alternate roles required
     const contents = messages.map(m => ({
       role: m.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: m.content }],
@@ -73,76 +72,48 @@ export async function POST(req: NextRequest) {
       generationConfig: { maxOutputTokens: 512, temperature: 0.7 },
     })
 
-    let geminiRes: Response | null = null
-    for (let attempt = 0; attempt < 3; attempt++) {
-      if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt))
-      const ac = new AbortController()
-      const tId = setTimeout(() => ac.abort(), 20000)
-      try {
-        geminiRes = await fetch(GEMINI_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body,
-          signal: ac.signal,
-        })
-      } finally {
-        clearTimeout(tId)
-      }
-      if (geminiRes.status !== 503) break
+    const ac = new AbortController()
+    const tId = setTimeout(() => ac.abort(), 22000)
+
+    let geminiRes: Response
+    try {
+      geminiRes = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+        signal: ac.signal,
+      })
+    } finally {
+      clearTimeout(tId)
     }
 
-    if (!geminiRes || !geminiRes.ok || !geminiRes.body) {
-      const err = geminiRes ? await geminiRes.text() : 'No response'
-      const isOverloaded = geminiRes?.status === 503
+    if (!geminiRes.ok) {
+      const err = await geminiRes.text()
+      const isOverloaded = geminiRes.status === 503
       return NextResponse.json(
         { error: isOverloaded ? 'AI je trenutno preobremenjeno. Poskusite čez minuto.' : `Gemini error: ${err}` },
         { status: isOverloaded ? 503 : 502 }
       )
     }
 
-    const upstream = geminiRes.body
-    const readable = new ReadableStream({
-      async start(controller) {
-        const reader = upstream.getReader()
-        const decoder = new TextDecoder()
-        let buffer = ''
-        try {
-          while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-            buffer += decoder.decode(value, { stream: true })
-            const lines = buffer.split('\n')
-            buffer = lines.pop() ?? ''
-            for (const line of lines) {
-              if (!line.startsWith('data: ')) continue
-              const raw = line.slice(6).trim()
-              if (!raw || raw === '[DONE]') continue
-              try {
-                const parsed = JSON.parse(raw)
-                const text: string = parsed?.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-                if (text) {
-                  controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ text })}\n\n`))
-                }
-              } catch { /* skip malformed */ }
-            }
-          }
-          controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'))
-        } finally {
-          controller.close()
-          reader.releaseLock()
-        }
-      }
-    })
+    const data = await geminiRes.json() as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
+    }
 
-    return new Response(readable, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-      }
-    })
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+
+    if (!text) {
+      return NextResponse.json({ error: 'Praznen odgovor AI — poskusite znova.' }, { status: 502 })
+    }
+
+    return NextResponse.json({ text })
+
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    const isAbort = msg.includes('abort') || msg.includes('Abort')
+    return NextResponse.json(
+      { error: isAbort ? 'Zahteva je potekla — poskusite znova.' : msg },
+      { status: 500 }
+    )
   }
 }

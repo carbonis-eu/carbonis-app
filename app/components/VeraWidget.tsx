@@ -158,11 +158,10 @@ export default function VeraWidget() {
         }),
       })
 
-      if (!res.ok || !res.body) {
-        const rawText = await res.text().catch(() => '')
-        let errData: { error?: string } = {}
-        try { errData = JSON.parse(rawText) } catch { /* non-JSON response */ }
-        const errMsg = errData.error
+      const data = await res.json() as { text?: string; error?: string }
+
+      if (!res.ok || data.error) {
+        const errMsg = data.error
           ?? (res.status === 503 ? 'AI je trenutno zaseden — poskusite čez minuto.'
             : res.status === 504 ? 'Zahteva je potekla — poskusite znova.'
             : `Napaka ${res.status} — poskusite znova.`)
@@ -174,33 +173,7 @@ export default function VeraWidget() {
         return
       }
 
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-      let fullText = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        const chunk = decoder.decode(value, { stream: true })
-        const lines = chunk.split('\n')
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue
-          const data = line.slice(6)
-          if (data === '[DONE]') break
-          try {
-            const parsed = JSON.parse(data) as { text?: string }
-            if (parsed.text) {
-              fullText += parsed.text
-              setMessages(prev => {
-                const copy = [...prev]
-                copy[copy.length - 1] = { role: 'assistant', content: fullText, streaming: true }
-                return copy
-              })
-            }
-          } catch { /* skip malformed chunk */ }
-        }
-      }
-
+      const fullText = data.text ?? ''
       const { clean, lead } = extractLeadSignal(fullText)
       const finalMsg: Message = { role: 'assistant', content: clean }
       setMessages(prev => {
