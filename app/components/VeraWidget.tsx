@@ -88,7 +88,7 @@ const isEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim())
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type FunnelStep = 'panoga' | 'contacts' | 'sales' | 'gdpr' | 'done'
-type SalesField = 'name' | 'company' | 'email'
+type SalesField = 'gender' | 'name' | 'company' | 'email'
 
 interface FunnelData {
   panoga: string | null
@@ -96,6 +96,7 @@ interface FunnelData {
   roi: number | null
   pkg: string | null
   price: number | null
+  gender: string | null  // 'g.' | 'ga.'
   name: string | null
   company: string | null
   email: string | null
@@ -113,6 +114,7 @@ async function callVeraAI(
   messages: Message[],
   salesContext: {
     panoga: string; contacts: string; roi: number; pkg: string; price: number
+    gender?: string
     collected: { name?: string; company?: string }
     collecting: SalesField
   }
@@ -179,7 +181,7 @@ export default function VeraWidget() {
   const [collecting, setCollecting] = useState<SalesField>('name')
   const [funnel, setFunnel] = useState<FunnelData>({
     panoga: null, contacts: null, roi: null, pkg: null, price: null,
-    name: null, company: null, email: null,
+    gender: null, name: null, company: null, email: null,
   })
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -228,11 +230,22 @@ export default function VeraWidget() {
     const { roi, pkg, price } = calcROI(f.panoga, n)
     setFunnel(prev => ({ ...prev, contacts: contactsLabel, roi, pkg, price }))
     setFunnelStep('sales')
-    setCollecting('name')
-    const roiMsg = `Na podlagi ${contactsLabel} v panogi **${f.panoga}** ocenjujem potencial reaktivacije na circa **${roi.toLocaleString('sl-SI')} €/mesec** *(ocena, ne zagotovilo)*.\n\nPriporočam paket **${pkg}** za **${price} €/mesec**.\n\nKako vas kličejo?`
+    setCollecting('gender')
+    const roiMsg = `Na podlagi ${contactsLabel} v panogi **${f.panoga}** ocenjujem potencial reaktivacije na circa **${roi.toLocaleString('sl-SI')} €/mesec** *(ocena, ne zagotovilo)*.\n\nPriporočam paket **${pkg}** za **${price} €/mesec**.\n\nPreden nadaljujemo — kako naj vas naslavljam?`
     setMessages(prev => [...prev,
       { role: 'user', content: contactsLabel },
       { role: 'assistant', content: roiMsg },
+    ])
+  }, [])
+
+  // Korak 2b: spol (g./ga.)
+  const handleGender = useCallback((genderLabel: string) => {
+    const prefix = genderLabel === 'Gospod' ? 'g.' : 'ga.'
+    setFunnel(f => ({ ...f, gender: prefix }))
+    setCollecting('name')
+    setMessages(prev => [...prev,
+      { role: 'user', content: genderLabel },
+      { role: 'assistant', content: `Odlično! Ali mi lahko zaupate vaše polno ime in priimek?` },
     ])
   }, [])
 
@@ -248,7 +261,8 @@ export default function VeraWidget() {
       setFunnelStep('done')
       return
     }
-    const thankMsg = `Hvala, ${f.name}! Analiza za **${f.company}** je na poti na ${f.email}. Javili se vam bomo kmalu. 🙏`
+    const addressedName = f.gender ? `${f.gender} ${f.name}` : f.name
+    const thankMsg = `Hvala, ${addressedName}! Analiza za **${f.company}** je na poti na ${f.email}. Javili se vam bomo kmalu. 🙏`
     setMessages(prev => [...prev,
       { role: 'user', content: answer },
       { role: 'assistant', content: thankMsg },
@@ -279,7 +293,7 @@ export default function VeraWidget() {
     const f = funnelRef.current
     let newFunnel = { ...f }
 
-    // Email validacija
+    // Validacija
     if (collecting === 'email' && !isEmail(trimmed)) {
       setMessages(prev => [...prev, {
         role: 'assistant',
@@ -287,6 +301,18 @@ export default function VeraWidget() {
       }])
       setLoading(false)
       return
+    }
+
+    if (collecting === 'name') {
+      const letters = trimmed.replace(/[^a-zA-ZčšžČŠŽ\s]/g, '').trim()
+      if (letters.length < 2 || trimmed.length > 60) {
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: 'Prosim vnesite vaše pravo ime in priimek (npr. Jana Novak).',
+        }])
+        setLoading(false)
+        return
+      }
     }
 
     // Shrani polje
@@ -320,6 +346,7 @@ export default function VeraWidget() {
         roi: newFunnel.roi!,
         pkg: newFunnel.pkg!,
         price: newFunnel.price!,
+        gender: newFunnel.gender ?? undefined,
         collected: {
           name: newFunnel.name ?? undefined,
           company: newFunnel.company ?? undefined,
@@ -378,6 +405,20 @@ export default function VeraWidget() {
       )
     }
 
+    if (funnelStep === 'sales' && collecting === 'gender') {
+      return (
+        <div style={{ display: 'flex', gap: '8px', marginTop: '10px', paddingLeft: '4px' }}>
+          {['Gospod', 'Gospa'].map(g => (
+            <button key={g} onClick={() => handleGender(g)} style={{
+              background: 'white', border: '1.5px solid #D1D9E6', borderRadius: '999px',
+              padding: '7px 20px', fontSize: '13px', fontWeight: 600, color: navy,
+              cursor: 'pointer', fontFamily: 'inherit',
+            }}>{g}</button>
+          ))}
+        </div>
+      )
+    }
+
     if (funnelStep === 'gdpr') {
       return (
         <div style={{ display: 'flex', gap: '8px', marginTop: '10px', paddingLeft: '4px' }}>
@@ -396,13 +437,14 @@ export default function VeraWidget() {
     return null
   }
 
-  const inputDisabled = loading || funnelStep !== 'sales'
+  const inputDisabled = loading || funnelStep !== 'sales' || collecting === 'gender'
   const inputPlaceholder =
     funnelStep === 'panoga' ? 'Izberite panogo zgoraj...' :
     funnelStep === 'contacts' ? 'Izberite možnost zgoraj...' :
     funnelStep === 'gdpr' ? 'Izberite DA ali NE zgoraj...' :
     funnelStep === 'done' ? 'Pogovor zaključen.' :
-    collecting === 'name' ? 'Vaše ime...' :
+    collecting === 'gender' ? 'Izberite Gospod ali Gospa zgoraj...' :
+    collecting === 'name' ? 'Vaše ime in priimek...' :
     collecting === 'company' ? 'Naziv podjetja...' :
     'Vaš email naslov...'
 

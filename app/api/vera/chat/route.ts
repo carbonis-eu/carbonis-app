@@ -13,12 +13,14 @@ interface SalesContext {
   roi: number
   pkg: string
   price: number
+  gender?: string
   collected: { name?: string; company?: string }
-  collecting: 'name' | 'company' | 'email'
+  collecting: 'gender' | 'name' | 'company' | 'email'
 }
 
 const FIELD_LABELS: Record<string, string> = {
-  name: 'ime kontaktne osebe',
+  gender: 'nagovor (gospod/gospa)',
+  name: 'ime in priimek kontaktne osebe',
   company: 'naziv podjetja',
   email: 'email naslov',
 }
@@ -29,11 +31,13 @@ function buildSystem(salesContext: SalesContext | null, recentAnalyses: string):
 Vikaj stranke (Vi, Vas, Vam). Knjižna slovenščina. Max 3 stavki.`
   }
 
-  const { panoga, contacts, roi, pkg, price, collected, collecting } = salesContext
+  const { panoga, contacts, roi, pkg, price, gender, collected, collecting } = salesContext
   const collectedLines = [
+    gender ? `- Nagovor: ${gender}` : null,
     collected.name ? `- Ime kontaktne osebe: ${collected.name}` : null,
     collected.company ? `- Naziv podjetja: ${collected.company}` : null,
   ].filter(Boolean).join('\n')
+  const addressedName = gender && collected.name ? `${gender} ${collected.name}` : collected.name
 
   return `Si Vera, AI prodajni asistent Carbonis (carbonis.eu).
 
@@ -45,12 +49,14 @@ KONTEKST STRANKE:
 
 ${collectedLines ? `ZBRANO DO SEDAJ:\n${collectedLines}\n` : ''}
 TRENUTNA NALOGA: Zberi **${FIELD_LABELS[collecting]}** — eno vprašanje, naravno, prijazno.
+${addressedName ? `NAGOVOR STRANKE: Stranko naslovite kot "${addressedName}"` : ''}
 
 PRAVILA:
 - Vikaj: Vi, Vas, Vam — NIKOLI ti/te
 - Knjižna slovenščina — NIKOLI "zaveza" za podjetje, NIKOLI "kompanija"
 - Max 2-3 stavki + eno vprašanje
 - Prijazen, profesionalen ton — ne robot, ampak svetovalka
+- Uporabite nagovor (${addressedName ?? 'ime'}) ko naslavljate stranko
 - NE postavljaj vprašanj izven trenutne naloge
 - NE razlagaj zakaj rabiš podatek
 
