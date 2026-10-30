@@ -222,7 +222,7 @@ export default function RegisterPage() {
                 type="submit"
                 disabled={loading}
                 style={{
-                  background: loading ? '#6b7280' : '#356AE6',
+                  background: loading ? '#6b7280' : '#1E7A56',
                   color: 'white', border: 'none', borderRadius: '10px',
                   padding: '14px', fontSize: '15px', fontWeight: 700,
                   cursor: loading ? 'not-allowed' : 'pointer',

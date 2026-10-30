@@ -1,19 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, DM_Serif_Display } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 import VeraWidget from "./components/VeraWidget";
 
-const inter = Inter({
-  variable: "--font-inter",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
   display: "swap",
-});
-
-const dmSerif = DM_Serif_Display({
-  variable: "--font-dm-serif",
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://carbonis.eu'
@@ -75,7 +69,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="sl"
-      className={`${inter.variable} ${dmSerif.variable} h-full antialiased`}
+      className={`${manrope.variable} h-full antialiased`}
     >
       <head>
         <script
