@@ -5,6 +5,11 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 const navy = '#102A56'
 const cobalt = '#356AE6'
 
+const PANOGE = [
+  'Avtoservis', 'Kozmetika / salon', 'Fitnes studio', 'Gostinstvo',
+  'Nepremičnine', 'Ordinacija', 'Vulkanizerji', 'Serviserji & monterji',
+]
+
 const TEASER_MSGS = [
   'Pozdravljeni! 👋',
   'Sem Vera, AI pomočnica Carbonis.',
@@ -286,29 +291,43 @@ export default function VeraWidget() {
             display: 'flex', flexDirection: 'column', gap: '8px',
           }}>
             {messages.map((msg, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                <div style={{
-                  maxWidth: '82%',
-                  background: msg.role === 'user' ? cobalt : 'white',
-                  color: msg.role === 'user' ? 'white' : '#0f172a',
-                  borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '4px 16px 16px 16px',
-                  padding: '10px 14px', fontSize: '13.5px', lineHeight: 1.55,
-                  boxShadow: msg.role === 'assistant' ? '0 1px 4px rgba(0,0,0,0.07)' : 'none',
-                  whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-                }}>
-                  {msg.content}
-                  {msg.streaming && msg.content.length === 0 && (
-                    <span style={{ display: 'inline-flex', gap: '3px', verticalAlign: 'middle' }}>
-                      {[0,1,2].map(j => (
-                        <span key={j} style={{
-                          width: '4px', height: '4px', borderRadius: '50%',
-                          background: '#94a3b8', display: 'inline-block',
-                          animation: `dotBlink 1.2s ease-in-out ${j * 0.2}s infinite`,
-                        }}/>
-                      ))}
-                    </span>
-                  )}
+              <div key={i}>
+                <div style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
+                  <div style={{
+                    maxWidth: '82%',
+                    background: msg.role === 'user' ? cobalt : 'white',
+                    color: msg.role === 'user' ? 'white' : '#0f172a',
+                    borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '4px 16px 16px 16px',
+                    padding: '10px 14px', fontSize: '13.5px', lineHeight: 1.55,
+                    boxShadow: msg.role === 'assistant' ? '0 1px 4px rgba(0,0,0,0.07)' : 'none',
+                    whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                  }}>
+                    {msg.content}
+                    {msg.streaming && msg.content.length === 0 && (
+                      <span style={{ display: 'inline-flex', gap: '3px', verticalAlign: 'middle' }}>
+                        {[0,1,2].map(j => (
+                          <span key={j} style={{
+                            width: '4px', height: '4px', borderRadius: '50%',
+                            background: '#94a3b8', display: 'inline-block',
+                            animation: `dotBlink 1.2s ease-in-out ${j * 0.2}s infinite`,
+                          }}/>
+                        ))}
+                      </span>
+                    )}
+                  </div>
                 </div>
+                {/* Quick-reply panoge — pokaži samo po prvem sporočilu Vere, preden user odgovori */}
+                {i === 0 && msg.role === 'assistant' && messages.length === 1 && !loading && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px', paddingLeft: '4px' }}>
+                    {PANOGE.map(p => (
+                      <button key={p} onClick={() => sendMessage(p)} style={{
+                        background: 'white', border: '1.5px solid #D1D9E6', borderRadius: '999px',
+                        padding: '5px 12px', fontSize: '12px', fontWeight: 600, color: '#102A56',
+                        cursor: 'pointer', fontFamily: 'inherit', transition: 'border-color 0.15s',
+                      }}>{p}</button>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
             <div ref={bottomRef} />
@@ -358,7 +377,7 @@ export default function VeraWidget() {
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
             <p style={{ fontSize: '10px', color: '#94a3b8', margin: 0 }}>
-              AI asistent · EU AI Act · <a href="/politika-zasebnosti" style={{ color: '#94a3b8' }}>Zasebnost</a>
+              AI asistent · EU AI Act · <a href="/politika-zasebnosti" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8' }}>Zasebnost</a>
             </p>
             <p style={{ fontSize: '10px', color: '#94a3b8', margin: 0 }}>
               <a href="mailto:info@carbonis.eu" style={{ color: '#94a3b8' }}>info@carbonis.eu</a>
