@@ -50,6 +50,22 @@ const PANOGE = [
   'Nepremičnine', 'Ordinacija', 'Vulkanizerji', 'Serviserji & monterji',
 ]
 
+function getQuickReplies(content: string): { labels: string[]; type: 'pill' | 'gdpr' } | null {
+  if (/privol|strinjate|GDPR|soglašate/i.test(content)) {
+    return { labels: ['Da, strinjam se.', 'Ne, hvala.'], type: 'gdpr' }
+  }
+  if (/koliko strank|v (vaši )?bazi|strank.*baz|baz.*strank|število strank|ocen.*strank/i.test(content)) {
+    return { labels: ['Do 100 strank', '100–300 strank', '300–500 strank', '500+ strank'], type: 'pill' }
+  }
+  if (/kakšna.*panoga|kateri.*panogi|vaša.*panoga|panoge|področj/i.test(content)) {
+    return { labels: PANOGE, type: 'pill' }
+  }
+  if (/starter|growth|pro.*paket|kateri paket|kateri.*plan|paket.*zanima/i.test(content)) {
+    return { labels: ['Starter — do 100 strank', 'Growth — 100–300 strank', 'Pro — 300+ strank', 'Brezplačen demo klic'], type: 'pill' }
+  }
+  return null
+}
+
 const TEASER_MSGS = [
   'Pozdravljeni! 👋',
   'Sem Vera, AI pomočnica Carbonis.',
@@ -325,34 +341,36 @@ export default function VeraWidget() {
                     )}
                   </div>
                 </div>
-                {/* Quick-reply panoge — pokaži samo po prvem sporočilu Vere */}
-                {i === 0 && msg.role === 'assistant' && messages.length === 1 && !loading && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px', paddingLeft: '4px' }}>
-                    {PANOGE.map(p => (
-                      <button key={p} onClick={() => sendMessage(p)} style={{
-                        background: 'white', border: '1.5px solid #D1D9E6', borderRadius: '999px',
-                        padding: '5px 12px', fontSize: '12px', fontWeight: 600, color: '#102A56',
-                        cursor: 'pointer', fontFamily: 'inherit', transition: 'border-color 0.15s',
-                      }}>{p}</button>
-                    ))}
-                  </div>
-                )}
-                {/* DA/NE gumbi za GDPR privolitev */}
-                {msg.role === 'assistant' && i === messages.length - 1 && !loading &&
-                  /privol|strinjate|GDPR|soglašate/i.test(msg.content) && (
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '10px', paddingLeft: '4px' }}>
-                    <button onClick={() => sendMessage('Da, strinjam se.')} style={{
-                      background: cobalt, color: 'white', border: 'none', borderRadius: '999px',
-                      padding: '7px 20px', fontSize: '13px', fontWeight: 700,
-                      cursor: 'pointer', fontFamily: 'inherit',
-                    }}>✓ Da</button>
-                    <button onClick={() => sendMessage('Ne, hvala.')} style={{
-                      background: 'white', color: '#64748b', border: '1.5px solid #D1D9E6', borderRadius: '999px',
-                      padding: '7px 20px', fontSize: '13px', fontWeight: 600,
-                      cursor: 'pointer', fontFamily: 'inherit',
-                    }}>Ne</button>
-                  </div>
-                )}
+                {/* Kontekstualni hitri odgovori — zadnje Verino sporočilo */}
+                {msg.role === 'assistant' && i === messages.length - 1 && !loading && (() => {
+                  const qr = getQuickReplies(msg.content)
+                  if (!qr) return null
+                  if (qr.type === 'gdpr') return (
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '10px', paddingLeft: '4px' }}>
+                      <button onClick={() => sendMessage('Da, strinjam se.')} style={{
+                        background: cobalt, color: 'white', border: 'none', borderRadius: '999px',
+                        padding: '7px 20px', fontSize: '13px', fontWeight: 700,
+                        cursor: 'pointer', fontFamily: 'inherit',
+                      }}>✓ Da</button>
+                      <button onClick={() => sendMessage('Ne, hvala.')} style={{
+                        background: 'white', color: '#64748b', border: '1.5px solid #D1D9E6', borderRadius: '999px',
+                        padding: '7px 20px', fontSize: '13px', fontWeight: 600,
+                        cursor: 'pointer', fontFamily: 'inherit',
+                      }}>Ne</button>
+                    </div>
+                  )
+                  return (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px', paddingLeft: '4px' }}>
+                      {qr.labels.map(label => (
+                        <button key={label} onClick={() => sendMessage(label)} style={{
+                          background: 'white', border: '1.5px solid #D1D9E6', borderRadius: '999px',
+                          padding: '5px 12px', fontSize: '12px', fontWeight: 600, color: '#102A56',
+                          cursor: 'pointer', fontFamily: 'inherit',
+                        }}>{label}</button>
+                      ))}
+                    </div>
+                  )
+                })()}
               </div>
             ))}
             <div ref={bottomRef} />
