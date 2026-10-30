@@ -41,6 +41,11 @@ const NAV = [
     icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 8.5C13 11.54 10.87 14 8 14C6.85 14 5.76 13.62 4.82 12.95L2 14L2.78 11.18C2.28 10.24 2 9.15 2 8C2 4.96 4.69 2.5 8 2.5C11.31 2.5 14 4.96 14 8Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   },
   {
+    label: 'Vera Analiza',
+    href: '/admin/vera-analiza',
+    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12l3-4 3 2 3-5 3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/><rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.4"/></svg>,
+  },
+  {
     label: 'Nastavitve',
     href: '/admin/settings',
     icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.4"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.3 3.3l1 1M11.7 11.7l1 1M3.3 12.7l1-1M11.7 4.3l1-1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,

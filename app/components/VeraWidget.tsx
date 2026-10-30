@@ -85,14 +85,17 @@ interface LeadSignal {
   email: string
   industry: string
   contacts: string
+  package: string
+  roi: number
   gdpr: boolean
 }
 
 function extractLeadSignal(text: string): { clean: string; lead: LeadSignal | null } {
-  const match = text.match(/\[LEAD:\{([^}]*)\}\]/)
+  // Match [LEAD:{...}] — content may span multiple keys
+  const match = text.match(/\[LEAD:(\{[\s\S]*?\})\]/)
   if (!match) return { clean: text, lead: null }
   try {
-    const lead = JSON.parse(`{${match[1]}}`) as LeadSignal
+    const lead = JSON.parse(match[1]) as LeadSignal
     const clean = text.replace(match[0], '').trim()
     return { clean, lead }
   } catch {
@@ -100,12 +103,46 @@ function extractLeadSignal(text: string): { clean: string; lead: LeadSignal | nu
   }
 }
 
-async function saveLead(lead: LeadSignal, conversation: Message[]) {
+async function saveLead(lead: LeadSignal, conversation: Message[]): Promise<string | null> {
   const log = conversation.map(m => ({ role: m.role, content: m.content }))
-  await fetch('/api/organic-lead', {
+  try {
+    const res = await fetch('/api/vera/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contact_name: lead.name,
+        company_name: lead.company,
+        email: lead.email,
+        industry: lead.industry,
+        estimated_contacts: lead.contacts,
+        recommended_package: lead.package || 'Starter',
+        estimated_roi_eur: lead.roi || null,
+        gdpr_consent: lead.gdpr,
+        conversation_log: log,
+      }),
+    })
+    const data = await res.json() as { ok: boolean; lead_id?: string }
+    return data.lead_id ?? null
+  } catch {
+    return null
+  }
+}
+
+async function analyzeConversation(
+  conversation: Message[],
+  industry: string,
+  contacts: string,
+  leadId: string | null,
+) {
+  fetch('/api/vera/analyze', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...lead, conversation_log: log, source: 'vera_chatbot' }),
+    body: JSON.stringify({
+      conversation_log: conversation.map(m => ({ role: m.role, content: m.content })),
+      industry,
+      contacts_estimate: contacts,
+      lead_id: leadId,
+    }),
   }).catch(() => {})
 }
 
@@ -202,7 +239,9 @@ export default function VeraWidget() {
       if (lead && lead.gdpr && lead.email && !leadSavedRef.current) {
         leadSavedRef.current = true
         const allMessages = [...newMessages, finalMsg]
-        saveLead(lead, allMessages)
+        saveLead(lead, allMessages).then(leadId => {
+          analyzeConversation(allMessages, lead.industry, lead.contacts, leadId)
+        })
       }
 
     } catch {

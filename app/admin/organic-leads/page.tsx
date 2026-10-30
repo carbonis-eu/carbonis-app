@@ -8,7 +8,7 @@ export default async function OrganicLeadsPage() {
 
   const { data: leads } = await db
     .from('organic_leads')
-    .select('id, created_at, contact_name, company_name, email, industry, estimated_contacts, recommended_package, estimated_roi_eur, status, gdpr_consent, conversation_log, source')
+    .select('id, created_at, contact_name, company_name, email, industry, estimated_contacts, recommended_package, estimated_roi_eur, status, gdpr_consent, conversation_log, source, email_draft, email_sent_at')
     .order('created_at', { ascending: false })
     .limit(500)
 

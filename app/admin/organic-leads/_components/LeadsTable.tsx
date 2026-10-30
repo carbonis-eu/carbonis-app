@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 const cobalt = '#356AE6'
 const navy = '#0B2471'
+const green = '#1E7A56'
 
 const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
   new:       { label: 'Nov',         color: '#64748b', bg: '#f1f5f9' },
@@ -37,6 +38,8 @@ interface Lead {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   conversation_log: any
   source: string | null
+  email_draft: string | null
+  email_sent_at: string | null
 }
 
 function ConversationModal({ lead, onClose }: { lead: Lead; onClose: () => void }) {
@@ -128,8 +131,86 @@ function ConversationModal({ lead, onClose }: { lead: Lead; onClose: () => void 
   )
 }
 
+function EmailModal({ lead, onClose }: { lead: Lead; onClose: () => void }) {
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [err, setErr] = useState('')
+
+  async function handleSend() {
+    setSending(true)
+    setErr('')
+    try {
+      const res = await fetch('/api/admin/send-lead-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lead_id: lead.id }),
+      })
+      const data = await res.json() as { ok: boolean; error?: string }
+      if (!data.ok) { setErr(data.error ?? 'Napaka'); return }
+      setSent(true)
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '18px', width: '620px', maxWidth: '100%', maxHeight: '85vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.25)' }}>
+        <div style={{ background: green, borderRadius: '18px 18px 0 0', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <p style={{ color: 'white', fontWeight: 700, fontSize: '15px', margin: 0 }}>Email stranki: {lead.contact_name}</p>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', margin: '2px 0 0' }}>{lead.email}</p>
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: '22px', cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>×</button>
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0' }}>
+          {lead.email_draft ? (
+            <iframe
+              srcDoc={lead.email_draft}
+              title="Email predogled"
+              style={{ width: '100%', height: '400px', border: 'none' }}
+              sandbox="allow-same-origin"
+            />
+          ) : (
+            <div style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>
+              Osnutek emaila ni bil ustvarjen. Preverite ali je lead zbral vse podatke.
+            </div>
+          )}
+        </div>
+
+        <div style={{ padding: '14px 20px', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'flex-end' }}>
+          {lead.email_sent_at && !sent && (
+            <span style={{ fontSize: '12px', color: '#64748b' }}>
+              Poslano: {new Date(lead.email_sent_at).toLocaleString('sl-SI')}
+            </span>
+          )}
+          {err && <span style={{ fontSize: '12px', color: '#dc2626' }}>{err}</span>}
+          {sent ? (
+            <span style={{ color: green, fontWeight: 700, fontSize: '14px' }}>✓ Email poslan!</span>
+          ) : (
+            <button
+              onClick={handleSend}
+              disabled={sending || !lead.email_draft}
+              style={{
+                background: sending ? '#94a3b8' : green, color: 'white',
+                border: 'none', borderRadius: '8px', padding: '9px 20px',
+                fontSize: '13px', fontWeight: 700, cursor: sending ? 'wait' : 'pointer',
+              }}
+            >
+              {sending ? 'Pošiljam...' : lead.email_sent_at ? 'Pošlji ponovno' : 'Pošlji stranki'}
+            </button>
+          )}
+          <button onClick={onClose} style={{ background: '#f1f5f9', color: '#64748b', border: 'none', borderRadius: '8px', padding: '9px 16px', fontSize: '13px', cursor: 'pointer' }}>Zapri</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function LeadsTable({ leads }: { leads: Lead[] }) {
   const [selected, setSelected] = useState<Lead | null>(null)
+  const [emailLead, setEmailLead] = useState<Lead | null>(null)
 
   if (leads.length === 0) {
     return (
@@ -143,11 +224,12 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
   return (
     <>
       {selected && <ConversationModal lead={selected} onClose={() => setSelected(null)} />}
+      {emailLead && <EmailModal lead={emailLead} onClose={() => setEmailLead(null)} />}
 
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
         <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
           <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-            {['Ime', 'Podjetje', 'Email', 'Panoga', 'Baza', 'Paket', 'ROI €/mes', 'Status', 'GDPR', 'Čas', 'Chat'].map(h => (
+            {['Ime', 'Podjetje', 'Email', 'Panoga', 'Baza', 'Paket', 'ROI €/mes', 'Status', 'GDPR', 'Čas', 'Chat', 'Pošlji'].map(h => (
               <th key={h} style={{
                 padding: '10px 14px', textAlign: 'left',
                 fontSize: '11px', fontWeight: 600, color: '#64748b',
@@ -202,6 +284,21 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
                       <path d="M11 6.5C11 9.09 8.87 11 6 11C4.85 11 3.76 10.62 2.82 9.95L1 11L1.78 9.18C1.28 8.24 1 7.15 1 6C1 3.41 3.69 1.5 6 1.5C8.31 1.5 11 3.41 11 6Z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                     {msgCount > 0 ? `${msgCount} sporočil` : 'Prazno'}
+                  </button>
+                </td>
+                <td style={{ padding: '10px 14px' }}>
+                  <button
+                    onClick={() => setEmailLead(l)}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '5px',
+                      background: l.email_sent_at ? '#f0fdf4' : (l.email_draft ? '#ECFDF5' : '#f1f5f9'),
+                      color: l.email_sent_at ? green : (l.email_draft ? green : '#94a3b8'),
+                      border: 'none', borderRadius: '6px',
+                      padding: '5px 10px', fontSize: '12px', fontWeight: 600,
+                      cursor: 'pointer', whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {l.email_sent_at ? '✓ Poslano' : (l.email_draft ? 'Pošlji →' : '—')}
                   </button>
                 </td>
               </tr>
