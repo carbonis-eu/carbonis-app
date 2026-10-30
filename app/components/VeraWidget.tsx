@@ -3,7 +3,47 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 
 const navy = '#102A56'
-const cobalt = '#356AE6'
+const cobalt = '#1E7A56'
+
+const VeraAvatar = ({ size = 36 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Background circle */}
+    <circle cx="18" cy="18" r="18" fill="url(#veraGrad)"/>
+    <defs>
+      <linearGradient id="veraGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#26966B"/>
+        <stop offset="100%" stopColor="#1E7A56"/>
+      </linearGradient>
+    </defs>
+    {/* Hair bun */}
+    <ellipse cx="18" cy="8" rx="5" ry="4" fill="#4A3728"/>
+    <circle cx="18" cy="5.5" rx="3" ry="3" fill="#4A3728"/>
+    <circle cx="15.5" cy="7" rx="1.5" ry="1.5" fill="#4A3728"/>
+    <circle cx="20.5" cy="7" rx="1.5" ry="1.5" fill="#4A3728"/>
+    {/* Hair pin */}
+    <line x1="16" y1="5" x2="20" y2="5" stroke="#E8C87A" strokeWidth="1" strokeLinecap="round"/>
+    {/* Face */}
+    <ellipse cx="18" cy="17" rx="6.5" ry="7" fill="#F5C9A0"/>
+    {/* Hair sides */}
+    <ellipse cx="11.8" cy="16" rx="2" ry="5" fill="#4A3728"/>
+    <ellipse cx="24.2" cy="16" rx="2" ry="5" fill="#4A3728"/>
+    {/* Glasses frame */}
+    <rect x="11.5" y="15" width="5" height="3.5" rx="1.5" fill="none" stroke="#2D2D2D" strokeWidth="1.2"/>
+    <rect x="19.5" y="15" width="5" height="3.5" rx="1.5" fill="none" stroke="#2D2D2D" strokeWidth="1.2"/>
+    <line x1="16.5" y1="16.7" x2="19.5" y2="16.7" stroke="#2D2D2D" strokeWidth="1.2"/>
+    <line x1="11" y1="16.7" x2="11.5" y2="16.7" stroke="#2D2D2D" strokeWidth="1.2"/>
+    <line x1="24.5" y1="16.7" x2="25" y2="16.7" stroke="#2D2D2D" strokeWidth="1.2"/>
+    {/* Eyes behind glasses */}
+    <circle cx="14" cy="16.7" r="1" fill="#3D2B1F"/>
+    <circle cx="22" cy="16.7" r="1" fill="#3D2B1F"/>
+    {/* Smile */}
+    <path d="M15.5 21 Q18 23 20.5 21" stroke="#C4876A" strokeWidth="1" fill="none" strokeLinecap="round"/>
+    {/* Shoulders / collar */}
+    <path d="M8 36 Q10 28 14 26 L18 28 L22 26 Q26 28 28 36Z" fill="#1E5A8A"/>
+    {/* Collar detail */}
+    <path d="M16 26 L18 30 L20 26" fill="#FFFFFF" opacity="0.3"/>
+  </svg>
+)
 
 const PANOGE = [
   'Avtoservis', 'Kozmetika / salon', 'Fitnes studio', 'Gostinstvo',
@@ -237,17 +277,14 @@ export default function VeraWidget() {
         style={{
           position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
           width: '56px', height: '56px', borderRadius: '50%',
-          background: `linear-gradient(135deg, ${cobalt}, #2545b8)`,
+          background: `linear-gradient(135deg, #26966B, ${cobalt})`,
           border: 'none', cursor: 'pointer',
-          boxShadow: '0 4px 20px rgba(53,106,230,0.45)',
+          boxShadow: '0 4px 20px rgba(30,122,86,0.45)',
           display: open ? 'none' : 'flex',
           alignItems: 'center', justifyContent: 'center',
         }}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="white" opacity="0.9"/>
-          <path d="M8 10h8M8 13h5" stroke="rgba(53,106,230,0.8)" strokeWidth="1.5" strokeLinecap="round"/>
-        </svg>
+        <VeraAvatar size={44} />
       </button>
 
       {/* Chat window */}
@@ -267,12 +304,7 @@ export default function VeraWidget() {
             background: navy, padding: '14px 16px',
             display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0,
           }}>
-            <div style={{
-              width: '36px', height: '36px', borderRadius: '50%',
-              background: 'linear-gradient(135deg, #356AE6, #60a5fa)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'white', fontWeight: 700, fontSize: '15px', flexShrink: 0,
-            }}>V</div>
+            <div style={{ flexShrink: 0 }}><VeraAvatar size={36} /></div>
             <div style={{ flex: 1 }}>
               <p style={{ color: 'white', fontWeight: 700, fontSize: '14px', margin: 0 }}>Vera</p>
               <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '11px', margin: 0 }}>
