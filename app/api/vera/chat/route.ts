@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:streamGenerateContent?key=${process.env.GEMINI_API_KEY}&alt=sse`
@@ -74,12 +75,19 @@ export async function POST(req: NextRequest) {
 
     let geminiRes: Response | null = null
     for (let attempt = 0; attempt < 3; attempt++) {
-      if (attempt > 0) await new Promise(r => setTimeout(r, 1500 * attempt))
-      geminiRes = await fetch(GEMINI_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-      })
+      if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt))
+      const ac = new AbortController()
+      const tId = setTimeout(() => ac.abort(), 20000)
+      try {
+        geminiRes = await fetch(GEMINI_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body,
+          signal: ac.signal,
+        })
+      } finally {
+        clearTimeout(tId)
+      }
       if (geminiRes.status !== 503) break
     }
 
