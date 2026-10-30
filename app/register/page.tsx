@@ -12,6 +12,8 @@ const INDUSTRIES = [
   'Gostinstvo',
   'Nepremičnine',
   'Ordinacija',
+  'Vulkanizerji',
+  'Serviserji & monterji',
   'Drugo',
 ]
 

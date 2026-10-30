@@ -10,6 +10,8 @@ const INDUSTRIES = [
   { label: 'Gostinci', problem: 'Gosti so zadovoljni — a ne pustijo ocene in ne pridejo nazaj sami od sebe.', details: 'Gostinci z aktivnim zbiranjem ocen dosegajo 4,7+ na Googlu in pridobivajo nova naročila brez oglaševanja.', solution: 'Vsak obisk sproži prošnjo za Google oceno. Reaktivacija za praznike, obletnice in posebne priložnosti.', calcLabel: '500 strank × 10% × 35 €', calcResult: '1.750 €/mes' },
   { label: 'Nepremičnine', problem: 'Stare stranke so vaš najtoplejši vir priporočil — ampak jih pozabljate kontaktirati.', details: 'Večina posrednikov izgubi stik s kupci takoj po zaključku posla. Priporočila in ponovni nakupi ostanejo neizkoriščeni.', solution: 'Carbonis vzdržuje stik z bazo kupcev in prodajalcev. Reaktivacija ob spremembi trga ali obletnicah nakupa.', calcLabel: '50 strank × 8% × 3.500 €', calcResult: '14.000 €/mes' },
   { label: 'Ordinacije', problem: 'Preventivni pregledi se pozabijo — pacienti se ne vrnejo sami brez opomnika.', details: 'Reden kontakt z bazo pacientov poveča zaupanje, zmanjša čakalnico in izboljša zdravstvene izide.', solution: 'Sistem sproži opomnik za letni pregled ali nadaljevanje zdravljenja. Vse skladno z GDPR zakonodajo.', calcLabel: '200 strank × 15% × 80 €', calcResult: '2.400 €/mes' },
+  { label: 'Vulkanizerji', problem: 'Stranke pridejo dvakrat letno — in vsakič k tistemu, ki jih je zadnji kontaktiral.', details: 'Menjava gum je predvidljiva kot ura: vsako jesen in vsako pomlad. Tisti vulkanizerji, ki pošljejo sezonski opomnik prvi, zapolnijo urnik — ostali čakajo.', solution: 'Carbonis samodejno pošlje sezonski opomnik ob pravem času vsakemu kupcu iz vaše baze. Booking sistem sprejme rezervacijo termina 24/7, brez klicanja.', calcLabel: '300 strank × 60% × 60 €', calcResult: '10.800 €/sez' },
+  { label: 'Serviserji & monterji', problem: 'Letni servis kotla ali klime se pozabi — dokler ne nastane okvara.', details: 'Stranke ne vedo kdaj je čas za servis. Tisti serviser, ki jih spomni prvi, dobi klic. Vaša baza je polna strank, ki čakajo na opomnik.', solution: 'Sistem izračuna kdaj je vsaki stranki potekel servisni interval in avtomatsko sproži sporočilo ob pravem času. Booking sprejme termin, vi pridete na servis.', calcLabel: '150 strank × 40% × 120 €', calcResult: '7.200 €/mes' },
 ]
 
 const FAQS = [
@@ -518,7 +520,7 @@ export default function HomePage() {
             <h2 className="h2-size" style={{fontSize:'38px',fontWeight:800,color:'#17364D',lineHeight:1.1,letterSpacing:'-0.015em',marginBottom:'16px'}}>Izberite svojo panogo</h2>
             <p style={{fontSize:'16px',color:'#687985',lineHeight:1.7}}>Carbonis se prilagodi vaši branži — pravi timing, sporočila in pristop za vsako vrsto lokalnega podjetja.</p>
           </div>
-          <div style={{display:'flex',gap:'8px',marginBottom:'32px',flexWrap:'wrap',justifyContent:'center'}}>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4,auto)',gap:'8px',marginBottom:'32px',justifyContent:'center'}}>
             {INDUSTRIES.map((industry, i) => (
               <button key={i} onClick={() => setActiveIndustry(i)} style={{borderRadius:'999px',padding:'10px 20px',fontSize:'14px',fontWeight:i===activeIndustry?700:500,background:i===activeIndustry?'#17364D':'transparent',color:i===activeIndustry?'#FFFFFF':'#687985',border:`2px solid ${i===activeIndustry?'#17364D':'#E3EAE8'}`,transition:'all 150ms',cursor:'pointer',whiteSpace:'nowrap'}}>
                 {industry.label}

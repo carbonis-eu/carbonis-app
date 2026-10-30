@@ -20,7 +20,7 @@ KAJ CARBONIS DELA (za lokalna podjetja v SLO + HR):
 3. 24/7 booking — stranka se naroči sama, termin pade v urnik
 4. AI analitika — kdo se vrača, kdaj, zakaj odide
 
-PANOGE: avtoservisi, kozmetični saloni, fitnes studii, gostinci, nepremičnine, ordinacije
+PANOGE: avtoservisi, kozmetični saloni, fitnes studii, gostinci, nepremičnine, ordinacije, vulkanizerji, serviserji & monterji (kotli, klime, vodovodne naprave)
 
 PAKETI (vedno dodaj opombo "ocena potenciala"):
 - Starter (do 100 strank): od 149 €/mes
