@@ -325,7 +325,7 @@ export default function VeraWidget() {
                     )}
                   </div>
                 </div>
-                {/* Quick-reply panoge — pokaži samo po prvem sporočilu Vere, preden user odgovori */}
+                {/* Quick-reply panoge — pokaži samo po prvem sporočilu Vere */}
                 {i === 0 && msg.role === 'assistant' && messages.length === 1 && !loading && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px', paddingLeft: '4px' }}>
                     {PANOGE.map(p => (
@@ -335,6 +335,22 @@ export default function VeraWidget() {
                         cursor: 'pointer', fontFamily: 'inherit', transition: 'border-color 0.15s',
                       }}>{p}</button>
                     ))}
+                  </div>
+                )}
+                {/* DA/NE gumbi za GDPR privolitev */}
+                {msg.role === 'assistant' && i === messages.length - 1 && !loading &&
+                  /privol|strinjate|GDPR|soglašate/i.test(msg.content) && (
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '10px', paddingLeft: '4px' }}>
+                    <button onClick={() => sendMessage('Da, strinjam se.')} style={{
+                      background: cobalt, color: 'white', border: 'none', borderRadius: '999px',
+                      padding: '7px 20px', fontSize: '13px', fontWeight: 700,
+                      cursor: 'pointer', fontFamily: 'inherit',
+                    }}>✓ Da</button>
+                    <button onClick={() => sendMessage('Ne, hvala.')} style={{
+                      background: 'white', color: '#64748b', border: '1.5px solid #D1D9E6', borderRadius: '999px',
+                      padding: '7px 20px', fontSize: '13px', fontWeight: 600,
+                      cursor: 'pointer', fontFamily: 'inherit',
+                    }}>Ne</button>
                   </div>
                 )}
               </div>
