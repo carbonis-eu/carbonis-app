@@ -59,6 +59,9 @@ const PACKAGE_TABLE: Record<string, { name: string; price: number }> = {
 
 const CONTACTS_OPTIONS = ['Do 100', '100–300', '300–500', '500+']
 
+const cobalt = '#356AE6'
+const navy = '#0B2471'
+
 function VeraBubble({ content }: { content: string }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '8px' }}>
@@ -82,7 +85,7 @@ function UserBubble({ content }: { content: string }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
       <div style={{
-        background: '#265CFF',
+        background: cobalt,
         borderRadius: '16px 16px 4px 16px',
         padding: '10px 14px',
         fontSize: '14px',
@@ -106,21 +109,21 @@ function QuickReply({ options, onSelect }: { options: string[]; onSelect: (v: st
           style={{
             padding: '7px 14px',
             borderRadius: '20px',
-            border: '1.5px solid #265CFF',
+            border: `1.5px solid ${cobalt}`,
             background: 'white',
-            color: '#265CFF',
+            color: cobalt,
             fontSize: '13px',
             fontWeight: 500,
             cursor: 'pointer',
             transition: 'background 0.15s, color 0.15s',
           }}
           onMouseEnter={e => {
-            ;(e.currentTarget as HTMLButtonElement).style.background = '#265CFF'
+            ;(e.currentTarget as HTMLButtonElement).style.background = cobalt
             ;(e.currentTarget as HTMLButtonElement).style.color = 'white'
           }}
           onMouseLeave={e => {
             ;(e.currentTarget as HTMLButtonElement).style.background = 'white'
-            ;(e.currentTarget as HTMLButtonElement).style.color = '#265CFF'
+            ;(e.currentTarget as HTMLButtonElement).style.color = cobalt
           }}
         >
           {opt}
@@ -129,6 +132,13 @@ function QuickReply({ options, onSelect }: { options: string[]; onSelect: (v: st
     </div>
   )
 }
+
+// Teaser messages that auto-appear before user clicks
+const TEASER_MSGS = [
+  'Pozdravljeni! 👋',
+  'Sem Vera, AI pomočnica Carbonis.',
+  'Koliko strank spi v vaši bazi?',
+]
 
 export default function VeraWidget() {
   const [open, setOpen] = useState(false)
@@ -144,7 +154,28 @@ export default function VeraWidget() {
   const [inputValue, setInputValue] = useState('')
   const [sending, setSending] = useState(false)
   const [started, setStarted] = useState(false)
+
+  // Teaser state
+  const [teaserVisible, setTeaserVisible] = useState(false)
+  const [teaserDismissed, setTeaserDismissed] = useState(false)
+  const [teaserStep, setTeaserStep] = useState(0) // how many teaser messages shown
+
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  // Auto-show teaser after 2.5s
+  useEffect(() => {
+    if (teaserDismissed || open) return
+    const t = setTimeout(() => setTeaserVisible(true), 2500)
+    return () => clearTimeout(t)
+  }, [teaserDismissed, open])
+
+  // Reveal teaser messages one by one
+  useEffect(() => {
+    if (!teaserVisible || teaserDismissed) return
+    if (teaserStep >= TEASER_MSGS.length) return
+    const t = setTimeout(() => setTeaserStep(s => s + 1), teaserStep === 0 ? 0 : 700)
+    return () => clearTimeout(t)
+  }, [teaserVisible, teaserStep, teaserDismissed])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -160,9 +191,10 @@ export default function VeraWidget() {
 
   function handleOpen() {
     setOpen(true)
+    setTeaserVisible(false)
+    setTeaserDismissed(true)
     if (!started) {
       setStarted(true)
-      // 3 messages with delay
       setTimeout(() => addVera('Pozdravljeni 👋'), 300)
       setTimeout(() => addVera('Sem Vera, pomočnica Carbonis — odgovarjam samodejno.'), 900)
       setTimeout(() => {
@@ -172,13 +204,18 @@ export default function VeraWidget() {
     }
   }
 
+  function handleTeaserDismiss(e: React.MouseEvent) {
+    e.stopPropagation()
+    setTeaserVisible(false)
+    setTeaserDismissed(true)
+  }
+
   function handleIndustry(label: string) {
     const found = INDUSTRIES.find(i => i.label === label)
     const key = found?.key ?? 'drugo'
     setIndustry(key)
     setIndustryLabel(label)
     addUser(label)
-
     const response = INDUSTRY_RESPONSE[key]
     setTimeout(() => addVera(response), 400)
     setTimeout(() => {
@@ -190,7 +227,6 @@ export default function VeraWidget() {
   function handleContacts(range: string) {
     setContactsRange(range)
     addUser(range)
-
     if (industry === 'drugo' || !ROI_TABLE[industry]) {
       setTimeout(() => {
         addVera('Hvala! Za panogo "Drugo" vam pripravimo individualno ponudbo.')
@@ -199,7 +235,6 @@ export default function VeraWidget() {
       }, 400)
       return
     }
-
     const roi = ROI_TABLE[industry][range] ?? 0
     const pkg = PACKAGE_TABLE[range]
     setTimeout(() => {
@@ -264,9 +299,7 @@ export default function VeraWidget() {
     setEmail(mail)
     addUser(mail)
     setInputValue('')
-    setTimeout(() => {
-      setStep('gdpr')
-    }, 400)
+    setTimeout(() => setStep('gdpr'), 400)
   }
 
   async function handleGdprSubmit() {
@@ -307,12 +340,76 @@ export default function VeraWidget() {
     setStep('done')
   }
 
-  const roi = industry && contactsRange && ROI_TABLE[industry] ? ROI_TABLE[industry][contactsRange] : undefined
-  const pkg = contactsRange ? PACKAGE_TABLE[contactsRange] : undefined
-
   return (
     <>
-      {/* Bubble button */}
+      <style>{`
+        @keyframes vera-pulse{0%{transform:scale(1);opacity:1}100%{transform:scale(2.5);opacity:0}}
+        @keyframes vera-teaser-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes vera-chat-in{from{opacity:0;transform:translateY(12px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+      `}</style>
+
+      {/* Teaser bubble — auto-appears above button */}
+      {teaserVisible && !open && (
+        <div
+          onClick={handleOpen}
+          style={{
+            position: 'fixed',
+            bottom: '90px',
+            right: '24px',
+            zIndex: 9997,
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '6px',
+          }}
+        >
+          {/* Close teaser */}
+          <button
+            onClick={handleTeaserDismiss}
+            style={{
+              background: 'white',
+              border: '1px solid #e2e8f0',
+              borderRadius: '50%',
+              width: '22px',
+              height: '22px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '13px',
+              color: '#94a3b8',
+              alignSelf: 'flex-end',
+              marginBottom: '2px',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+            }}
+          >×</button>
+
+          {/* Messages */}
+          {TEASER_MSGS.slice(0, teaserStep).map((msg, i) => (
+            <div
+              key={i}
+              style={{
+                background: 'white',
+                border: '1px solid #e2e8f0',
+                borderRadius: i === TEASER_MSGS.length - 1 ? '18px 18px 4px 18px' : '18px',
+                padding: '10px 16px',
+                fontSize: '14px',
+                fontWeight: i === 0 ? 700 : 500,
+                color: '#0f172a',
+                boxShadow: '0 2px 12px rgba(11,36,113,0.1)',
+                maxWidth: '240px',
+                textAlign: 'right',
+                animation: 'vera-teaser-in 0.25s ease',
+              }}
+            >
+              {msg}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* FAB Button */}
       <button
         data-vera-open="true"
         onClick={handleOpen}
@@ -321,7 +418,7 @@ export default function VeraWidget() {
           bottom: '24px',
           right: '24px',
           zIndex: 9999,
-          background: '#0B2471',
+          background: navy,
           color: 'white',
           border: 'none',
           borderRadius: '50px',
@@ -338,26 +435,21 @@ export default function VeraWidget() {
         onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.04)')}
         onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <path d="M17 10.5C17 14.09 13.87 17 10 17C8.85 17 7.76 16.72 6.82 16.22L3 17L3.78 13.18C3.28 12.24 3 11.15 3 10C3 6.13 6.13 3 10 3C13.87 3 17 6.13 17 10Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
         <span>Vprašajte Vero</span>
-        {/* Pulsing green dot */}
         <span style={{ position: 'relative', width: '10px', height: '10px', flexShrink: 0 }}>
           <span style={{
             position: 'absolute', inset: 0,
             background: '#22c55e', borderRadius: '50%',
             animation: 'vera-pulse 1.5s ease-out infinite',
           }} />
-          <span style={{
-            position: 'absolute', inset: '2px',
-            background: '#22c55e', borderRadius: '50%',
-          }} />
+          <span style={{ position: 'absolute', inset: '2px', background: '#22c55e', borderRadius: '50%' }} />
         </span>
-        <style>{`@keyframes vera-pulse{0%{transform:scale(1);opacity:1}100%{transform:scale(2.5);opacity:0}}`}</style>
       </button>
 
-      {/* Modal */}
+      {/* Chat window */}
       {open && (
         <div style={{
           position: 'fixed',
@@ -373,10 +465,11 @@ export default function VeraWidget() {
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
+          animation: 'vera-chat-in 0.22s ease',
         }}>
           {/* Header */}
           <div style={{
-            background: '#0B2471',
+            background: navy,
             padding: '16px 20px',
             display: 'flex',
             alignItems: 'center',
@@ -385,13 +478,13 @@ export default function VeraWidget() {
           }}>
             <div style={{
               width: '40px', height: '40px', borderRadius: '50%',
-              background: 'linear-gradient(135deg, #265CFF, #60a5fa)',
+              background: `linear-gradient(135deg, ${cobalt}, #60a5fa)`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: 'white', fontWeight: 800, fontSize: '18px', flexShrink: 0,
             }}>V</div>
             <div style={{ flex: 1 }}>
               <p style={{ color: 'white', fontWeight: 700, fontSize: '15px', margin: 0 }}>Vera</p>
-              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', margin: 0 }}>Pomočnica Carbonis</p>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', margin: 0 }}>AI pomočnica Carbonis · odgovarja takoj</p>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -407,23 +500,14 @@ export default function VeraWidget() {
                 : <UserBubble key={i} content={m.content} />
             )}
 
-            {/* Quick replies / inputs for current step */}
             {step === 'industry' && (
-              <QuickReply
-                options={INDUSTRIES.map(i => i.label)}
-                onSelect={handleIndustry}
-              />
+              <QuickReply options={INDUSTRIES.map(i => i.label)} onSelect={handleIndustry} />
             )}
-
             {step === 'contacts' && (
               <QuickReply options={CONTACTS_OPTIONS} onSelect={handleContacts} />
             )}
-
             {step === 'decision' && (
-              <QuickReply
-                options={['Pošljite mi ponudbo ✓', 'Imam vprašanje']}
-                onSelect={handleDecision}
-              />
+              <QuickReply options={['Pošljite mi ponudbo ✓', 'Imam vprašanje']} onSelect={handleDecision} />
             )}
 
             {step === 'gdpr' && (
@@ -433,11 +517,11 @@ export default function VeraWidget() {
                     type="checkbox"
                     checked={gdprConsent}
                     onChange={e => setGdprConsent(e.target.checked)}
-                    style={{ marginTop: '2px', accentColor: '#265CFF', width: '16px', height: '16px', flexShrink: 0 }}
+                    style={{ marginTop: '2px', accentColor: cobalt, width: '16px', height: '16px', flexShrink: 0 }}
                   />
                   <span>
                     Strinjam se z obdelavo osebnih podatkov za namen pošiljanja ponudbe.{' '}
-                    <a href="/politika-zasebnosti" target="_blank" style={{ color: '#265CFF', textDecoration: 'underline' }}>Politika zasebnosti →</a>
+                    <a href="/politika-zasebnosti" target="_blank" style={{ color: cobalt, textDecoration: 'underline' }}>Politika zasebnosti →</a>
                     <br />
                     <span style={{ color: '#94a3b8', fontSize: '12px' }}>Podatke hranimo varno v EU in jih ne posredujemo tretjim osebam.</span>
                   </span>
@@ -446,15 +530,10 @@ export default function VeraWidget() {
                   onClick={handleGdprSubmit}
                   disabled={!gdprConsent || sending}
                   style={{
-                    marginTop: '12px',
-                    width: '100%',
-                    padding: '10px',
-                    background: gdprConsent ? '#265CFF' : '#94a3b8',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    fontWeight: 600,
+                    marginTop: '12px', width: '100%', padding: '10px',
+                    background: gdprConsent ? cobalt : '#94a3b8',
+                    color: 'white', border: 'none', borderRadius: '8px',
+                    fontSize: '14px', fontWeight: 600,
                     cursor: gdprConsent && !sending ? 'pointer' : 'not-allowed',
                     transition: 'background 0.2s',
                   }}
@@ -464,7 +543,6 @@ export default function VeraWidget() {
               </div>
             )}
 
-            {/* Text input steps */}
             {(step === 'get_name' || step === 'get_company' || step === 'get_email' || step === 'question') && (
               <div style={{ display: 'flex', gap: '8px', margin: '8px 0 4px' }}>
                 <input
@@ -488,10 +566,9 @@ export default function VeraWidget() {
                   autoFocus
                   style={{
                     flex: 1, padding: '10px 12px', borderRadius: '10px',
-                    border: '1.5px solid #e2e8f0', fontSize: '14px', outline: 'none',
-                    color: '#0f172a',
+                    border: '1.5px solid #e2e8f0', fontSize: '14px', outline: 'none', color: '#0f172a',
                   }}
-                  onFocus={e => (e.target.style.borderColor = '#265CFF')}
+                  onFocus={e => (e.target.style.borderColor = cobalt)}
                   onBlur={e => (e.target.style.borderColor = '#e2e8f0')}
                 />
                 <button
@@ -502,7 +579,7 @@ export default function VeraWidget() {
                     else if (step === 'question') handleQuestion()
                   }}
                   style={{
-                    padding: '10px 14px', background: '#265CFF', color: 'white',
+                    padding: '10px 14px', background: cobalt, color: 'white',
                     border: 'none', borderRadius: '10px', cursor: 'pointer', flexShrink: 0,
                   }}
                 >
@@ -516,16 +593,22 @@ export default function VeraWidget() {
             <div ref={bottomRef} />
           </div>
 
-          {/* Footer */}
+          {/* Footer — AI disclaimer + kontakt */}
           <div style={{
-            padding: '8px 16px 12px',
-            textAlign: 'center',
-            fontSize: '11px',
-            color: '#94a3b8',
+            padding: '10px 16px 14px',
             borderTop: '1px solid #f1f5f9',
             flexShrink: 0,
+            background: '#fafafa',
           }}>
-            Pogovarjate se z AI asistentom — skladno z EU AI Act čl. 50.
+            <p style={{ fontSize: '11px', color: '#94a3b8', lineHeight: 1.5, margin: '0 0 4px', textAlign: 'center' }}>
+              Vera je umetna inteligenca (AI) — EU AI Act čl. 50.{' '}
+              Odgovori so ocena potenciala, ne zagotovilo.
+            </p>
+            <p style={{ fontSize: '11px', color: '#b0bac7', textAlign: 'center', margin: 0 }}>
+              Vprašanja: <a href="mailto:info@carbonis.eu" style={{ color: '#b0bac7', textDecoration: 'underline' }}>info@carbonis.eu</a>
+              {' · '}
+              <a href="/politika-zasebnosti" style={{ color: '#b0bac7', textDecoration: 'underline' }}>Zasebnost</a>
+            </p>
           </div>
         </div>
       )}
