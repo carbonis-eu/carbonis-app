@@ -200,9 +200,8 @@ export default function HomePage() {
               className={i < arr.length-1 ? 'benefits-border-r' : ''}
               style={{padding:'48px 36px',borderRight:i<arr.length-1?'1px solid #E0E5ED':'none'}}
             >
-              <div style={{width:'44px',height:'44px',background:'#EEF3FF',borderRadius:'12px',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'24px'}}>{b.icon}</div>
-              <span style={{fontSize:'11px',fontWeight:700,color:cobalt,letterSpacing:'0.1em'}}>{b.num}</span>
-              <h3 style={{fontSize:'19px',fontWeight:800,color:'#172033',lineHeight:1.3,margin:'12px 0 14px'}}>{b.title}</h3>
+              <div style={{width:'48px',height:'48px',background:'#EEF3FF',borderRadius:'12px',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'28px'}}>{b.icon}</div>
+              <h3 style={{fontSize:'19px',fontWeight:800,color:'#172033',lineHeight:1.3,margin:'0 0 14px'}}>{b.title}</h3>
               <p style={{fontSize:'14px',color:'#5D687A',lineHeight:1.8}}>{b.body}</p>
             </div>
           ))}
