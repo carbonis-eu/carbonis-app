@@ -61,7 +61,7 @@ function getQuickReplies(content: string): { labels: string[]; type: 'pill' | 'g
     return { labels: PANOGE, type: 'pill' }
   }
   if (/starter|growth|pro.*paket|kateri paket|kateri.*plan|paket.*zanima/i.test(content)) {
-    return { labels: ['Starter — do 100 strank', 'Growth — 100–300 strank', 'Pro — 300+ strank', 'Brezplačen demo klic'], type: 'pill' }
+    return { labels: ['Starter — do 100 strank', 'Growth — 100–300 strank', 'Pro — 300+ strank'], type: 'pill' }
   }
   return null
 }

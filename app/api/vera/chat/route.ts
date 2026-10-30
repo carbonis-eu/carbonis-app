@@ -28,7 +28,6 @@ PAKETI (vedno dodaj opombo "ocena potenciala"):
 - Starter (do 100 strank): od 149 €/mes
 - Growth (100–300 strank): od 249 €/mes
 - Pro (300+ strank): od 349 €/mes
-Brezplačen demo klic, brez obveznosti.
 
 CILJ POGOVORA — zberi v pogovoru (postopoma, ne naenkrat):
 1. Ime stranke
