@@ -1,17 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import VeraWidget from "./components/VeraWidget";
 import FoundingMemberPopup from "./components/FoundingMemberPopup";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const dmSerif = DM_Serif_Display({
+  variable: "--font-dm-serif",
   subsets: ["latin"],
+  weight: "400",
+  display: "swap",
 });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://carbonis.eu'
@@ -73,7 +76,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="sl"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${dmSerif.variable} h-full antialiased`}
     >
       <head>
         <script
@@ -84,20 +87,22 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               '@type': 'SoftwareApplication',
               name: 'Carbonis',
               applicationCategory: 'BusinessApplication',
-              description: 'EU CBAM compliance platform — calculate carbon border adjustment liability, trade certificates, generate declarations.',
+              description: 'AI-powered marketing automation za lokalna podjetja v Sloveniji in Hrvaški. Reaktivacija strank, Google ocene, booking sistem.',
               url: APP_URL,
               operatingSystem: 'Web',
               offers: {
-                '@type': 'Offer',
-                price: '0',
+                '@type': 'AggregateOffer',
                 priceCurrency: 'EUR',
-                description: 'Free tier available for certificate sellers',
+                lowPrice: '149',
+                offerCount: '3',
+                description: 'Starter, Growth, Pro paketi za lokalna podjetja',
               },
               provider: {
                 '@type': 'Organization',
                 name: 'Carbonis',
                 url: APP_URL,
               },
+              areaServed: ['SI', 'HR'],
             })
           }}
         />
