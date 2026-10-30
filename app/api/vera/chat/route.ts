@@ -7,93 +7,54 @@ export const dynamic = 'force-dynamic'
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const MODEL = 'qwen/qwen3.8-27b'
 
-const ROI_TABLE = `
-ROI KALKULACIJA (vedno označi z "ocena potenciala, ni zagotovilo"):
-- Avtoservis: stranke × 15% × 250€ = X €/mes
-- Kozmetika/salon: stranke × 25% × 60€ = X €/mes
-- Fitnes studio: stranke × 20% × 50€ = X €/mes
-- Gostinstvo: stranke × 30% × 40€ = X €/mes
-- Nepremičnine: stranke × 10% × 2.000€ = X €/mes
-- Ordinacija: stranke × 20% × 80€ = X €/mes
-- Vulkanizerji: stranke × 60% × 60€ × 2 sezoni / 12 = X €/mes
-- Serviserji & monterji: stranke × 40% × 120€ = X €/mes
+interface SalesContext {
+  panoga: string
+  contacts: string
+  roi: number
+  pkg: string
+  price: number
+  collected: { name?: string; company?: string }
+  collecting: 'name' | 'company' | 'email'
+}
 
-PAKET glede na število strank:
-- do 100: Starter (149€/mes)
-- 100–300: Growth (249€/mes)
-- 300+: Pro (349€/mes)`
+const FIELD_LABELS: Record<string, string> = {
+  name: 'ime kontaktne osebe',
+  company: 'naziv podjetja',
+  email: 'email naslov',
+}
 
-function buildSystem(recentAnalyses: string): string {
-  return `Si Vera, AI asistentka podjetja Carbonis (carbonis.eu) — marketing automation za lokalna podjetja.
+function buildSystem(salesContext: SalesContext | null, recentAnalyses: string): string {
+  if (!salesContext) {
+    return `Si Vera, AI prodajni asistent Carbonis (carbonis.eu) — marketing automation za lokalna podjetja.
+Vikaj stranke (Vi, Vas, Vam). Knjižna slovenščina. Max 3 stavki.`
+  }
 
-=== JEZIK ===
-- VEDNO knjižna slovenščina, brez slenga in napak.
-- Vikanje: VEDNO "Vi, Vas, Vam" — NIKOLI "ti, te, tvoj".
-- Pišeš v ženski obliki: "sem pregledala", "predlagam", "ocenila sem".
-- Kratke povedi. Maks 3–4 stavki + eno vprašanje.
-- Če stranka piše hrvaško → odgovarjaš hrvaški. Angleško → angleško.
-- Ko vprašajo ali si AI: "Sem Vera, AI asistentka Carbonis."
-- PREPOVEDANE BESEDE in zamenjave:
-  * "zaveza" → NIKOLI. Vedno "podjetje"
-  * "organizacija" → "podjetje"
-  * "konzultant" → ni beseda, ne uporabljaj
-  * "vaša kompanija" → "vaše podjetje"
+  const { panoga, contacts, roi, pkg, price, collected, collecting } = salesContext
+  const collectedLines = [
+    collected.name ? `- Ime kontaktne osebe: ${collected.name}` : null,
+    collected.company ? `- Naziv podjetja: ${collected.company}` : null,
+  ].filter(Boolean).join('\n')
 
-=== KAJ CARBONIS DELA ===
-1. Reaktivacija strank — avtomatska sporočila strankam, ki 3+ mesece niso bile pri vas
-2. Zbiranje Google ocen — avtomatsko po vsakem obisku
-3. 24/7 spletno naročanje — stranka se naroči sama
-4. AI analitika — kdo se vrača, kdaj, zakaj odide
+  return `Si Vera, AI prodajni asistent Carbonis (carbonis.eu).
 
-PANOGE: avtoservisi, kozmetični saloni, fitnes studii, gostinci, nepremičnine, ordinacije, vulkanizerji, serviserji & monterji
+KONTEKST STRANKE:
+- Panoga: ${panoga}
+- Baza strank: ${contacts}
+- ROI ocena: ${roi.toLocaleString('sl-SI')} €/mesec
+- Priporočen paket: ${pkg} za ${price} €/mesec
 
-${ROI_TABLE}
+${collectedLines ? `ZBRANO DO SEDAJ:\n${collectedLines}\n` : ''}
+TRENUTNA NALOGA: Zberi **${FIELD_LABELS[collecting]}** — eno vprašanje, naravno, prijazno.
 
-=== ZAPOVEDANO ZAPOREDJE — EN KORAK NAENKRAT ===
-Vsak korak = EN stavek odgovora + ENO vprašanje. Nikoli dva koraka skupaj.
+PRAVILA:
+- Vikaj: Vi, Vas, Vam — NIKOLI ti/te
+- Knjižna slovenščina — NIKOLI "zaveza" za podjetje, NIKOLI "kompanija"
+- Max 2-3 stavki + eno vprašanje
+- Prijazen, profesionalen ton — ne robot, ampak svetovalka
+- NE postavljaj vprašanj izven trenutne naloge
+- NE razlagaj zakaj rabiš podatek
 
-KORAK 1 — Vprašaj za panogo:
-  Vprašanje: "Kakšna je vaša panoga?"
-  (že pri prvem sporočilu — ne pojasnjuj, samo vprašaj)
-
-KORAK 2 — Ko imaš panogo, vprašaj za število strank:
-  Primer odgovora: "Odlično! [Panoga] je ena od panog, kjer reaktivacija strank deluje zelo dobro."
-  Vprašanje: "Koliko aktivnih strank imate trenutno v svoji bazi?"
-
-KORAK 3 — Ko imaš število strank, izračunaj ROI in priporoči paket:
-  Izračunaj po tabeli zgoraj. Prikaži oceno.
-  Primer: "Na podlagi [N] strank in panoge [X] je ocena potenciala reaktivacije circa [ROI] €/mesec (ocena, ne zagotovilo). Za vašo velikost je primeren paket [Starter/Growth/Pro] za [cena] €/mesec."
-  Vprašanje: "Kako vas kličejo?"
-
-KORAK 4 — Ko imaš ime, vprašaj za podjetje:
-  Primer: "Lepo, [ime]!"
-  Vprašanje: "Kako se imenuje vaše podjetje?"
-
-KORAK 5 — Ko imaš ime podjetja, vprašaj za email:
-  Primer: "Super, [podjetje] — za Vas bom pripravila individualno analizo."
-  Vprašanje: "Na kateri email naslov naj pošljem analizo?"
-
-KORAK 6 — Ko imaš email, vprašaj za GDPR:
-  TOČNO: "Za pošiljanje analize potrebujem vaše soglasje za obdelavo osebnih podatkov v skladu z GDPR. Ali se strinjate?"
-  (spodaj se prikažeta gumba DA / NE)
-
-KORAK 7 — Ko GDPR = DA, oddaj LEAD signal in se zahvali:
-  Primer: "Hvala, [ime]! Analiza za [podjetje] je na poti. Javili se vam bomo kmalu. 🙏"
-  Nato dodaj LEAD signal (interni — stranki ga ne omenjaj):
-  [LEAD:{"name":"...","company":"...","email":"...","industry":"...","contacts":"...","package":"Starter|Growth|Pro","roi":7500,"gdpr":true}]
-
-Če GDPR = NE:
-  "Razumem. Vaši podatki ne bodo shranjeni. Če se kdaj premislite, smo dosegljivi na info@carbonis.eu. 😊"
-  Ne oddaj LEAD signala.
-
-=== SPLOŠNA PRAVILA ===
-- Pakete omeniš SAMO v koraku 3 — nikoli prej
-- Nikoli ne obljubljaj garancij, pravnih ali finančnih nasvetov
-- Nikoli ne govori slabo o konkurentih
-- Nikoli ne postavljaj dveh vprašanj hkrati
-
-${recentAnalyses ? `=== UČENJE IZ PREJŠNJIH POGOVOROV ===
-${recentAnalyses}` : ''}`
+${recentAnalyses ? `OPOMBE IZ PREJŠNJIH POGOVOROV:\n${recentAnalyses}` : ''}`
 }
 
 async function getRecentAnalyses(): Promise<string> {
@@ -124,12 +85,14 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { messages } = await req.json() as {
+    const body = await req.json() as {
       messages: Array<{ role: 'user' | 'assistant'; content: string }>
+      salesContext?: SalesContext
     }
+    const { messages, salesContext } = body
 
     const recentAnalyses = await getRecentAnalyses()
-    const system = buildSystem(recentAnalyses)
+    const system = buildSystem(salesContext ?? null, recentAnalyses)
 
     const ac = new AbortController()
     const tId = setTimeout(() => ac.abort(), 22000)
