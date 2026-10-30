@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent`
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
+const MODEL = 'llama-3.3-70b-versatile'
 
 const SYSTEM = `Si Vera, AI asistentka podjetja Carbonis (carbonis.eu) — marketing automation za lokalna podjetja.
 
@@ -52,8 +53,8 @@ KO ZBEŠ VSE PODATKE (ime + email + GDPR soglasje), dodaj na konec odgovora:
 Ta JSON blok je INTERNI signal — stranki ga ne razlagaj in ne omenjaj.`
 
 export async function POST(req: NextRequest) {
-  if (!process.env.GEMINI_API_KEY) {
-    return NextResponse.json({ error: 'AI ni konfiguriran. Dodajte GEMINI_API_KEY.' }, { status: 503 })
+  if (!process.env.GROQ_API_KEY) {
+    return NextResponse.json({ error: 'AI ni konfiguriran.' }, { status: 503 })
   }
 
   try {
@@ -61,56 +62,54 @@ export async function POST(req: NextRequest) {
       messages: Array<{ role: 'user' | 'assistant'; content: string }>
     }
 
-    const contents = messages.map(m => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content }],
-    }))
-
-    const body = JSON.stringify({
-      system_instruction: { parts: [{ text: SYSTEM }] },
-      contents,
-      generationConfig: { maxOutputTokens: 512, temperature: 0.7 },
-    })
-
     const ac = new AbortController()
-    const tId = setTimeout(() => ac.abort(), 22000)
+    const tId = setTimeout(() => ac.abort(), 20000)
 
-    let geminiRes: Response
+    let groqRes: Response
     try {
-      geminiRes = await fetch(`${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`, {
+      groqRes = await fetch(GROQ_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [
+            { role: 'system', content: SYSTEM },
+            ...messages.map(m => ({ role: m.role, content: m.content })),
+          ],
+          max_tokens: 512,
+          temperature: 0.7,
+        }),
         signal: ac.signal,
       })
     } finally {
       clearTimeout(tId)
     }
 
-    if (!geminiRes.ok) {
-      const err = await geminiRes.text()
-      const isOverloaded = geminiRes.status === 503
+    if (!groqRes.ok) {
+      const err = await groqRes.text()
       return NextResponse.json(
-        { error: isOverloaded ? 'AI je trenutno preobremenjeno. Poskusite čez minuto.' : `Gemini error: ${err}` },
-        { status: isOverloaded ? 503 : 502 }
+        { error: groqRes.status === 429 ? 'AI je trenutno zaseden — poskusite čez minuto.' : `Napaka: ${err}` },
+        { status: groqRes.status === 429 ? 503 : 502 }
       )
     }
 
-    const data = await geminiRes.json() as {
-      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
+    const data = await groqRes.json() as {
+      choices?: Array<{ message?: { content?: string } }>
     }
 
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-
+    const text = data?.choices?.[0]?.message?.content ?? ''
     if (!text) {
-      return NextResponse.json({ error: 'Praznen odgovor AI — poskusite znova.' }, { status: 502 })
+      return NextResponse.json({ error: 'Praznen odgovor — poskusite znova.' }, { status: 502 })
     }
 
     return NextResponse.json({ text })
 
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
-    const isAbort = msg.includes('abort') || msg.includes('Abort')
+    const isAbort = msg.toLowerCase().includes('abort')
     return NextResponse.json(
       { error: isAbort ? 'Zahteva je potekla — poskusite znova.' : msg },
       { status: 500 }
