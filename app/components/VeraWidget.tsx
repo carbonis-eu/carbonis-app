@@ -301,7 +301,7 @@ export default function VeraWidget() {
         }}>
           {/* Header */}
           <div style={{
-            background: navy, padding: '14px 16px',
+            background: '#1E7A56', padding: '14px 16px',
             display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0,
           }}>
             <div style={{ flexShrink: 0 }}><VeraAvatar size={36} /></div>
