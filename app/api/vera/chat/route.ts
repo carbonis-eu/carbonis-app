@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 
 export const dynamic = 'force-dynamic'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?key=${process.env.GEMINI_API_KEY}&alt=sse`
 
 const SYSTEM = `Si Vera, AI asistentka podjetja Carbonis (carbonis.eu) — marketing automation za lokalna podjetja.
 
@@ -52,8 +51,8 @@ KO ZBEŠ VSE PODATKE (ime + email + GDPR soglasje), dodaj na konec odgovora:
 Ta JSON blok je INTERNI signal — stranki ga ne razlagaj in ne omenjaj.`
 
 export async function POST(req: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: 'AI ni konfiguriran. Dodajte ANTHROPIC_API_KEY.' }, { status: 503 })
+  if (!process.env.GEMINI_API_KEY) {
+    return NextResponse.json({ error: 'AI ni konfiguriran. Dodajte GEMINI_API_KEY.' }, { status: 503 })
   }
 
   try {
@@ -61,25 +60,57 @@ export async function POST(req: NextRequest) {
       messages: Array<{ role: 'user' | 'assistant'; content: string }>
     }
 
-    const stream = client.messages.stream({
-      model: 'claude-haiku-4-5',
-      max_tokens: 512,
-      system: SYSTEM,
-      messages,
+    // Convert to Gemini format: map 'assistant' -> 'model', alternate roles required
+    const contents = messages.map(m => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }],
+    }))
+
+    const geminiRes = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: SYSTEM }] },
+        contents,
+        generationConfig: { maxOutputTokens: 512, temperature: 0.7 },
+      }),
     })
 
+    if (!geminiRes.ok || !geminiRes.body) {
+      const err = await geminiRes.text()
+      return NextResponse.json({ error: `Gemini error: ${err}` }, { status: 502 })
+    }
+
+    const upstream = geminiRes.body
     const readable = new ReadableStream({
       async start(controller) {
+        const reader = upstream.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
         try {
-          for await (const chunk of stream) {
-            if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
-              const data = JSON.stringify({ text: chunk.delta.text })
-              controller.enqueue(new TextEncoder().encode(`data: ${data}\n\n`))
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            buffer += decoder.decode(value, { stream: true })
+            const lines = buffer.split('\n')
+            buffer = lines.pop() ?? ''
+            for (const line of lines) {
+              if (!line.startsWith('data: ')) continue
+              const raw = line.slice(6).trim()
+              if (!raw || raw === '[DONE]') continue
+              try {
+                const parsed = JSON.parse(raw)
+                const text: string = parsed?.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+                if (text) {
+                  controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ text })}\n\n`))
+                }
+              } catch { /* skip malformed */ }
             }
           }
           controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'))
         } finally {
           controller.close()
+          reader.releaseLock()
         }
       }
     })
