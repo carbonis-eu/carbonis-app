@@ -114,8 +114,9 @@ export default function VeraWidget() {
       })
 
       if (!res.ok || !res.body) {
-        const errData = await res.json().catch(() => ({ error: 'Napaka pri povezavi' }))
-        const errMsg = (errData as { error?: string }).error ?? 'Napaka pri povezavi'
+        const errData = await res.json().catch(() => ({}))
+        const errMsg = (errData as { error?: string }).error
+          ?? (res.status === 503 ? 'AI je trenutno zaseden — poskusite čez minuto.' : 'Napaka pri povezavi')
         setMessages(prev => {
           const copy = [...prev]
           copy[copy.length - 1] = { role: 'assistant', content: errMsg }

@@ -66,19 +66,30 @@ export async function POST(req: NextRequest) {
       parts: [{ text: m.content }],
     }))
 
-    const geminiRes = await fetch(GEMINI_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: SYSTEM }] },
-        contents,
-        generationConfig: { maxOutputTokens: 512, temperature: 0.7 },
-      }),
+    const body = JSON.stringify({
+      system_instruction: { parts: [{ text: SYSTEM }] },
+      contents,
+      generationConfig: { maxOutputTokens: 512, temperature: 0.7 },
     })
 
-    if (!geminiRes.ok || !geminiRes.body) {
-      const err = await geminiRes.text()
-      return NextResponse.json({ error: `Gemini error: ${err}` }, { status: 502 })
+    let geminiRes: Response | null = null
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 1500 * attempt))
+      geminiRes = await fetch(GEMINI_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+      })
+      if (geminiRes.status !== 503) break
+    }
+
+    if (!geminiRes || !geminiRes.ok || !geminiRes.body) {
+      const err = geminiRes ? await geminiRes.text() : 'No response'
+      const isOverloaded = geminiRes?.status === 503
+      return NextResponse.json(
+        { error: isOverloaded ? 'AI je trenutno preobremenjeno. Poskusite čez minuto.' : `Gemini error: ${err}` },
+        { status: isOverloaded ? 503 : 502 }
+      )
     }
 
     const upstream = geminiRes.body
