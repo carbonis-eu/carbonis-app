@@ -307,8 +307,8 @@ export default function VeraWidget() {
             <div style={{ flexShrink: 0 }}><VeraAvatar size={36} /></div>
             <div style={{ flex: 1 }}>
               <p style={{ color: 'white', fontWeight: 700, fontSize: '14px', margin: 0 }}>Vera</p>
-              <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '11px', margin: 0 }}>
-                AI pomočnica · {loading ? 'piše...' : 'online'}
+              <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '11px', margin: 0 }}>
+                AI pomočnica Carbonis · {loading ? 'piše...' : 'online'}
               </p>
             </div>
             <button
