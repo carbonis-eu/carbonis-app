@@ -269,23 +269,40 @@ export default function VeraWidget() {
         </div>
       )}
 
-      {/* Floating button */}
-      <button
-        data-vera-open
-        onClick={openChat}
-        aria-label="Odpri Vera AI pomočnico"
-        style={{
-          position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
-          width: '56px', height: '56px', borderRadius: '50%',
-          background: `linear-gradient(135deg, #26966B, ${cobalt})`,
-          border: 'none', cursor: 'pointer',
-          boxShadow: '0 4px 20px rgba(30,122,86,0.45)',
-          display: open ? 'none' : 'flex',
-          alignItems: 'center', justifyContent: 'center',
-        }}
-      >
-        <VeraAvatar size={44} />
-      </button>
+      {/* Floating button + label */}
+      {!open && (
+        <div
+          onClick={openChat}
+          style={{
+            position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
+            display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer',
+            flexDirection: 'row-reverse',
+          }}
+        >
+          <button
+            data-vera-open
+            aria-label="Odpri Vera AI pomočnico"
+            style={{
+              width: '56px', height: '56px', borderRadius: '50%',
+              background: `linear-gradient(135deg, #26966B, ${cobalt})`,
+              border: 'none', cursor: 'pointer',
+              boxShadow: '0 4px 20px rgba(30,122,86,0.45)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <VeraAvatar size={44} />
+          </button>
+          <div style={{
+            background: 'white', borderRadius: '12px', padding: '8px 14px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12)', border: '1px solid #E3EAE8',
+            animation: 'fadeInUp 0.3s ease',
+          }}>
+            <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#17364D', lineHeight: 1.3 }}>Vera — AI pomočnica</p>
+            <p style={{ margin: 0, fontSize: '11px', color: '#687985', marginTop: '2px' }}>Koliko strank spi v vaši bazi?</p>
+          </div>
+        </div>
+      )}
 
       {/* Chat window */}
       {open && (
