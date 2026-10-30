@@ -357,7 +357,7 @@ export default function VeraWidget() {
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
             <p style={{ fontSize: '10px', color: '#94a3b8', margin: 0 }}>
-              AI asistent · EU AI Act · <a href="/zasebnost" style={{ color: '#94a3b8' }}>Zasebnost</a>
+              AI asistent · EU AI Act · <a href="/politika-zasebnosti" style={{ color: '#94a3b8' }}>Zasebnost</a>
             </p>
             <p style={{ fontSize: '10px', color: '#94a3b8', margin: 0 }}>
               <a href="mailto:info@carbonis.eu" style={{ color: '#94a3b8' }}>info@carbonis.eu</a>

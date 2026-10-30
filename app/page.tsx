@@ -55,7 +55,7 @@ export default function HomePage() {
       <nav style={{position:'sticky',top:0,zIndex:100,background:'white',borderBottom:'1px solid #E0E5ED',boxShadow:'0 1px 8px rgba(0,0,0,0.04)'}}>
         <div style={{maxWidth:'1160px',margin:'0 auto',padding:'0 32px',height:'64px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
           <Link href="/">
-            <img src="/carbonis-logo.png" alt="Carbonis" style={{height:'38px',width:'auto'}}/>
+            <img src="/carbonis-logo.png" alt="Carbonis" style={{height:'44px',width:'auto'}}/>
           </Link>
           <div className="nav-links" style={{display:'flex',gap:'32px',alignItems:'center'}}>
             <a href="#kako-deluje" className="nl">Kako deluje</a>
@@ -511,7 +511,7 @@ export default function HomePage() {
         <div style={{maxWidth:'1160px',margin:'0 auto',padding:'0 32px'}}>
           <div className="footer-top" style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'40px',flexWrap:'wrap',gap:'20px'}}>
             <Link href="/">
-              <img src="/carbonis-logo-dark.png" alt="Carbonis" style={{height:'44px',width:'auto'}}/>
+              <img src="/carbonis-logo.png" alt="Carbonis" style={{height:'50px',width:'auto',filter:'brightness(0) invert(1)'}}/>
             </Link>
             <nav style={{display:'flex',gap:'24px',flexWrap:'wrap'}}>
               {[['Kako deluje','#kako-deluje'],['Panoge','#panoge'],['Paketi','#paketi'],['FAQ','#faq'],['Prijava','/login']].map(([l,h]) => (

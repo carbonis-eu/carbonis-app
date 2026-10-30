@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import VeraWidget from "./components/VeraWidget";
-import FoundingMemberPopup from "./components/FoundingMemberPopup";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -107,7 +106,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}<VeraWidget /><FoundingMemberPopup /></body>
+      <body className="min-h-full flex flex-col">{children}<VeraWidget /></body>
     </html>
   );
 }
