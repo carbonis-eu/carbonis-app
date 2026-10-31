@@ -1,7 +1,4 @@
 import { createAdminClient } from '@/lib/supabase/admin'
-import AdminSidebar from '@/app/admin/_components/AdminSidebar'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 
 interface VeraLog {
   id: string
@@ -19,19 +16,6 @@ const RATING_COLOR: Record<number, string> = {
   5: '#16a34a', 4: '#65a30d', 3: '#d97706', 2: '#dc2626', 1: '#991b1b',
 }
 
-async function getAdminInfo() {
-  const cookieStore = await cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
-  )
-  const { data: { user } } = await supabase.auth.getUser()
-  const email = user?.email ?? 'admin'
-  const initials = email.substring(0, 2).toUpperCase()
-  return { email, initials }
-}
-
 export default async function VeraAnalizaPage() {
   const db = createAdminClient()
   const { data: logs } = await db
@@ -40,16 +24,12 @@ export default async function VeraAnalizaPage() {
     .order('created_at', { ascending: false })
     .limit(50)
 
-  const { email, initials } = await getAdminInfo()
-
   const avgRating = logs && logs.length > 0
     ? (logs.reduce((s, l) => s + (l.overall_rating ?? 0), 0) / logs.length).toFixed(1)
     : '—'
 
   return (
-    <div style={{ display: 'flex', height: '100vh', fontFamily: 'system-ui, sans-serif', background: '#F7F8FA' }}>
-      <AdminSidebar adminEmail={email} adminInitials={initials} />
-      <main style={{ flex: 1, overflow: 'auto', padding: '32px' }}>
+    <main style={{ flex: 1, overflow: 'auto', padding: '32px', fontFamily: 'system-ui, sans-serif', background: '#F7F8FA' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ marginBottom: '28px' }}>
             <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0f172a', margin: 0 }}>Vera — samoanaliza</h1>
@@ -131,7 +111,6 @@ export default async function VeraAnalizaPage() {
             </div>
           )}
         </div>
-      </main>
-    </div>
+    </main>
   )
 }
