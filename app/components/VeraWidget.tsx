@@ -245,7 +245,7 @@ export default function VeraWidget() {
     setCollecting('name')
     setMessages(prev => [...prev,
       { role: 'user', content: genderLabel },
-      { role: 'assistant', content: `Odlično! Ali mi lahko zaupate vaše polno ime in priimek?` },
+      { role: 'assistant', content: `Vaše ime in priimek, prosim?` },
     ])
   }, [])
 
